@@ -188,8 +188,8 @@ public class Resource
         if (childrenMap.isEmpty())
             return name + " = {}";
         final StringBuilder output = new StringBuilder(name + " = {");
-        for (int key : childrenMap.keys())
-            output.append(kindToName.get(key)).append(", ");
-        return output.delete(output.length() - 2, output.length()).append("}").toString();
+        for (TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext();)
+            output.append(kindToName.get(childrenIterator.next())).append((childrenIterator.hasNext()) ? ", " : "}");
+        return output.toString();
     }
 }
