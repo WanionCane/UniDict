@@ -91,7 +91,7 @@ public class RecipeHelper
                     createCompressionRecipe(smaller, bigger);
     }
 
-    private static void createCompressionRecipe(UniResourceContainer bigger, UniResourceContainer smaller)
+    private static void createCompressionRecipe(UniResourceContainer smaller, UniResourceContainer bigger)
     {
         recipes.add(new ShapedOreRecipe(bigger.getMainEntry(), "SSS", "SSS", "SSS", 'S', smaller.name));
         recipes.add(new ShapelessOreRecipe(smaller.getMainEntry(9), bigger.name));
