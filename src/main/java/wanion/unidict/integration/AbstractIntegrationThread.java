@@ -8,8 +8,8 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import wanion.unidict.AbstractModuleThread;
 import wanion.unidict.UniDict;
+import wanion.unidict.module.AbstractModuleThread;
 import wanion.unidict.resource.ResourceHandler;
 
 abstract class AbstractIntegrationThread extends AbstractModuleThread

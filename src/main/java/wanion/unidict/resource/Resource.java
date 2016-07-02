@@ -25,7 +25,7 @@ public class Resource
 {
     private static final TObjectIntMap<String> nameToKind = new TObjectIntHashMap<>();
     private static final TIntObjectMap<String> kindToName = new TIntObjectHashMap<>();
-    private static int totalKindsRegistered;
+    private static int totalKindsRegistered = 0;
     private static boolean populated;
     public final String name;
     private final TIntObjectMap<UniResourceContainer> childrenMap = new TIntObjectHashMap<>();
@@ -91,21 +91,6 @@ public class Resource
                 continue;
             children &= ~kindId;
             childrenIterator.remove();
-        }
-    }
-
-    public static void populateKindMap(String[] kinds)
-    {
-        if (populated)
-            return;
-        else
-            populated = true;
-        for (String kindName : kinds) {
-            if (nameToKind.containsKey(kindName))
-                continue;
-            int value = 1 << totalKindsRegistered++;
-            nameToKind.put(kindName, value);
-            kindToName.put(value, kindName);
         }
     }
 

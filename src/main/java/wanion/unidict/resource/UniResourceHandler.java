@@ -26,7 +26,6 @@ import wanion.unidict.helper.LogHelper;
 
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class UniResourceHandler
 {
@@ -96,7 +95,7 @@ public final class UniResourceHandler
         StringBuilder patternBaseString = new StringBuilder("^(");
         for (Iterator<String> kindIterator = kinds.iterator(); kindIterator.hasNext(); )
             patternBaseString.append(kindIterator.next()).append((kindIterator.hasNext()) ? "|" : ")");
-        for (Matcher matcher : UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBaseString.toString()))) {
+        for (Matcher matcher : UniOreDictionary.getThoseThatMatches(patternBaseString.toString())) {
             String resourceName = WordUtils.capitalize(matcher.replaceFirst(""));
             if (!basicResourceMap.containsKey(resourceName))
                 basicResourceMap.put(resourceName, new LinkedHashSet<String>());
@@ -145,11 +144,11 @@ public final class UniResourceHandler
     {
         updateEverything();
         ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
-        resourceHandler.populateIndividualStackAttributes();
         Resource customResource;
         for (String customEntry : Config.customUnifiedResources.keySet())
             if ((customResource = resourceMap.get(customEntry)) != null)
                 customResource.updateEntries();
+        resourceHandler.populateIndividualStackAttributes();
         for (String blackListedResource : Config.resourceBlackList)
         {
             resourceMap.remove(blackListedResource);

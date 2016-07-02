@@ -47,7 +47,7 @@ public final class UniDictAPI implements UniDict.IDependence
         return Resource.getResources(resources, kinds);
     }
 
-    public static Map<String, Resource> toResourceMap(List<Resource> resources)
+    public static Map<String, Resource> toResourceMap(Collection<Resource> resources)
     {
         Map<String, Resource> resourceMap = new THashMap<>();
         for (Resource resource : resources)

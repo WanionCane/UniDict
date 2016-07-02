@@ -1,4 +1,4 @@
-package wanion.unidict;
+package wanion.unidict.module;
 
 /*
  * Created by WanionCane(https://github.com/WanionCane).

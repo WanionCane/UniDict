@@ -68,7 +68,8 @@ final class CraftingIntegration extends AbstractIntegrationThread
     {
         int initialSize = recipes.size();
         try {
-            RecipeHelper.singleWayCompressionRecipe(dustTinyAndDust, dustTiny, dust);
+            if (dustTinyAndDust != null)
+                RecipeHelper.singleWayCompressionRecipe(dustTinyAndDust, dustTiny, dust);
             RecipeHelper.resourcesToCompressionRecipes(resourceHandler.resources, nugget, ingot, block);
             if (gems != null)
                 RecipeHelper.resourcesToCompressionRecipes(gems, nugget, gem, block);

@@ -24,11 +24,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static cpw.mods.fml.common.Loader.isModLoaded;
+import static wanion.unidict.common.Reference.SLASH;
 
 public final class Config
 {
     // config
-    private static final Configuration config = new Configuration(new File(Reference.MOD_FOLDER + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
+    private static final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
 
     // ensure mod loaded
     public static boolean exNihilo;
@@ -56,10 +57,8 @@ public final class Config
 
     // modules
     private static final String modules = "modules";
-    private static final String externalModules = "externalModules";
     static final boolean integrationModule = config.getBoolean("integration", modules, true, "Integration Module enabled?\nif false all the Integrations will be disabled.\nthis will affect non-standalone tweak.\n");
     static final boolean tweakModule = config.getBoolean("tweak", modules, true, "Tweak Module enabled?\nif false all standalone Tweaks will be disabled.\n");
-    static final boolean loadExternalModules = config.getBoolean("loadExternalModules", externalModules, true, "External Modules enabled?\nif false UniDict won't will load any external module.\n");
 
     // recipe tweaks
     private static final String recipeTweaks = "recipeTweaks";
@@ -83,7 +82,7 @@ public final class Config
     public static boolean teIntegration;
 
     // vanilla integrations
-    private  static final String vanillaIntegrations = "vanillaIntegrations";
+    private static final String vanillaIntegrations = "vanillaIntegrations";
     public static final boolean chestIntegration = config.getBoolean("chestIntegration", vanillaIntegrations, true, "Chest Integration? (\"dungeon chest, nether fortress chests, etc...\").");
     public static final boolean craftingIntegration = config.getBoolean("craftingIntegration", vanillaIntegrations, true, "Crafting Integration");
     public static final boolean furnaceIntegration = config.getBoolean("furnaceIntegration", vanillaIntegrations, true, "Furnace Integration");
@@ -176,15 +175,5 @@ public final class Config
                 customUnifiedResources.put(customUnifiedResource.substring(0, baseSeparatorIndex), kindSet);
         }
         return customUnifiedResources;
-    }
-
-    static boolean specificModuleEnabled(String name)
-    {
-        try {
-            return config.get(externalModules, name, true).getBoolean();
-        } finally {
-            if (config.hasChanged())
-                config.save();
-        }
     }
 }

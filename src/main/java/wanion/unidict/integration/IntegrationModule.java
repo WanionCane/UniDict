@@ -8,7 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import wanion.unidict.AbstractModule;
+import wanion.unidict.module.AbstractModule;
 
 import static wanion.unidict.Config.*;
 

@@ -9,8 +9,8 @@ package wanion.unidict.tweak;
  */
 
 import cpw.mods.fml.common.Loader;
-import wanion.unidict.AbstractModule;
 import wanion.unidict.Config;
+import wanion.unidict.module.AbstractModule;
 import wanion.unidict.tweak.compat.ExAOBDCompat;
 
 public final class TweakModule extends AbstractModule
