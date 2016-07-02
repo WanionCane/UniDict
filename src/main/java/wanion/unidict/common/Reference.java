@@ -17,7 +17,6 @@ public final class Reference
     public static final String MOD_VERSION = "1.9.4-1.5";
     public static final char SLASH = separatorChar;
     public static final String MC_VERSION = "[1.9.4]";
-    public static final String MOD_FOLDER = "." + SLASH + MOD_NAME.toLowerCase() + SLASH;
 
     private Reference() {}
 }

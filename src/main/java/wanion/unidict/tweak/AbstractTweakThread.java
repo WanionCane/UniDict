@@ -8,7 +8,7 @@ package wanion.unidict.tweak;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import wanion.unidict.AbstractModuleThread;
+import wanion.unidict.module.AbstractModuleThread;
 
 abstract class AbstractTweakThread extends AbstractModuleThread
 {

@@ -9,6 +9,7 @@ package wanion.unidict;
  */
 
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -17,10 +18,19 @@ import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
+import wanion.unidict.helper.LogHelper;
+import wanion.unidict.integration.IntegrationModule;
+import wanion.unidict.module.AbstractModule;
+import wanion.unidict.module.ModuleHandler;
 import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniResourceHandler;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
+import java.util.Set;
 
 import static wanion.unidict.common.Reference.*;
 
@@ -33,6 +43,7 @@ public final class UniDict
 
     private static Dependencies<IDependence> dependencies = new Dependencies<>();
     private UniResourceHandler uniResourceHandler = UniResourceHandler.create();
+    private ModuleHandler moduleHandler;
 
     public static Dependencies<IDependence> getDependencies()
     {
@@ -50,29 +61,56 @@ public final class UniDict
     }
 
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
+    public void preInit(final FMLPreInitializationEvent event)
     {
         Config.init();
+        moduleHandler = searchForModules(populateModules(new ModuleHandler()), event.getAsmData());
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
+    public void init(final FMLInitializationEvent event)
     {
         uniResourceHandler.init();
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
+    public void postInit(final FMLPostInitializationEvent event)
     {
         uniResourceHandler.postInit();
-        new ModuleHandler().startModules();
+        moduleHandler.startModules(event);
     }
 
     @Mod.EventHandler
-    public void loadComplete(FMLLoadCompleteEvent event)
+    public void loadComplete(final FMLLoadCompleteEvent event)
     {
+        moduleHandler.startModules(event);
         uniResourceHandler = null;
+        moduleHandler = null;
         dependencies = null;
+    }
+
+    private ModuleHandler populateModules(final ModuleHandler moduleHandler)
+    {
+        if (Config.integrationModule)
+            moduleHandler.addModule(new IntegrationModule());
+        //if (Config.tweakModule)
+        //    moduleHandler.addModule(new TweakModule());
+        return moduleHandler;
+    }
+
+    private ModuleHandler searchForModules(final ModuleHandler moduleHandler, final ASMDataTable asmDataTable)
+    {
+        final Set<ASMDataTable.ASMData> modules = asmDataTable.getAll("wanion.unidict.UniDict$Module");
+        for (final ASMDataTable.ASMData module : modules) {
+            try {
+                final Class<?> mayBeAModule = Class.forName(module.getClassName());
+                if (mayBeAModule.getSuperclass().isAssignableFrom(AbstractModule.class))
+                    moduleHandler.addModule((AbstractModule) mayBeAModule.newInstance());
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                LogHelper.error("Cannot load ", module.getClassName(), e);
+            }
+        }
+        return moduleHandler;
     }
 
     @NetworkCheckHandler
@@ -82,4 +120,8 @@ public final class UniDict
     }
 
     public interface IDependence {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface Module {}
 }

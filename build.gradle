@@ -25,7 +25,7 @@ group= "wanion.unidict" // http://maven.apache.org/guides/mini/guide-naming-conv
 archivesBaseName = "UniDict"
 
 minecraft {
-    version = "1.9.4-12.17.0.1968"
+    version = "1.9.4-12.17.0.1976"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

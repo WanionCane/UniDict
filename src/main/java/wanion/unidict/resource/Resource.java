@@ -15,14 +15,18 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class Resource
 {
     private static final TObjectIntMap<String> nameToKind = new TObjectIntHashMap<>();
     private static final TIntObjectMap<String> kindToName = new TIntObjectHashMap<>();
-    private static int totalKindsRegistered;
+    private static int totalKindsRegistered = 0;
+    private static boolean populated;
     public final String name;
     private final TIntObjectMap<UniResourceContainer> childrenMap = new TIntObjectHashMap<>();
     private int children = 0;
@@ -66,20 +70,11 @@ public class Resource
         return childrenMap.valueCollection();
     }
 
-    public Resource whiteListedClone(final int kinds)
+    public Resource filteredClone(int kinds)
     {
-        final TIntObjectMap<UniResourceContainer> newChildrenMap = new TIntObjectHashMap<>();
+        TIntObjectMap<UniResourceContainer> newChildrenMap = new TIntObjectHashMap<>();
         for (int kind : childrenMap.keys())
             if ((kinds & kind) > 0)
-                newChildrenMap.put(kind, childrenMap.get(kind));
-        return new Resource(name, newChildrenMap);
-    }
-
-    public Resource blackListedClone(final int kinds)
-    {
-        final TIntObjectMap<UniResourceContainer> newChildrenMap = new TIntObjectHashMap<>();
-        for (int kind : childrenMap.keys())
-            if ((kinds & kind) == 0)
                 newChildrenMap.put(kind, childrenMap.get(kind));
         return new Resource(name, newChildrenMap);
     }
@@ -91,7 +86,7 @@ public class Resource
         else
             updated = true;
         for (TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); ) {
-            final int kindId = childrenIterator.next();
+            int kindId = childrenIterator.next();
             if (childrenMap.get(kindId).updateEntries())
                 continue;
             children &= ~kindId;
@@ -99,22 +94,11 @@ public class Resource
         }
     }
 
-    public static void populateKindMap(String[] kinds)
-    {
-        for (String kindName : kinds) {
-            if (nameToKind.containsKey(kindName))
-                continue;
-            final int value = 1 << totalKindsRegistered++;
-            nameToKind.put(kindName, value);
-            kindToName.put(value, kindName);
-        }
-    }
-
     public static int registerKind(String kindName)
     {
         if (nameToKind.containsKey(kindName))
             return nameToKind.get(kindName);
-        final int kind = 1 << totalKindsRegistered++;
+        int kind = 1 << totalKindsRegistered++;
         nameToKind.put(kindName, kind);
         kindToName.put(kind, kindName);
         return kind;
@@ -136,7 +120,7 @@ public class Resource
     {
         if (kinds == 0)
             return Collections.emptyList();
-        final List<Resource> sortedResources = new ArrayList<>();
+        List<Resource> sortedResources = new ArrayList<>();
         for (Resource resource : resources)
             if ((kinds & resource.getChildren()) == kinds)
                 sortedResources.add(resource);
@@ -154,9 +138,9 @@ public class Resource
         return getResources(resources, trueKinds);
     }
 
-    public static Set<String> getKinds()
+    public static List<String> getKinds()
     {
-        return Collections.unmodifiableSet(nameToKind.keySet());
+        return Collections.unmodifiableList(new ArrayList<>(nameToKind.keySet()));
     }
 
     public static int getKindOfName(String name)
@@ -188,7 +172,7 @@ public class Resource
         if (childrenMap.isEmpty())
             return name + " = {}";
         final StringBuilder output = new StringBuilder(name + " = {");
-        for (TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext();)
+        for (TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); )
             output.append(kindToName.get(childrenIterator.next())).append((childrenIterator.hasNext()) ? ", " : "}");
         return output.toString();
     }

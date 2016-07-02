@@ -134,11 +134,11 @@ public final class UniResourceHandler
     {
         updateEverything();
         ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
-        resourceHandler.populateIndividualStackAttributes();
         Resource customResource;
         for (String customEntry : Config.customUnifiedResources.keySet())
             if ((customResource = resourceMap.get(customEntry)) != null)
                 customResource.updateEntries();
+        resourceHandler.populateIndividualStackAttributes();
         for (String blackListedResource : Config.resourceBlackList)
         {
             resourceMap.remove(blackListedResource);

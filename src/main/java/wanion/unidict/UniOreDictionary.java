@@ -13,6 +13,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import wanion.unidict.UniDict.IDependence;
 import wanion.unidict.common.Util;
 
+import javax.annotation.RegEx;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,68 +29,57 @@ public class UniOreDictionary implements IDependence
 
     private final Map<Object, String> someThingToName = new HashMap<>();
 
-    public static List<ItemStack> get(String oreDictName)
+    public static List<ItemStack> get(final String oreDictName)
     {
         return get(nameToId.get(oreDictName));
     }
 
-    public static List<ItemStack> get(Integer oreDictId)
+    public static List<ItemStack> get(final Integer oreDictId)
     {
         return checkId(oreDictId) ? idToStack.get(oreDictId) : null;
     }
 
-    public static List<ItemStack> getUn(Integer oreDictId)
+    public static List<ItemStack> getUn(final Integer oreDictId)
     {
         return checkId(oreDictId) ? idToStackUn.get(oreDictId) : null;
     }
 
-    public static Map<String, Integer> getNameToId()
+    public static ItemStack getFirstEntry(final String oreDictName)
     {
-        return Collections.unmodifiableMap(nameToId);
+        final List<ItemStack> oreList = get(oreDictName);
+        return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(0).copy() : null;
     }
 
-    public static ItemStack getFirstEntry(String oreDictName)
+    public static ItemStack getLastEntry(final String oreDictName)
     {
-        List<ItemStack> oreList = get(oreDictName);
-        return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(0) : null;
+        final List<ItemStack> oreList = get(oreDictName);
+        return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(oreList.size() - 1).copy() : null;
     }
 
-    public static ItemStack getLastEntry(String oreDictName)
+    public static Set<ItemStack> get(final Collection<String> oreDictNames)
     {
-        List<ItemStack> oreList = get(oreDictName);
-        return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(oreList.size() - 1) : null;
-    }
-
-    public static Set<ItemStack> get(Collection<String> oreDictNames)
-    {
-        Set<ItemStack> itemStacks = new HashSet<>();
+        final Set<ItemStack> itemStacks = new HashSet<>();
         for (String name : oreDictNames)
             itemStacks.addAll(idToStack.get(nameToId.get(name)));
         return itemStacks;
     }
 
-    public static List<ItemStack> get(ItemStack thing)
+    public static List<ItemStack> get(final ItemStack thing)
     {
-        Integer thingId = MetaItem.get(thing);
+        final int thingId = MetaItem.get(thing);
         if (stackToId.containsKey(thingId))
             return idToStack.get(stackToId.get(thingId).get(0));
         return null;
     }
 
-    public static List<ItemStack> get(Object thing)
+    public static List<Matcher> getThoseThatMatches(@RegEx final String regex)
     {
-        if (thing instanceof String)
-            return get((String) thing);
-        else if (thing instanceof Integer)
-            return get((Integer) thing);
-        else if (thing instanceof ItemStack)
-            return get((ItemStack) thing);
-        return null;
+        return getThoseThatMatches(Pattern.compile(regex));
     }
 
-    public static List<Matcher> getThoseThatMatches(Pattern pattern)
+    public static List<Matcher> getThoseThatMatches(final Pattern pattern)
     {
-        List<Matcher> matcherList = new ArrayList<>();
+        final List<Matcher> matcherList = new ArrayList<>();
         for (String name : nameToId.keySet()) {
             Matcher matcher = pattern.matcher(name);
             if (matcher.find())
@@ -98,20 +88,18 @@ public class UniOreDictionary implements IDependence
         return matcherList;
     }
 
-    public static void removeFromElsewhere(String oreDictName)
+    public static void removeFromElsewhere(final String oreDictName)
     {
-        ItemStack mainEntry = getFirstEntry(oreDictName);
-        if (mainEntry == null)
+        final ItemStack mainEntry = getFirstEntry(oreDictName);
+        final int[] ids = OreDictionary.getOreIDs(mainEntry);
+        if (mainEntry == null || ids.length == 0)
             return;
-        int mainEntryHash = MetaItem.get(mainEntry);
-        int oreDictId = getId(oreDictName);
-        int[] ids = OreDictionary.getOreIDs(mainEntry);
-        if (ids == null)
-            return;
+        final int mainEntryHash = MetaItem.get(mainEntry);
+        final int oreDictId = getId(oreDictName);
         for (int id : ids) {
             if (oreDictId == id)
                 continue;
-            List<ItemStack> oreDictEntries = get(id);
+            final List<ItemStack> oreDictEntries = get(id);
             if (oreDictEntries == null)
                 continue;
             for (Iterator<ItemStack> oreDictEntriesIterator = oreDictEntries.iterator(); oreDictEntriesIterator.hasNext(); )
@@ -120,17 +108,17 @@ public class UniOreDictionary implements IDependence
         }
     }
 
-    public static Integer getId(String oreDictName)
+    public static Integer getId(final String oreDictName)
     {
         return nameToId.get(oreDictName);
     }
 
-    private static String getName(Integer oreDictId)
+    private static String getName(final Integer oreDictId)
     {
         return idToName.get(oreDictId);
     }
 
-    private static boolean checkId(Integer oreDictId)
+    private static boolean checkId(final Integer oreDictId)
     {
         return oreDictId != null && oreDictId <= idToStack.size();
     }
@@ -149,7 +137,7 @@ public class UniOreDictionary implements IDependence
         }
     }
 
-    public String getName(Object thing)
+    public String getName(final Object thing)
     {
         if (thing instanceof ItemStack)
             return someThingToName.get(MetaItem.get((ItemStack) thing));
