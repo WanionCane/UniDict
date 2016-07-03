@@ -14,7 +14,7 @@ public final class Reference
 {
     public static final String MOD_ID = "UniDict";
     public static final String MOD_NAME = MOD_ID;
-    public static final String MOD_VERSION = "1.9.4-1.5";
+    public static final String MOD_VERSION = "1.9.4-1.5b";
     public static final char SLASH = separatorChar;
     public static final String MC_VERSION = "[1.9.4]";
 

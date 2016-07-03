@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -79,7 +80,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
             if (techReborn)
                 createUURecipes();
             if (dustBronze != null)
-                recipes.add(new ShapelessOreRecipe(dustBronze.getMainEntry(4), "dustCopper", "dustCopper", "dustCopper", "dustTin"));
+                GameRegistry.addRecipe(new ShapelessOreRecipe(dustBronze.getMainEntry(4), "dustCopper", "dustCopper", "dustCopper", "dustTin"));
             if (ingotBronze != null)
                 recipes.add(new ShapelessOreRecipe(ingotBronze.getMainEntry(4), "ingotCopper", "ingotCopper", "ingotCopper", "ingotTin"));
             if (dustBrass != null)
