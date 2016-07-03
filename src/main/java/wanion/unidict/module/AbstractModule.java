@@ -51,6 +51,11 @@ public abstract class AbstractModule
         return threads.get(loadStage).isEmpty();
     }
 
+    protected final boolean isEmpty()
+    {
+        return threadsClasses.isEmpty();
+    }
+
     protected abstract void init();
 
     protected void preparations() {}

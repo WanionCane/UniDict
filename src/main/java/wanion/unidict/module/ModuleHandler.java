@@ -27,11 +27,12 @@ public final class ModuleHandler
         if (modules.isEmpty() || loadStage == null)
             return;
         for (AbstractModule module : modules) {
-            module.init();
-            if (!module.isEmpty(loadStage)) {
-                module.preparations();
-                module.start(loadStage);
-            }
+            if (module.isEmpty())
+                module.init();
+            if (module.isEmpty(loadStage))
+                continue;
+            module.preparations();
+            module.start(loadStage);
         }
     }
 
