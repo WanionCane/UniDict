@@ -37,7 +37,7 @@ public final class Config
     public static boolean techReborn;
     public static boolean tinkersConstruct;
     //public static boolean exNihilo;
-    public static boolean forestry;
+    //public static boolean forestry;
 
     // general configs
     private static final String general = Configuration.CATEGORY_GENERAL;
@@ -58,7 +58,6 @@ public final class Config
 
     // modules
     private static final String modules = "modules";
-    private static final String externalModules = "externalModules";
     static final boolean integrationModule = config.getBoolean("integration", modules, true, "Integration Module enabled?\nif false all the Integrations will be disabled.\nthis will affect non-standalone tweak.\n");
     //static final boolean tweakModule = config.getBoolean("tweak", modules, true, "Tweak Module enabled?\nif false all standalone Tweaks will be disabled.\n");
 
@@ -70,7 +69,6 @@ public final class Config
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
     public static boolean techRebornIntegration;
-    public static boolean tinkerIOIntegration;
 
     // vanilla integrations
     private static final String vanillaIntegrations = "vanillaIntegrations";
@@ -115,7 +113,6 @@ public final class Config
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && foundry;
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && techReborn;
-            tinkerIOIntegration = config.getBoolean("tinkerIO", integrations, true, "Tinker I/O Integration") && isModLoaded("tinker_io");
 
             // recipe tweaks
             config.setCategoryComment(recipeTweaks, "everything in this category requires \"Crafting Integration\" to work.");
