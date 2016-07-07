@@ -16,15 +16,16 @@ import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict.IDependence;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class ResourceHandler implements IDependence
 {
+    static final Set<ItemStack> keepOneEntryBlackSet = new HashSet<>();
+    public final Collection<Resource> resources;
     private final TIntObjectMap<UniAttributes> individualStackAttributes = new TIntObjectHashMap<>();
     private final Map<String, UniResourceContainer> containerMap = new THashMap<>();
-    static final Set<ItemStack> keepOneEntryBlackSet = new HashSet<>();
     private final Map<String, Resource> resourceMap;
-    public final Collection<Resource> resources;
 
     ResourceHandler(Map<String, Resource> resourceMap)
     {
@@ -92,10 +93,7 @@ public final class ResourceHandler implements IDependence
 
     public List<ItemStack> getMainItemStackList(Collection<ItemStack> things)
     {
-        List<ItemStack> bufferList = new ArrayList<>();
-        for (ItemStack thing : things)
-            bufferList.add(getMainItemStack(thing));
-        return bufferList;
+        return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
     }
 
     public void setMainItemStacks(List<ItemStack> thingList)
@@ -118,24 +116,23 @@ public final class ResourceHandler implements IDependence
         return containerMap.containsKey(name);
     }
 
-    public List<Resource> getResources(int kinds)
+    public List<Resource> getResources(long kinds)
     {
         return Resource.getResources(resources, kinds);
     }
 
-    public List<Resource> getResources(int... kinds)
+    public List<Resource> getResources(long... kinds)
     {
         return Resource.getResources(resources, kinds);
     }
 
     void populateIndividualStackAttributes()
     {
-        for (Resource resource : resources) {
-            for (UniResourceContainer container : resource.getChildrenCollection()) {
-                containerMap.put(container.name, container);
-                UniAttributes uniAttributes = new UniAttributes(resource, container);
-                MetaItem.populateMap(container.getEntries(), individualStackAttributes, uniAttributes);
-            }
-        }
+        resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
+            containerMap.put(container.name, container);
+            UniAttributes uniAttributes = new UniAttributes(resource, container);
+            MetaItem.populateMap(container.getEntries(), individualStackAttributes, uniAttributes);
+            return true;
+        }));
     }
 }

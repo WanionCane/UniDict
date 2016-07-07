@@ -13,18 +13,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.helper.GearHelper;
-import wanion.unidict.helper.LogHelper;
 import wanion.unidict.helper.RecipeHelper;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static wanion.unidict.Config.*;
 
@@ -32,15 +32,15 @@ final class CraftingIntegration extends AbstractIntegrationThread
 {
     private final List<IRecipe> recipes = RecipeHelper.recipes;
     private final FMLControlledNamespacedRegistry<Item> itemRegistry = MetaItem.itemRegistry;
-    private final int dust = Resource.getKindOfName("dust");
-    private final int nugget = Resource.getKindOfName("nugget");
-    private final int ingot = Resource.getKindOfName("ingot");
-    private final int block = Resource.getKindOfName("block");
-    private final int gear = Resource.getKindOfName("gear");
-    private final int plate = Resource.getKindOfName("plate");
-    private final int rod = Resource.getKindOfName("rod");
-    private final int dustTiny = Resource.getKindOfName("dustTiny");
-    private final int gem = Resource.getKindOfName("gem");
+    private final long dust = Resource.getKindOfName("dust");
+    private final long nugget = Resource.getKindOfName("nugget");
+    private final long ingot = Resource.getKindOfName("ingot");
+    private final long block = Resource.getKindOfName("block");
+    private final long gear = Resource.getKindOfName("gear");
+    private final long plate = Resource.getKindOfName("plate");
+    private final long rod = Resource.getKindOfName("rod");
+    private final long dustTiny = Resource.getKindOfName("dustTiny");
+    private final long gem = Resource.getKindOfName("gem");
     private final GearHelper gearHelper = (gear != 0) ? new GearHelper(gearRecipesRequiresSomeGear) : null;
     private final List<Resource> plates = (plate != 0 && ingot != 0) ? resourceHandler.getResources(plate, ingot) : null;
     private final List<Resource> rods = (rod != 0 && ingot != 0) ? resourceHandler.getResources(rod, ingot) : null;
@@ -89,18 +89,14 @@ final class CraftingIntegration extends AbstractIntegrationThread
                 recipes.add(new ShapelessOreRecipe(dustInvar.getMainEntry(3), "dustIron", "dustIron", "dustNickel"));
             if (plates != null)
                 createPlateRecipes();
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "Why so many recipes? I had to deal with " + (recipes.size() - initialSize) + " recipes.";
     }
 
     private void createPlateRecipes()
     {
         final int platesResult = howManyPlatesWillBeCreatedPerRecipe;
-        for (Resource resource : plates)
-            recipes.add(new ShapedOreRecipe(resource.getChild(plate).getMainEntry(platesResult), "III", "   ", "   ", 'I', resource.getChild(ingot).name));
+        plates.forEach(r -> new ShapedOreRecipe(r.getChild(plate).getMainEntry(platesResult), "III", "   ", "   ", 'I', r.getChild(ingot).name));
         if (ic2)
             createForgeHammerRecipes();
     }
@@ -108,16 +104,14 @@ final class CraftingIntegration extends AbstractIntegrationThread
     private void createForgeHammerRecipes()
     {
         final Item forgeHammer = itemRegistry.getObject(new ResourceLocation("ic2:forge_hammer"));
-        for (Resource resource : plates)
-            recipes.add(new ShapelessOreRecipe(resource.getChild(plate).getMainEntry(1), new ItemStack(forgeHammer, 1, OreDictionary.WILDCARD_VALUE), resource.getChild(ingot).name));
+        plates.forEach(r -> new ShapelessOreRecipe(r.getChild(plate).getMainEntry(1), new ItemStack(forgeHammer, 1, OreDictionary.WILDCARD_VALUE), r.getChild(ingot).name));
     }
 
     private void createRodRecipes()
     {
         final int ingotsRequired = howManyIngotsWillBeRequiredToCreateAnRod;
         final int rodsPerRecipe = howManyRodsWillBeCreatedPerRecipe;
-        for (Resource resource : rods)
-            recipes.add(new ShapedOreRecipe(resource.getChild(rod).getMainEntry(rodsPerRecipe), (ingotsRequired == 3) ? new Object[]{"I  ", "I  ", "I  ", 'I', resource.getChild(ingot).name} : new Object[]{"I  ", "I  ", "   ", 'I', resource.getChild(ingot).name}));
+        recipes.addAll(rods.stream().map(resource -> new ShapedOreRecipe(resource.getChild(rod).getMainEntry(rodsPerRecipe), (ingotsRequired == 3) ? new Object[]{"I  ", "I  ", "I  ", 'I', resource.getChild(ingot).name} : new Object[]{"I  ", "I  ", "   ", 'I', resource.getChild(ingot).name})).collect(Collectors.toList()));
     }
 
     private void createUURecipes()

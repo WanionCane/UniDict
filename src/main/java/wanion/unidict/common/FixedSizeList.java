@@ -16,7 +16,7 @@ import java.util.Collection;
 @SuppressWarnings("unused")
 public class FixedSizeList<E> extends AbstractList<E>
 {
-    private static final int defaultCapacity = 64;
+    private static final int DEFAULT_CAPACITY = 64;
     private final E[] allTheData;
     private final int capacity;
     private int size;
@@ -24,14 +24,14 @@ public class FixedSizeList<E> extends AbstractList<E>
     @SuppressWarnings("unchecked")
     public FixedSizeList()
     {
-        allTheData = (E[]) new Object[capacity = defaultCapacity];
+        allTheData = (E[]) new Object[capacity = DEFAULT_CAPACITY];
     }
 
     @SuppressWarnings("unchecked")
     public FixedSizeList(int capacity)
     {
         if (capacity <= 0)
-            capacity = defaultCapacity;
+            capacity = DEFAULT_CAPACITY;
         allTheData = (E[]) new Object[this.capacity = capacity];
     }
 
@@ -82,7 +82,7 @@ public class FixedSizeList<E> extends AbstractList<E>
         if (index >= size)
             throw new IndexOutOfBoundsException();
         modCount++;
-        E removed = allTheData[index];
+        final E removed = allTheData[index];
         if (size != 1)
             System.arraycopy(allTheData, index + 1, allTheData, index, size - index - 1);
         allTheData[--size] = null;

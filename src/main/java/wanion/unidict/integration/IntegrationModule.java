@@ -10,6 +10,8 @@ package wanion.unidict.integration;
 
 import wanion.unidict.module.AbstractModule;
 
+import javax.annotation.Nonnull;
+
 import static wanion.unidict.Config.*;
 
 public final class IntegrationModule extends AbstractModule
@@ -20,23 +22,30 @@ public final class IntegrationModule extends AbstractModule
     }
 
     @Override
-    protected void init()
+    @Nonnull
+    protected Manager getAdder()
+    {
+        return new Manager(Class::newInstance);
+    }
+
+    @Override
+    protected void init(@Nonnull final Manager manager)
     {
         if (craftingIntegration)
-            add(new CraftingIntegration());
+            manager.add(CraftingIntegration.class);
         if (furnaceIntegration)
-            add(new FurnaceIntegration());
+            manager.add(FurnaceIntegration.class);
         if (abyssalCraft)
-            add(new AbyssalCraftIntegration());
+            manager.add(AbyssalCraftIntegration.class);
         if (baseMetalsIntegration)
-            add(new BaseMetalsIntegration());
+            manager.add(BaseMetalsIntegration.class);
         if (enderIOIntegration)
-            add(new EnderIOIntegration());
+            manager.add(EnderIOIntegration.class);
         if (foundryIntegration)
-            add(new FoundryIntegration());
+            manager.add(FoundryIntegration.class);
         if (ic2Integration)
-            add(new IC2Integration());
+            manager.add(IC2Integration.class);
         if (techRebornIntegration)
-            add(new TechRebornIntegration());
+            manager.add(TechRebornIntegration.class);
     }
 }

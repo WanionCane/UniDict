@@ -8,10 +8,13 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+import wanion.unidict.LoadStage;
 import wanion.unidict.UniDict;
 import wanion.unidict.module.AbstractModuleThread;
+import wanion.unidict.module.SpecifiedLoadStage;
 import wanion.unidict.resource.ResourceHandler;
 
+@SpecifiedLoadStage(stage = LoadStage.POST_INIT)
 abstract class AbstractIntegrationThread extends AbstractModuleThread
 {
     protected final ResourceHandler resourceHandler = UniDict.getResourceHandler();

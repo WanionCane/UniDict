@@ -11,29 +11,31 @@ package wanion.unidict.module;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import wanion.unidict.LoadStage;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class ModuleHandler
 {
     private final Set<Class<? extends AbstractModule>> moduleClasses = new HashSet<>();
-    private final List<AbstractModule> modules = new ArrayList<>();
+    private final Map<AbstractModule, AbstractModule.Manager> modules = new HashMap<>();
 
     public void startModules(final FMLStateEvent event)
     {
         final LoadStage loadStage = (event != null) ? LoadStage.getStage(event.getClass()) : null;
         if (modules.isEmpty() || loadStage == null)
             return;
-        for (AbstractModule module : modules) {
-            if (module.isEmpty())
-                module.init();
-            if (module.isEmpty(loadStage))
-                continue;
-            module.preparations();
-            module.start(loadStage);
-        }
+        modules.entrySet().forEach(e -> {
+            final AbstractModule module = e.getKey();
+            if (e.getValue() == null)
+                e.setValue(module.getAdder());
+            final AbstractModule.Manager manager = e.getValue();
+            if (manager.isEmpty())
+                module.init(manager);
+            if (!manager.isEmpty(loadStage))
+                module.start(loadStage, manager);
+        });
     }
 
     public void addModule(final AbstractModule module)
@@ -42,6 +44,6 @@ public final class ModuleHandler
         if (moduleClass == null || moduleClasses.contains(moduleClass))
             return;
         moduleClasses.add(moduleClass);
-        modules.add(module);
+        modules.put(module, null);
     }
 }

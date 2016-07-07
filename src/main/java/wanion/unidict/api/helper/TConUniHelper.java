@@ -9,6 +9,7 @@ package wanion.unidict.api.helper;
  */
 
 import net.minecraft.item.ItemStack;
+import slimeknights.mantle.util.RecipeMatch;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.smeltery.CastingRecipe;
 import wanion.unidict.Config;
@@ -21,15 +22,14 @@ public final class TConUniHelper
 {
     private TConUniHelper() {}
 
-    public static void removeCast(ItemStack removeTarget)
+    public static void removeCast(final ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
+        CastingRecipe castingRecipe;
+        RecipeMatch recipeMatch;
         for (Iterator<CastingRecipe> castingRecipeIterator = TinkerRegistry.getAllTableCastingRecipes().iterator(); castingRecipeIterator.hasNext(); )
-        {
-            CastingRecipe castingRecipe = castingRecipeIterator.next();
-            if (MetaItem.get(castingRecipe.getResult()) == targetHash)
+            if ((castingRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(castingRecipe.getResult()) == targetHash || ((recipeMatch = castingRecipe.cast) != null && MetaItem.getSet(recipeMatch.getInputs()).contains(targetHash))))
                 castingRecipeIterator.remove();
-        }
         if (Config.autoHideInJEI)
             UniJEIPlugin.hide(removeTarget);
     }

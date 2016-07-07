@@ -21,16 +21,16 @@ public enum LoadStage
 
     public final Class<? extends FMLStateEvent> stage;
 
+    LoadStage(Class<? extends FMLStateEvent> stage)
+    {
+        this.stage = stage;
+    }
+
     public static LoadStage getStage(@Nonnull final Class<? extends FMLStateEvent> stage)
     {
         for (final LoadStage loadStage : values())
             if (loadStage.stage == stage)
                 return loadStage;
         return null;
-    }
-
-    LoadStage(Class<? extends FMLStateEvent> stage)
-    {
-        this.stage = stage;
     }
 }

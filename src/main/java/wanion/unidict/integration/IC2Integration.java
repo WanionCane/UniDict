@@ -12,9 +12,9 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import ic2.core.recipe.BasicMachineRecipeManager;
+import wanion.unidict.UniDict;
 import wanion.unidict.common.FixedSizeList;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -33,19 +33,17 @@ final class IC2Integration extends AbstractIntegrationThread
             ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.blastfurnace, Map.class));
             ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.macerator, Map.class));
             ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerRolling, Map.class));
-        } catch (Exception e) { LogHelper.error(e); }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
     }
 
     @Override
     public String call()
     {
-        try {
-            for (Map<IRecipeInput, RecipeOutput> recipes : ic2MachinesRecipeList)
-                fixMachinesOutputs(recipes);
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        ic2MachinesRecipeList.forEach(map -> {
+            try {
+                fixMachinesOutputs(map);
+            } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+        });
         return threadName + "The world appears to be entirely industrialized.";
     }
 

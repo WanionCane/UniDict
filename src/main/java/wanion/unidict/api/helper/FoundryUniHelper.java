@@ -23,9 +23,9 @@ public final class FoundryUniHelper
 {
     private FoundryUniHelper() {}
 
-    public static void removeMold(ItemStack removeTarget)
+    public static void removeMold(final ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
         for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if (MetaItem.get(castingRecipeIterator.next().getMold()) == targetHash)
                 castingRecipeIterator.remove();
@@ -33,9 +33,9 @@ public final class FoundryUniHelper
             UniJEIPlugin.hide(removeTarget);
     }
 
-    public static void removeCast(ItemStack removeTarget)
+    public static void removeCast(final ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
         ICastingRecipe bufferRecipe;
         for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if ((bufferRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(bufferRecipe.getMold()) == targetHash || MetaItem.get(bufferRecipe.getOutput()) == targetHash))
@@ -44,9 +44,9 @@ public final class FoundryUniHelper
             UniJEIPlugin.hide(removeTarget);
     }
 
-    public static void removeMoldRecipe(ItemStack removeTarget)
+    public static void removeMoldRecipe(final ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
         IMoldRecipe bufferRecipe;
         for (Iterator<IMoldRecipe> moldRecipeIterator = MoldRecipeManager.instance.recipes.iterator(); moldRecipeIterator.hasNext(); )
             if ((bufferRecipe = moldRecipeIterator.next()) != null && MetaItem.get(bufferRecipe.getOutput()) == targetHash)

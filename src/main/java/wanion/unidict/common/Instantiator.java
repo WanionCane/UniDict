@@ -1,4 +1,4 @@
-package wanion.unidict.tweak;
+package wanion.unidict.common;
 
 /*
  * Created by WanionCane(https://github.com/WanionCane).
@@ -8,12 +8,7 @@ package wanion.unidict.tweak;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import wanion.unidict.module.AbstractModuleThread;
-
-abstract class AbstractTweakThread extends AbstractModuleThread
+public interface Instantiator<I>
 {
-    AbstractTweakThread(String tweakName)
-    {
-        super(tweakName, "Tweak");
-    }
+    I instantiate(Class<? extends I> moduleThreadClass) throws InstantiationException, IllegalAccessException;
 }

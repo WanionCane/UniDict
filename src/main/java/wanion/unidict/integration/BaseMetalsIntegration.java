@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,7 +35,7 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
     {
         try {
             fixCrackHammerDrops();
-        } catch (Exception e) { LogHelper.error(e); }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "When smashing things with Crack Hammer, you will get the right things now.";
     }
 
@@ -46,7 +45,7 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
         if (crusherRecipes == null)
             return;
         List<ICrusherRecipe> newRecipes = new ArrayList<>();
-        for (Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext();)
+        for (Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext(); )
         {
             ICrusherRecipe crusherRecipe = crusherRecipeIterator.next();
             if (crusherRecipe instanceof OreDictionaryCrusherRecipe) {

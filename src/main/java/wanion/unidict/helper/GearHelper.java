@@ -29,16 +29,16 @@ public final class GearHelper
     private final List<IRecipe> realRecipes = new ArrayList<>();
     public final List<IRecipe> recipes = Collections.unmodifiableList(realRecipes);
     private final Map<String, String> someMadMap;
-    private final int gear = Resource.getKindOfName("gear");
-    private final int ingot = Resource.getKindOfName("ingot");
-    private final int rod = Resource.getKindOfName("rod");
-    private final int plate = Resource.getKindOfName("plate");
+    private final long gear = Resource.getKindOfName("gear");
+    private final long ingot = Resource.getKindOfName("ingot");
+    private final long rod = Resource.getKindOfName("rod");
+    private final long plate = Resource.getKindOfName("plate");
     private final UniDictAPI uniDictAPI = UniDict.getAPI();
     private final Resource iron = uniDictAPI.getResource("Iron");
 
-    public GearHelper(boolean gearVersion)
+    public GearHelper(final boolean gearVersion)
     {
-        someMadMap = (gearVersion) ? new THashMap<String, String>() : null;
+        someMadMap = (gearVersion) ? new THashMap<>() : null;
         createAllTheRecipes();
     }
 
@@ -57,25 +57,24 @@ public final class GearHelper
                 ? (gearRecipesUsesIngotsInsteadOfPlates) ? uniDictAPI.getResources(gear, ingot, rod) : uniDictAPI.getResources(gear, plate, rod)
                 : (gearRecipesUsesIngotsInsteadOfPlates) ? uniDictAPI.getResources(gear, ingot) : uniDictAPI.getResources(gear, ingot, plate);
         resourceList.remove(iron);
-        final int borderKind = (gearRecipesUsesIngotsInsteadOfPlates) ? ingot : plate;
+        final long borderKind = (gearRecipesUsesIngotsInsteadOfPlates) ? ingot : plate;
         if (someMadMap != null) {
             for (Resource resource : resourceList)
                 createGearWithGearRecipe(resource, borderKind);
             return;
         }
-        final int middleKind = (useBaseMetalsShapeForGears) ? rod : ingot;
-        for (Resource resource : resourceList)
-            createGearRecipe(resource, borderKind, middleKind);
+        final long middleKind = (useBaseMetalsShapeForGears) ? rod : ingot;
+        resourceList.forEach(resource -> createGearRecipe(resource, borderKind, middleKind));
     }
 
-    private void createGearWithGearRecipe(Resource resource, int borderKind)
+    private void createGearWithGearRecipe(final Resource resource, final long borderKind)
     {
         final String name = resource.name;
         final Resource targetResource = someMadMap.containsKey(name) ? uniDictAPI.getResource(name) : iron;
         realRecipes.add(new ShapedOreRecipe(resource.getChild(gear).getMainEntry(), " I ", "ILI", " I ", 'I', resource.getChild(borderKind).name, 'L', targetResource.getChild(gear).name));
     }
 
-    private void createGearRecipe(Resource resource, int borderKind, int middleKind)
+    private void createGearRecipe(final Resource resource, final long borderKind, final long middleKind)
     {
         realRecipes.add(new ShapedOreRecipe(resource.getChild(gear).getMainEntry(), " I ", "ILI", " I ", 'I', resource.getChild(borderKind).name, 'L', resource.getChild(middleKind).name));
     }

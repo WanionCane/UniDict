@@ -10,7 +10,7 @@ package wanion.unidict;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -27,59 +27,71 @@ public final class MetaItem
 {
     public static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
 
-    private MetaItem() {}
+    private MetaItem()
+    {
+    }
 
     public static int get(ItemStack itemStack)
     {
         if (itemStack == null)
             return 0;
-        Item item = itemStack.getItem();
-        int id = itemRegistry.getId(item);
+        final Item item = itemStack.getItem();
+        final int id = itemRegistry.getId(item);
         return (id > 0) ? id | item.getDamage(itemStack) + 1 << 16 : 0;
     }
 
-    public static int get(Item item)
+    public static int get(final Item item)
     {
         if (item == null)
             return 0;
-        int id = itemRegistry.getIDForObject(item);
+        final int id = itemRegistry.getIDForObject(item);
         return (id > 0) ? id | 65536 : 0;
     }
 
-    public static int[] getArray(Collection<ItemStack> itemStackCollection)
+    public static int[] getArray(final Collection<ItemStack> itemStackCollection)
     {
         return getList(itemStackCollection).toArray();
     }
 
-    public static TIntList getList(Collection<ItemStack> itemStackCollection)
+    public static TIntList getList(final Collection<ItemStack> itemStackCollection)
     {
-        TIntList keys = new TIntArrayList();
+        final TIntList keys = new TIntArrayList();
         int hash;
-        for (ItemStack itemStack : itemStackCollection)
+        for (final ItemStack itemStack : itemStackCollection)
             if ((hash = get(itemStack)) != 0)
                 keys.add(hash);
         return keys;
     }
 
-    public static TIntSet getSet(Collection<Resource> resourceCollection, int kind)
+    public static TIntSet getSet(final Collection<Resource> resourceCollection, final long kind)
     {
-        TIntSet keys = new TIntHashSet();
+        final TIntSet keys = new TIntHashSet();
         UniResourceContainer container;
-        for (Resource resource : resourceCollection)
+        for (final Resource resource : resourceCollection)
             if ((container = resource.getChild(kind)) != null)
                 keys.addAll(getList(container.getEntries()));
         return keys;
     }
 
-    public static <E> void populateMap(Collection<ItemStack> itemStackCollection, TIntObjectMap<E> map, E defaultValue)
+    public static TIntSet getSet(final Collection<ItemStack> itemStackCollection)
     {
-        for (int id : getArray(itemStackCollection))
+        final TIntSet keys = new TIntHashSet();
+        int hash;
+        for (final ItemStack itemStack : itemStackCollection)
+            if ((hash = get(itemStack)) != 0)
+                keys.add(hash);
+        return keys;
+    }
+
+    public static <E> void populateMap(final Collection<ItemStack> itemStackCollection, final TIntObjectMap<E> map, final E defaultValue)
+    {
+        for (final int id : getArray(itemStackCollection))
             map.put(id, defaultValue);
     }
 
-    public static void populateMap(Collection<ItemStack> itemStackCollection, TIntIntMap map, int defaultValue)
+    public static void populateMap(final Collection<ItemStack> itemStackCollection, final TIntLongMap map, long defaultValue)
     {
-        for (int id : getArray(itemStackCollection))
+        for (final int id : getArray(itemStackCollection))
             map.put(id, defaultValue);
     }
 }

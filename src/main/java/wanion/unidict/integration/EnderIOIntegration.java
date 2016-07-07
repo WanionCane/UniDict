@@ -16,13 +16,14 @@ import crazypants.enderio.machine.recipe.RecipeOutput;
 import crazypants.enderio.machine.sagmill.SagMillRecipeManager;
 import crazypants.enderio.material.OreDictionaryPreferences;
 import net.minecraft.item.ItemStack;
+import wanion.unidict.UniDict;
 import wanion.unidict.common.FixedSizeList;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 final class EnderIOIntegration extends AbstractIntegrationThread
 {
@@ -38,10 +39,7 @@ final class EnderIOIntegration extends AbstractIntegrationThread
             fixOreDictPreferences();
             fixAlloySmelterRecipes();
             fixSagMillRecipes();
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "Some inanimate objects appear to have used ender pearls. They all disappeared, how this is possible?";
     }
 
@@ -76,8 +74,7 @@ final class EnderIOIntegration extends AbstractIntegrationThread
     {
         List<Recipe> sagMillRecipes = SagMillRecipeManager.getInstance().getRecipes();
         List<Recipe> newSagMillRecipes = new FixedSizeList<>(sagMillRecipes.size());
-        for (Recipe sagMillRecipe : sagMillRecipes)
-            newSagMillRecipes.add(sagMillRecipe(sagMillRecipe));
+        newSagMillRecipes.addAll(sagMillRecipes.stream().map(this::sagMillRecipe).collect(Collectors.toList()));
         sagMillRecipes.clear();
         sagMillRecipes.addAll(newSagMillRecipes);
     }

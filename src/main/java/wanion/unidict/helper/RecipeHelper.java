@@ -42,24 +42,24 @@ public class RecipeHelper
 
     public static void init()
     {
-        ResourceHandler resourceHandler = UniDict.getDependencies().get(ResourceHandler.class);
-        TIntSet gearHashes = Resource.kindExists("gear") ? createGearHashSet() : null;
+        final ResourceHandler resourceHandler = UniDict.getDependencies().get(ResourceHandler.class);
+        final TIntSet gearHashes = Resource.kindExists("gear") ? createGearHashSet() : null;
         if (gearHashes == null)
             inspectionOfRecipes(resourceHandler);
         else {
-            FMLControlledNamespacedRegistry<Item> itemRegistry = MetaItem.itemRegistry;
+            final FMLControlledNamespacedRegistry<Item> itemRegistry = MetaItem.itemRegistry;
             if (Config.gearRecipesRequiresSomeGear) {
                 if (Config.foundry) {
                     final ItemStack foundryMoldStack = new ItemStack(itemRegistry.getObject(new ResourceLocation("foundry:mold")), 1, 2);
                     FoundryUniHelper.removeMold(foundryMoldStack);
                     FoundryUniHelper.removeMoldRecipe(foundryMoldStack);
-                    int hash = MetaItem.get(foundryMoldStack);
+                    final int hash = MetaItem.get(foundryMoldStack);
                     gearHashes.add(hash);
                     if (Config.autoHideInJEI)
                         UniJEIPlugin.hide(foundryMoldStack);
                 }
                 if (Config.tinkersConstruct) {
-                    ItemStack gearCast = new ItemStack(itemRegistry.getObject(new ResourceLocation("tconstruct:cast_custom")), 1, 4);
+                    final ItemStack gearCast = new ItemStack(itemRegistry.getObject(new ResourceLocation("tconstruct:cast_custom")), 1, 4);
                     TConUniHelper.removeCast(gearCast);
                     if (Config.foundry)
                         FoundryUniHelper.removeCast(gearCast);
@@ -71,10 +71,10 @@ public class RecipeHelper
 
     private static TIntSet createGearHashSet()
     {
-        final int gear = Resource.getKindOfName("gear");
-        final int ingot = Resource.getKindOfName("ingot");
-        final int plate = Resource.getKindOfName("plate");
-        final int rod = Resource.getKindOfName("rod");
+        final long gear = Resource.getKindOfName("gear");
+        final long ingot = Resource.getKindOfName("ingot");
+        final long plate = Resource.getKindOfName("plate");
+        final long rod = Resource.getKindOfName("rod");
         final UniDictAPI uniDictAPI = UniDict.getAPI();
         if (useBaseMetalsShapeForGears)
             return new TIntHashSet(MetaItem.getSet((gearRecipesUsesIngotsInsteadOfPlates) ? uniDictAPI.getResources(gear, ingot, rod) : uniDictAPI.getResources(gear, plate, rod), gear));
@@ -82,13 +82,12 @@ public class RecipeHelper
             return new TIntHashSet(MetaItem.getSet((gearRecipesUsesIngotsInsteadOfPlates) ? uniDictAPI.getResources(gear, ingot) : uniDictAPI.getResources(gear, ingot, plate), gear));
     }
 
-    public static void singleWayCompressionRecipe(List<Resource> smallerAndBiggerResources, int smaller, int bigger)
+    public static void singleWayCompressionRecipe(List<Resource> smallerAndBiggerResources, long smaller, long bigger)
     {
-        for (Resource resource : smallerAndBiggerResources)
-            recipes.add(new ShapedOreRecipe(resource.getChild(bigger).getMainEntry(), "SSS", "SSS", "SSS", 'S', resource.getChild(smaller).name));
+        smallerAndBiggerResources.forEach(r -> recipes.add(new ShapedOreRecipe(r.getChild(bigger).getMainEntry(), "SSS", "SSS", "SSS", 'S', r.getChild(smaller).name)));
     }
 
-    public static void resourcesToCompressionRecipes(Collection<Resource> resources, int... smallerToBigger)
+    public static void resourcesToCompressionRecipes(Collection<Resource> resources, long... smallerToBigger)
     {
         UniResourceContainer smaller, bigger;
         for (Resource resource : resources)

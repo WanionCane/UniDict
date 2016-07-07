@@ -8,9 +8,8 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import reborncore.api.recipe.IBaseRecipeType;
 import reborncore.api.recipe.RecipeHandler;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 final class TechRebornIntegration extends AbstractIntegrationThread
 {
@@ -28,12 +27,12 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 
     private void fixTechRebornRecipes()
     {
-        for (IBaseRecipeType recipe : RecipeHandler.recipeList) {
+        RecipeHandler.recipeList.forEach(recipe -> {
             try {
                 if (!recipe.useOreDic())
                     resourceHandler.setMainItemStacks(recipe.getInputs());
                 resourceHandler.setMainItemStacks(recipe.getOutputs());
-            } catch (Exception e) { LogHelper.error(e); }
-        }
+            } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+        });
     }
 }

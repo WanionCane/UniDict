@@ -8,10 +8,10 @@ package wanion.unidict.helper;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.map.TIntLongMap;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TIntLongHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
@@ -24,16 +24,16 @@ import java.util.List;
 
 public class ResourceHelper implements IDependence
 {
-    private final TObjectIntMap<Object> oreKindMap = new TObjectIntHashMap<>();
-    private final TIntIntMap stackKindMap = new TIntIntHashMap();
+    private final TObjectLongMap<Object> oreKindMap = new TObjectLongHashMap<>();
+    private final TIntLongMap stackKindMap = new TIntLongHashMap();
     private final UniDictAPI uniDictAPI = UniDict.getAPI();
 
-    public int get(Object thing)
+    public long get(final Object thing)
     {
         return (thing instanceof ItemStack) ? stackKindMap.get(MetaItem.get((ItemStack) thing)) : (thing instanceof List) ? oreKindMap.get(thing) : 0;
     }
 
-    public void prepare(final int kind)
+    public void prepare(final long kind)
     {
         if (kind == 0)
             return;

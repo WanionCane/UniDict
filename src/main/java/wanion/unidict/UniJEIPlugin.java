@@ -18,24 +18,23 @@ import java.util.List;
 @JEIPlugin
 public class UniJEIPlugin implements IModPlugin
 {
-    private IItemBlacklist itemBlackList;
     private static final List<ItemStack> stacksToHideList = new ArrayList<>();
+    private IItemBlacklist itemBlackList;
 
-    public static void hide(ItemStack itemStack)
+    public static void hide(final ItemStack itemStack)
     {
         stacksToHideList.add(itemStack);
     }
 
     @Override
-    public void register(@Nonnull IModRegistry iModRegistry)
+    public void register(@Nonnull final IModRegistry iModRegistry)
     {
         itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
     }
 
     @Override
-    public void onRuntimeAvailable(@Nonnull IJeiRuntime iJeiRuntime)
+    public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime)
     {
-        for (ItemStack itemStack : stacksToHideList)
-            itemBlackList.addItemToBlacklist(itemStack);
+        stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
     }
 }

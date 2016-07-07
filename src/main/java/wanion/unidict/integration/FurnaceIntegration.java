@@ -10,7 +10,7 @@ package wanion.unidict.integration;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 import java.util.Map;
 
@@ -26,17 +26,12 @@ final class FurnaceIntegration extends AbstractIntegrationThread
     {
         try {
             optimizeFurnaceRecipes();
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "Some things that you smelted appear to be different now.";
     }
 
-    @SuppressWarnings("unchecked")
     private void optimizeFurnaceRecipes()
     {
-
         for (Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
             furnaceRecipe.setValue(resourceHandler.getMainItemStack(furnaceRecipe.getValue()));
     }

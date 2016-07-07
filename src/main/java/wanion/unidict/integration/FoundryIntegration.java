@@ -19,7 +19,7 @@ import exter.foundry.recipes.manager.AlloyFurnaceRecipeManager;
 import exter.foundry.recipes.manager.AtomizerRecipeManager;
 import exter.foundry.recipes.manager.CastingRecipeManager;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +39,7 @@ final class FoundryIntegration extends AbstractIntegrationThread
             fixAlloyFurnaceRecipes();
             fixAtomizerRecipes();
             fixCastingRecipes();
-        } catch (Exception e) { LogHelper.error(e); }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "Somethings that are made in casts had to change.";
     }
 

@@ -59,8 +59,7 @@ public class UniOreDictionary implements IDependence
     public static Set<ItemStack> get(final Collection<String> oreDictNames)
     {
         final Set<ItemStack> itemStacks = new HashSet<>();
-        for (String name : oreDictNames)
-            itemStacks.addAll(idToStack.get(nameToId.get(name)));
+        oreDictNames.forEach(name -> idToStack.get(nameToId.get(name)));
         return itemStacks;
     }
 
@@ -80,11 +79,11 @@ public class UniOreDictionary implements IDependence
     public static List<Matcher> getThoseThatMatches(final Pattern pattern)
     {
         final List<Matcher> matcherList = new ArrayList<>();
-        for (String name : nameToId.keySet()) {
+        nameToId.keySet().forEach(name -> {
             Matcher matcher = pattern.matcher(name);
             if (matcher.find())
                 matcherList.add(matcher);
-        }
+        });
         return matcherList;
     }
 
@@ -127,14 +126,14 @@ public class UniOreDictionary implements IDependence
     {
         if (!someThingToName.isEmpty())
             return;
-        for (String oreDictName : nameToId.keySet()) {
-            final Integer oreDictId = nameToId.get(oreDictName);
+        nameToId.keySet().forEach(name -> {
+            final Integer oreDictId = nameToId.get(name);
             final List<ItemStack> entries = getUn(oreDictId);
             for (int hash : MetaItem.getArray(entries))
                 if (!someThingToName.containsKey(hash))
-                    someThingToName.put(hash, oreDictName);
-            someThingToName.put(entries, oreDictName);
-        }
+                    someThingToName.put(hash, name);
+            someThingToName.put(entries, name);
+        });
     }
 
     public String getName(final Object thing)

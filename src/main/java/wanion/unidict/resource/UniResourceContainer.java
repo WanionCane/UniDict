@@ -23,14 +23,14 @@ public final class UniResourceContainer
 {
     public final String name;
     private final int id;
-    private final int kind;
+    private final long kind;
     private final List<ItemStack> entries;
     private final boolean sort;
     private final int initialSize;
     private Item mainEntryItem;
     private int mainEntryMeta;
 
-    public UniResourceContainer(String name, int kind, boolean sort)
+    public UniResourceContainer(String name, long kind, boolean sort)
     {
         if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
@@ -71,8 +71,7 @@ public final class UniResourceContainer
     void removeBadEntriesFromNEI()
     {
         if (entries.size() > 1)
-            for (ItemStack entry : entries.subList(1, entries.size()))
-                UniJEIPlugin.hide(entry);
+            entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
     }
 
     boolean updateEntries()

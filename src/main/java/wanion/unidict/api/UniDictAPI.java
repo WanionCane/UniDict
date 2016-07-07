@@ -19,39 +19,39 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class UniDictAPI implements UniDict.IDependence
 {
-    private final Map<String, Resource> resourceMap;
     public final Collection<Resource> resources;
+    private final Map<String, Resource> resourceMap;
 
-    public UniDictAPI(Map<String, Resource> resourceMap)
+    public UniDictAPI(final Map<String, Resource> resourceMap)
     {
         resources = (this.resourceMap = resourceMap).values();
     }
 
-    public Resource getResource(String resourceName)
+    public static Map<String, Resource> toResourceMap(final List<Resource> resources)
+    {
+        final Map<String, Resource> resourceMap = new THashMap<>();
+        for (Resource resource : resources)
+            resourceMap.put(resource.name, resource);
+        return resourceMap;
+    }
+
+    public Resource getResource(final String resourceName)
     {
         return resourceMap.get(resourceName);
     }
 
-    public List<Resource> getResources(String... kinds)
+    public List<Resource> getResources(final String... kinds)
     {
         return Resource.getResources(resources, kinds);
     }
 
-    public List<Resource> getResources(int kinds)
+    public List<Resource> getResources(final long kinds)
     {
         return Resource.getResources(resources, kinds);
     }
 
-    public List<Resource> getResources(int... kinds)
+    public List<Resource> getResources(final long... kinds)
     {
         return Resource.getResources(resources, kinds);
-    }
-
-    public static Map<String, Resource> toResourceMap(List<Resource> resources)
-    {
-        Map<String, Resource> resourceMap = new THashMap<>();
-        for (Resource resource : resources)
-            resourceMap.put(resource.name, resource);
-        return resourceMap;
     }
 }

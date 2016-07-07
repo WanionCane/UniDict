@@ -10,7 +10,7 @@ package wanion.unidict.integration;
 
 import com.shinoow.abyssalcraft.api.recipe.TransmutatorRecipes;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 import java.util.Map;
 
@@ -20,14 +20,16 @@ final class AbyssalCraftIntegration extends AbstractIntegrationThread
     {
         super("AbyssalCraft");
     }
+
     @Override
     public String call()
     {
         try {
             fixTransmutationRecipes();
-        } catch (Exception e) { LogHelper.error(e); }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "TransMules Fixes!";
     }
+
     private void fixTransmutationRecipes()
     {
         for (Map.Entry<ItemStack, ItemStack> entry : TransmutatorRecipes.instance().getTransmutationList().entrySet())

@@ -8,11 +8,11 @@ package wanion.unidict.resource;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.Config;
@@ -22,6 +22,7 @@ import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +39,7 @@ public final class UniResourceHandler
         dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
         {
             @Override
+            @Nonnull
             public ResourceHandler instantiate()
             {
                 return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
@@ -46,6 +48,7 @@ public final class UniResourceHandler
         dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
         {
             @Override
+            @Nonnull
             public UniDictAPI instantiate()
             {
                 return new UniDictAPI(Collections.unmodifiableMap(apiResourceMap));
@@ -79,8 +82,7 @@ public final class UniResourceHandler
                 new SpecificKindItemStackComparator(Resource.registerKind(kind));
             Config.saveIfHasChanged();
         } else
-            for (String kind : kinds)
-                Resource.registerKind(kind);
+            kinds.forEach(Resource::registerKind);
         Map<String, Set<String>> basicResourceMap = new THashMap<>();
         StringBuilder patternBaseString = new StringBuilder("^(");
         for (Iterator<String> kindIterator = kinds.iterator(); kindIterator.hasNext(); )
@@ -98,8 +100,8 @@ public final class UniResourceHandler
             if (!(kindSet.containsAll(blackList) || kindSet.containsAll(secondaryBlackList)))
                 continue;
             boolean sort = Config.metalsToUnify.contains(resourceName);
-            TIntObjectMap<UniResourceContainer> childrenOfThisResource = new TIntObjectHashMap<>();
-            int kind;
+            TLongObjectMap<UniResourceContainer> childrenOfThisResource = new TLongObjectHashMap<>();
+            long kind;
             for (String kindName : kindSet)
                 childrenOfThisResource.put(kind = Resource.getKindOfName(kindName), new UniResourceContainer(kindName + resourceName, kind, sort));
             Resource resource = new Resource(resourceName, childrenOfThisResource);
@@ -112,11 +114,11 @@ public final class UniResourceHandler
         final List<String> gemRequires = Arrays.asList("nugget", "block");
         for (Map.Entry<String, Set<String>> customEntries : Config.customUnifiedResources.entrySet()) {
             final String resourceName = customEntries.getKey();
-            final TIntObjectMap<UniResourceContainer> childrenOfCustomResource = new TIntObjectHashMap<>();
+            final TLongObjectMap<UniResourceContainer> childrenOfCustomResource = new TLongObjectHashMap<>();
             final Set<String> customEntriesKindSet = customEntries.getValue();
             if (customEntriesKindSet.contains("gem"))
                 customEntriesKindSet.addAll(gemRequires);
-            int kind;
+            long kind;
             for (String kindName : customEntriesKindSet) {
                 final String oreDictName = kindName + resourceName;
                 if (!OreDictionary.doesOreNameExist(oreDictName))
@@ -139,8 +141,7 @@ public final class UniResourceHandler
             if ((customResource = resourceMap.get(customEntry)) != null)
                 customResource.updateEntries();
         resourceHandler.populateIndividualStackAttributes();
-        for (String blackListedResource : Config.resourceBlackList)
-        {
+        for (String blackListedResource : Config.resourceBlackList) {
             resourceMap.remove(blackListedResource);
             apiResourceMap.remove(blackListedResource);
         }
@@ -151,8 +152,7 @@ public final class UniResourceHandler
 
     private void updateEverything()
     {
-        for (Resource resource : apiResourceMap.values())
-            resource.updateEntries();
+        apiResourceMap.values().forEach(Resource::updateEntries);
     }
 
     private void cleanEverything()
@@ -166,19 +166,18 @@ public final class UniResourceHandler
         if (!Config.autoHideInJEI)
             return;
         if (!Config.keepOneEntry) {
-            TIntSet blackSet = new TIntHashSet();
+            TLongSet blackSet = new TLongHashSet();
             for (String blackThing : Config.hideInJEIBlackSet)
                 blackSet.add(Resource.getKindOfName(blackThing));
             for (Resource resource : resourceMap.values()) {
-                TIntObjectMap<UniResourceContainer> childrenMap = resource.getChildrenMap();
-                for (int kind : childrenMap.keys())
+                TLongObjectMap<UniResourceContainer> childrenMap = resource.getChildrenMap();
+                for (long kind : childrenMap.keys())
                     if (!blackSet.contains(kind))
                         childrenMap.get(kind).removeBadEntriesFromNEI();
             }
         } else
             for (Resource resource : resourceMap.values())
-                for (UniResourceContainer container : resource.getChildrenCollection())
-                    container.removeBadEntriesFromNEI();
+                resource.getChildrenCollection().forEach(UniResourceContainer::removeBadEntriesFromNEI);
     }
 
     private void keepOneEntry()
@@ -186,8 +185,7 @@ public final class UniResourceHandler
         if (!Config.keepOneEntry)
             return;
         for (Resource resource : resourceMap.values())
-            for (UniResourceContainer container : resource.getChildrenCollection())
-                container.keepOneEntry();
+            resource.getChildrenCollection().forEach(UniResourceContainer::keepOneEntry);
         OreDictionary.rebakeMap();
     }
 }
