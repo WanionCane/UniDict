@@ -8,6 +8,7 @@ package wanion.unidict.resource;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+import com.google.common.collect.Sets;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -24,7 +25,6 @@ import wanion.unidict.common.SpecificKindItemStackComparator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class UniResourceHandler
@@ -33,6 +33,7 @@ public final class UniResourceHandler
     private final Map<String, Resource> apiResourceMap = new THashMap<>();
     private final Map<String, Resource> resourceMap = new THashMap<>();
     private final Dependencies<UniDict.IDependence> dependencies = UniDict.getDependencies();
+    private final long childrenOfMetals;
 
     private UniResourceHandler()
     {
@@ -54,6 +55,10 @@ public final class UniResourceHandler
                 return new UniDictAPI(Collections.unmodifiableMap(apiResourceMap));
             }
         });
+        long childrenOfMetals = 0;
+        for (final String child : Config.childrenOfMetals)
+            childrenOfMetals += Resource.registerAndGet(child);
+        this.childrenOfMetals = childrenOfMetals;
     }
 
     public static UniResourceHandler create()
@@ -72,64 +77,62 @@ public final class UniResourceHandler
 
     private void createResources()
     {
-        Set<String> kinds = (Config.useBaseMetalsShapeForGears || !Config.gearRecipesUsesIngotsInsteadOfPlates) ? new LinkedHashSet<>(Config.childrenOfMetals) : Config.childrenOfMetals;
-        if (kinds.isEmpty())
-            throw new RuntimeException();
-        if (Config.useBaseMetalsShapeForGears) kinds.add("rod");
-        if (!Config.gearRecipesUsesIngotsInsteadOfPlates) kinds.add("plate");
-        if (Config.enableSpecificKindSort) {
-            for (String kind : kinds)
-                new SpecificKindItemStackComparator(Resource.registerKind(kind));
-            Config.saveIfHasChanged();
-        } else
-            kinds.forEach(Resource::registerKind);
-        Map<String, Set<String>> basicResourceMap = new THashMap<>();
-        StringBuilder patternBaseString = new StringBuilder("^(");
-        for (Iterator<String> kindIterator = kinds.iterator(); kindIterator.hasNext(); )
-            patternBaseString.append(kindIterator.next()).append((kindIterator.hasNext()) ? "|" : ")");
-        for (Matcher matcher : UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBaseString.toString()))) {
-            String resourceName = WordUtils.capitalize(matcher.replaceFirst(""));
-            if (!basicResourceMap.containsKey(resourceName))
-                basicResourceMap.put(resourceName, new LinkedHashSet<String>());
-            basicResourceMap.get(resourceName).add(matcher.group());
-        }
-        List<String> blackList = Arrays.asList("ingot", "dust");
-        List<String> secondaryBlackList = Arrays.asList("dustTiny", "dust");
-        for (String resourceName : basicResourceMap.keySet()) {
-            Set<String> kindSet = basicResourceMap.get(resourceName);
-            if (!(kindSet.containsAll(blackList) || kindSet.containsAll(secondaryBlackList)))
-                continue;
-            boolean sort = Config.metalsToUnify.contains(resourceName);
-            TLongObjectMap<UniResourceContainer> childrenOfThisResource = new TLongObjectHashMap<>();
-            long kind;
-            for (String kindName : kindSet)
-                childrenOfThisResource.put(kind = Resource.getKindOfName(kindName), new UniResourceContainer(kindName + resourceName, kind, sort));
-            Resource resource = new Resource(resourceName, childrenOfThisResource);
-            apiResourceMap.put(resourceName, resource);
-            if (sort)
-                resourceMap.put(resourceName, resource);
-        }
+        final List<String> allTheResourceNames = new ArrayList<>();
+        final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small).*");
+        UniOreDictionary.getThoseThatMatches("^ingot").stream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
+        final StringBuilder patternBuilder = new StringBuilder("(");
+        for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
+            patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
+        final Map<String, Set<String>> basicResourceMap = new HashMap<>();
+        final Set<String> allTheKinds = new LinkedHashSet<>();
+        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine");
+        UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
+            final String kindName = matcher.replaceFirst("");
+            if (!allTheKindsBlackSet.contains(kindName)) {
+                final String resourceName = matcher.group();
+                if (!basicResourceMap.containsKey(resourceName))
+                    basicResourceMap.put(resourceName, new LinkedHashSet<>());
+                basicResourceMap.get(resourceName).add(kindName);
+                allTheKinds.add(kindName);
+            }
+        });
+        allTheKinds.forEach(Resource::register);
+        basicResourceMap.forEach((resourceName, kinds) -> {
+            final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
+            kinds.forEach(kindName -> {
+                final long kind = Resource.getKindOfName(kindName);
+                kindMap.put(kind, new UniResourceContainer(kindName + resourceName, kind));
+            });
+            apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
+        });
+        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(childrenOfMetals).setSortOfChildren(true)));
         if (Config.customUnifiedResources.isEmpty())
             return;
         final List<String> gemRequires = Arrays.asList("nugget", "block");
-        for (Map.Entry<String, Set<String>> customEntries : Config.customUnifiedResources.entrySet()) {
-            final String resourceName = customEntries.getKey();
-            final TLongObjectMap<UniResourceContainer> childrenOfCustomResource = new TLongObjectHashMap<>();
-            final Set<String> customEntriesKindSet = customEntries.getValue();
-            if (customEntriesKindSet.contains("gem"))
-                customEntriesKindSet.addAll(gemRequires);
-            long kind;
-            for (String kindName : customEntriesKindSet) {
-                final String oreDictName = kindName + resourceName;
-                if (!OreDictionary.doesOreNameExist(oreDictName))
-                    continue;
-                if ((kind = Resource.getKindOfName(kindName)) == 0)
-                    kind = Resource.registerKind(kindName);
-                childrenOfCustomResource.put(kind, new UniResourceContainer(oreDictName, kind, true));
+        Config.customUnifiedResources.forEach((resourceName, kinds) -> {
+            if (kinds.contains("gem"))
+                kinds.addAll(gemRequires);
+            if (resourceMap.containsKey(resourceName)) {
+                kinds.forEach(kindName -> {
+                    final String oreDictName = kindName + resourceName;
+                    final long kind = Resource.registerAndGet(kindName);
+                    if (OreDictionary.doesOreNameExist(oreDictName))
+                        resourceMap.get(resourceName).addChild(new UniResourceContainer(oreDictName, kind).setSortAndGet(true));
+                });
+            } else {
+                final TLongObjectMap<UniResourceContainer> childrenOfCustomResource = new TLongObjectHashMap<>();
+                kinds.forEach(kindName -> {
+                    final String oreDictName = kindName + resourceName;
+                    if (OreDictionary.doesOreNameExist(oreDictName)) {
+                        final long kind = Resource.registerAndGet(kindName);
+                        if (resourceMap.containsKey(resourceName))
+                            childrenOfCustomResource.put(kind, new UniResourceContainer(oreDictName, kind).setSortAndGet(true));
+                        if (!childrenOfCustomResource.isEmpty())
+                            resourceMap.put(resourceName, new Resource(resourceName, childrenOfCustomResource));
+                    }
+                });
             }
-            if (!childrenOfCustomResource.isEmpty())
-                resourceMap.put(resourceName, new Resource(resourceName, childrenOfCustomResource));
-        }
+        });
     }
 
     public void postInit()
@@ -147,7 +150,7 @@ public final class UniResourceHandler
         }
         cleanEverything();
         if (Config.enableSpecificKindSort)
-            SpecificKindItemStackComparator.nullify(this);
+            SpecificKindItemStackComparator.nullify();
     }
 
     private void updateEverything()

@@ -27,101 +27,101 @@ public final class ResourceHandler implements IDependence
     private final Map<String, UniResourceContainer> containerMap = new THashMap<>();
     private final Map<String, Resource> resourceMap;
 
-    ResourceHandler(Map<String, Resource> resourceMap)
+    ResourceHandler(final Map<String, Resource> resourceMap)
     {
         resources = (this.resourceMap = resourceMap).values();
     }
 
-    public static void addToKeepOneEntryModBlackSet(ItemStack itemStack)
+    public static void addToKeepOneEntryModBlackSet(final ItemStack itemStack)
     {
         keepOneEntryBlackSet.add(itemStack);
     }
 
-    public boolean exists(int thingId)
+    public boolean exists(final int thingId)
     {
         return individualStackAttributes.containsKey(thingId);
     }
 
-    public boolean exists(ItemStack thing)
+    public boolean exists(final ItemStack thing)
     {
         return individualStackAttributes.containsKey(MetaItem.get(thing));
     }
 
-    public boolean resourceExists(String name)
+    public boolean resourceExists(final String name)
     {
         return resourceMap.containsKey(name);
     }
 
-    private UniAttributes get(ItemStack thing)
+    private UniAttributes get(final ItemStack thing)
     {
         return individualStackAttributes.get(MetaItem.get(thing));
     }
 
-    public Resource getResource(String resourceName)
+    public Resource getResource(final String resourceName)
     {
         return resourceMap.get(resourceName);
     }
 
-    public Resource getResource(ItemStack thing)
+    public Resource getResource(final ItemStack thing)
     {
-        UniAttributes attributesOfThing = get(thing);
+        final UniAttributes attributesOfThing = get(thing);
         return (attributesOfThing != null) ? attributesOfThing.resource : null;
     }
 
-    public UniResourceContainer getContainer(String name)
+    public UniResourceContainer getContainer(final String name)
     {
         return containerMap.get(name);
     }
 
-    public UniResourceContainer getContainer(ItemStack thing)
+    public UniResourceContainer getContainer(final ItemStack thing)
     {
-        UniAttributes attributesOfThing = get(thing);
+        final UniAttributes attributesOfThing = get(thing);
         return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer : null;
     }
 
-    public String getContainerName(ItemStack thing)
+    public String getContainerName(final ItemStack thing)
     {
-        UniAttributes attributesOfThing = get(thing);
+        final UniAttributes attributesOfThing = get(thing);
         return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.name : null;
     }
 
-    public ItemStack getMainItemStack(ItemStack thing)
+    public ItemStack getMainItemStack(final ItemStack thing)
     {
-        UniAttributes attributesOfThing = get(thing);
+        final UniAttributes attributesOfThing = get(thing);
         return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.stackSize) : thing;
     }
 
-    public List<ItemStack> getMainItemStackList(Collection<ItemStack> things)
+    public List<ItemStack> getMainItemStackList(final Collection<ItemStack> things)
     {
         return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
     }
 
-    public void setMainItemStacks(List<ItemStack> thingList)
+    public void setMainItemStacks(final List<ItemStack> thingList)
     {
-        List<ItemStack> newThings = new ArrayList<>();
+        final List<ItemStack> newThings = new ArrayList<>();
         for (Iterator<ItemStack> thingListIterator = thingList.iterator(); thingListIterator.hasNext(); thingListIterator.remove())
             newThings.add(getMainItemStack(thingListIterator.next()));
         thingList.addAll(newThings);
     }
 
-    public ItemStack[] getMainItemStacks(ItemStack[] things)
+    public ItemStack[] getMainItemStacks(final ItemStack[] things)
     {
         for (int i = 0; i < things.length; i++)
             things[i] = getMainItemStack(things[i]);
         return things;
     }
 
-    public boolean containerExists(String name)
+    public boolean containerExists(final String name)
     {
         return containerMap.containsKey(name);
     }
 
-    public List<Resource> getResources(long kinds)
+    public List<Resource> getResources(final long kinds)
     {
         return Resource.getResources(resources, kinds);
     }
 
-    public List<Resource> getResources(long... kinds)
+    public List<Resource> getResources(final long... kinds)
     {
         return Resource.getResources(resources, kinds);
     }

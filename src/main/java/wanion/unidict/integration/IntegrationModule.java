@@ -10,26 +10,17 @@ package wanion.unidict.integration;
 
 import wanion.unidict.module.AbstractModule;
 
-import javax.annotation.Nonnull;
-
 import static wanion.unidict.Config.*;
 
 public final class IntegrationModule extends AbstractModule
 {
     public IntegrationModule()
     {
-        super("Integration");
+        super("Integration", Class::newInstance);
     }
 
     @Override
-    @Nonnull
-    protected Manager getAdder()
-    {
-        return new Manager(Class::newInstance);
-    }
-
-    @Override
-    protected void init(@Nonnull final Manager manager)
+    protected void init()
     {
         if (craftingIntegration)
             manager.add(CraftingIntegration.class);

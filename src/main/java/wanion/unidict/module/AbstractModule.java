@@ -23,16 +23,15 @@ import java.util.concurrent.Future;
 public abstract class AbstractModule
 {
     private final String moduleName;
+    protected final Manager manager;
 
-    protected AbstractModule(@Nonnull final String moduleName)
+    protected AbstractModule(@Nonnull final String moduleName, @Nonnull final Instantiator<AbstractModuleThread> moduleThreadInstantiator)
     {
         this.moduleName = moduleName;
+        manager = new Manager(moduleThreadInstantiator);
     }
 
-    @Nonnull
-    protected abstract Manager getAdder();
-
-    protected abstract void init(@Nonnull final Manager manager);
+    protected abstract void init();
 
     final void start(@Nonnull final LoadStage loadStage, @Nonnull final Manager manager)
     {
@@ -45,21 +44,21 @@ public abstract class AbstractModule
             final long initialTime = System.nanoTime();
             final List<Future<String>> futureOfThreads = moduleThreadExecutor.invokeAll(threadList);
             final long took = System.nanoTime() - initialTime;
-            for (Future<String> threadModuleSay : futureOfThreads)
+            for (final Future<String> threadModuleSay : futureOfThreads)
                 logger.info(threadModuleSay.get());
             logger.info("All " + threadList.size() + " " + moduleName + "s took " + took / 1000000 + "ms to finish. " + loadStage.name());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("Something really bad happened on: " + moduleName);
+            logger.error("Something really bad happened on " + moduleName + " at load stage "+ loadStage.name());
             e.printStackTrace();
         }
     }
 
-    protected static class Manager
+    public static class Manager
     {
         private final Map<LoadStage, Set<Class<? extends AbstractModuleThread>>> loadStageMap;
         private final Instantiator<AbstractModuleThread> instantiator;
 
-        public Manager(@Nonnull final Instantiator<AbstractModuleThread> instantiator)
+        Manager(@Nonnull final Instantiator<AbstractModuleThread> instantiator)
         {
             this.instantiator = instantiator;
             loadStageMap = new EnumMap<>(LoadStage.class);

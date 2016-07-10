@@ -30,8 +30,7 @@ public class UniDictAPI implements UniDict.IDependence
     public static Map<String, Resource> toResourceMap(final List<Resource> resources)
     {
         final Map<String, Resource> resourceMap = new THashMap<>();
-        for (Resource resource : resources)
-            resourceMap.put(resource.name, resource);
+        resources.forEach(resource -> resourceMap.put(resource.name, resource));
         return resourceMap;
     }
 

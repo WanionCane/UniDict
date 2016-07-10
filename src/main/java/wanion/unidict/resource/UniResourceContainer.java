@@ -22,42 +22,34 @@ import static wanion.unidict.Config.enableSpecificKindSort;
 public final class UniResourceContainer
 {
     public final String name;
+    public final long kind;
     private final int id;
-    private final long kind;
     private final List<ItemStack> entries;
-    private final boolean sort;
     private final int initialSize;
+    private boolean sort = false;
     private Item mainEntryItem;
     private int mainEntryMeta;
 
-    public UniResourceContainer(String name, long kind, boolean sort)
-    {
+    public UniResourceContainer(String name, long kind) {
         if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
         this.kind = kind;
-        if (this.sort = sort)
-            if (entries.size() > 1)
-                sort();
         initialSize = entries.size();
     }
 
-    public ItemStack getMainEntry()
-    {
+    public ItemStack getMainEntry() {
         return new ItemStack(mainEntryItem, 1, mainEntryMeta);
     }
 
-    public ItemStack getMainEntry(int size)
-    {
+    public ItemStack getMainEntry(int size) {
         return new ItemStack(mainEntryItem, size, mainEntryMeta);
     }
 
-    public List<ItemStack> getEntries()
-    {
+    public List<ItemStack> getEntries() {
         return UniOreDictionary.getUn(id);
     }
 
-    void keepOneEntry()
-    {
+    void keepOneEntry() {
         if (entries.size() == 1)
             return;
         Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
@@ -68,14 +60,12 @@ public final class UniResourceContainer
         } else entries.subList(1, entries.size()).clear();
     }
 
-    void removeBadEntriesFromNEI()
-    {
+    void removeBadEntriesFromNEI() {
         if (entries.size() > 1)
             entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
     }
 
-    boolean updateEntries()
-    {
+    boolean updateEntries() {
         if (entries.isEmpty())
             return false;
         if (sort && initialSize != entries.size())
@@ -85,16 +75,31 @@ public final class UniResourceContainer
         return true;
     }
 
-    public void sort()
+    public Comparator<ItemStack> getComparator() {
+        return (enableSpecificKindSort) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+    }
+
+    public UniResourceContainer setSortAndGet(final boolean sort)
     {
-        final Comparator<ItemStack> itemStackComparator = (enableSpecificKindSort) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+        if (this.sort = sort)
+            sort();
+        return this;
+    }
+
+    void setSort(final boolean sort)
+    {
+        if (this.sort = sort)
+            sort();
+    }
+
+    public void sort() {
+        final Comparator<ItemStack> itemStackComparator = getComparator();
         if (itemStackComparator != null)
             Collections.sort(entries, itemStackComparator);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 }

@@ -21,18 +21,18 @@ final class TechRebornIntegration extends AbstractIntegrationThread
     @Override
     public String call()
     {
-        fixTechRebornRecipes();
+        try {
+            fixTechRebornRecipes();
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "now Tech is truly Reborn.";
     }
 
     private void fixTechRebornRecipes()
     {
         RecipeHandler.recipeList.forEach(recipe -> {
-            try {
                 if (!recipe.useOreDic())
                     resourceHandler.setMainItemStacks(recipe.getInputs());
                 resourceHandler.setMainItemStacks(recipe.getOutputs());
-            } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         });
     }
 }

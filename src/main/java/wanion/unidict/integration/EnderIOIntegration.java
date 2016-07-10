@@ -45,8 +45,8 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 
     private void fixOreDictPreferences()
     {
-        Map preferences = Util.getField(OreDictionaryPreferences.class, "preferences", OreDictionaryPreferences.instance, Map.class);
-        Map stackCache = Util.getField(OreDictionaryPreferences.class, "stackCache", OreDictionaryPreferences.instance, Map.class);
+        final Map preferences = Util.getField(OreDictionaryPreferences.class, "preferences", OreDictionaryPreferences.instance, Map.class);
+        final Map stackCache = Util.getField(OreDictionaryPreferences.class, "stackCache", OreDictionaryPreferences.instance, Map.class);
         if (preferences != null)
             preferences.clear();
         if (stackCache != null)
@@ -55,15 +55,15 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 
     private void fixAlloySmelterRecipes()
     {
-        List<IManyToOneRecipe> alloySmelterRecipes = AlloyRecipeManager.getInstance().getRecipes();
-        List<IManyToOneRecipe> newAlloySmelterRecipes = new FixedSizeList<>(alloySmelterRecipes.size());
-        for (Iterator<IManyToOneRecipe> alloySmelterRecipesIterator = alloySmelterRecipes.iterator(); alloySmelterRecipesIterator.hasNext(); )
+        final List<IManyToOneRecipe> alloySmelterRecipes = AlloyRecipeManager.getInstance().getRecipes();
+        final List<IManyToOneRecipe> newAlloySmelterRecipes = new FixedSizeList<>(alloySmelterRecipes.size());
+        for (final Iterator<IManyToOneRecipe> alloySmelterRecipesIterator = alloySmelterRecipes.iterator(); alloySmelterRecipesIterator.hasNext(); )
         {
-            IManyToOneRecipe alloySmelterRecipe = alloySmelterRecipesIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(alloySmelterRecipe.getOutput());
+            final IManyToOneRecipe alloySmelterRecipe = alloySmelterRecipesIterator.next();
+            final ItemStack correctOutput = resourceHandler.getMainItemStack(alloySmelterRecipe.getOutput());
             if (correctOutput == alloySmelterRecipe.getOutput())
                 continue;
-            RecipeOutput recipeOutput = alloySmelterRecipe.getOutputs()[0];
+            final RecipeOutput recipeOutput = alloySmelterRecipe.getOutputs()[0];
             newAlloySmelterRecipes.add(new BasicManyToOneRecipe(new Recipe(new RecipeOutput(correctOutput, recipeOutput.getChance(), recipeOutput.getExperiance()), alloySmelterRecipe.getEnergyRequired(), alloySmelterRecipe.getBonusType(), alloySmelterRecipe.getInputs())));
             alloySmelterRecipesIterator.remove();
         }
@@ -72,8 +72,8 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 
     private void fixSagMillRecipes()
     {
-        List<Recipe> sagMillRecipes = SagMillRecipeManager.getInstance().getRecipes();
-        List<Recipe> newSagMillRecipes = new FixedSizeList<>(sagMillRecipes.size());
+        final List<Recipe> sagMillRecipes = SagMillRecipeManager.getInstance().getRecipes();
+        final List<Recipe> newSagMillRecipes = new FixedSizeList<>(sagMillRecipes.size());
         newSagMillRecipes.addAll(sagMillRecipes.stream().map(this::sagMillRecipe).collect(Collectors.toList()));
         sagMillRecipes.clear();
         sagMillRecipes.addAll(newSagMillRecipes);
@@ -81,8 +81,8 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 
     private Recipe sagMillRecipe(Recipe sagMillRecipe)
     {
-        int outputSize = sagMillRecipe.getOutputs().length;
-        RecipeOutput[] output = new RecipeOutput[outputSize];
+        final int outputSize = sagMillRecipe.getOutputs().length;
+        final RecipeOutput[] output = new RecipeOutput[outputSize];
         for (int i = 0; i < outputSize; i++) {
             RecipeOutput oldOutput = sagMillRecipe.getOutputs()[i];
             output[i] = new RecipeOutput(resourceHandler.getMainItemStack(oldOutput.getOutput()), oldOutput.getChance(), oldOutput.getExperiance());

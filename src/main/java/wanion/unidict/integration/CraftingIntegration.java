@@ -8,126 +8,108 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import net.minecraft.item.Item;
+import com.google.common.collect.Lists;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
-import wanion.unidict.MetaItem;
-import wanion.unidict.UniDict;
-import wanion.unidict.helper.GearHelper;
+import wanion.unidict.Config;
 import wanion.unidict.helper.RecipeHelper;
-import wanion.unidict.resource.Resource;
+import wanion.unidict.recipe.ForgeResearcher;
+import wanion.unidict.recipe.IC2Researcher;
+import wanion.unidict.recipe.IRecipeResearcher;
+import wanion.unidict.recipe.VanillaResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static wanion.unidict.Config.*;
+import javax.annotation.Nonnull;
+import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
     private final List<IRecipe> recipes = RecipeHelper.recipes;
-    private final FMLControlledNamespacedRegistry<Item> itemRegistry = MetaItem.itemRegistry;
-    private final long dust = Resource.getKindOfName("dust");
-    private final long nugget = Resource.getKindOfName("nugget");
-    private final long ingot = Resource.getKindOfName("ingot");
-    private final long block = Resource.getKindOfName("block");
-    private final long gear = Resource.getKindOfName("gear");
-    private final long plate = Resource.getKindOfName("plate");
-    private final long rod = Resource.getKindOfName("rod");
-    private final long dustTiny = Resource.getKindOfName("dustTiny");
-    private final long gem = Resource.getKindOfName("gem");
-    private final GearHelper gearHelper = (gear != 0) ? new GearHelper(gearRecipesRequiresSomeGear) : null;
-    private final List<Resource> plates = (plate != 0 && ingot != 0) ? resourceHandler.getResources(plate, ingot) : null;
-    private final List<Resource> rods = (rod != 0 && ingot != 0) ? resourceHandler.getResources(rod, ingot) : null;
-    private final List<Resource> dustTinyAndDust = (dustTiny != 0 && dust != 0) ? resourceHandler.getResources(dustTiny, dust) : null;
-    private final List<Resource> gems = (gem != 0) ? resourceHandler.getResources(gem, block) : null;
-    private final UniResourceContainer dustBronze = resourceHandler.getContainer("dustBronze");
-    private final UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
-    private final UniResourceContainer dustBrass = resourceHandler.getContainer("dustBrass");
-    private final UniResourceContainer dustInvar = resourceHandler.getContainer("dustInvar");
-    private final UniResourceContainer oreIron = techReborn ? resourceHandler.getContainer("oreIron") : null;
-    private final UniResourceContainer oreGold = techReborn ? resourceHandler.getContainer("oreGold") : null;
-    private final UniResourceContainer oreEmerald = techReborn ? resourceHandler.getContainer("oreEmerald") : null;
-    private final UniResourceContainer gemEmerald = techReborn ? resourceHandler.getContainer("gemEmerald") : null;
-    private final UniResourceContainer gemDiamond = techReborn ? resourceHandler.getContainer("gemDiamond") : null;
-    private final UniResourceContainer ingotIridium = techReborn ? resourceHandler.getContainer("ingotIridium") : null;
+    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new THashMap<>();
+    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new THashMap<>();
 
     CraftingIntegration()
     {
         super("Crafting");
-        RecipeHelper.init();
+        final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
+        researcherList.add(new VanillaResearcher());
+        researcherList.add(new ForgeResearcher());
+        if (Config.ic2)
+            researcherList.add(new IC2Researcher());
+        researcherList.forEach(researcher -> {
+            shapedResearcherMap.put(researcher.getShapedRecipeClass(), researcher);
+            shapelessResearcherMap.put(researcher.getShapelessRecipeClass(), researcher);
+        });
     }
 
     @Override
     public String call()
     {
-        final int initialSize = recipes.size();
-        try {
-            if (dustTinyAndDust != null)
-                RecipeHelper.singleWayCompressionRecipe(dustTinyAndDust, dustTiny, dust);
-            RecipeHelper.resourcesToCompressionRecipes(resourceHandler.resources, nugget, ingot, block);
-            if (gems != null)
-                RecipeHelper.resourcesToCompressionRecipes(gems, nugget, gem, block);
-            if (gearHelper != null)
-                recipes.addAll(gearHelper.recipes);
-            if (rod != 0)
-                createRodRecipes();
-            if (techReborn)
-                createUURecipes();
-            if (dustBronze != null)
-                recipes.add(new ShapelessOreRecipe(dustBronze.getMainEntry(4), "dustCopper", "dustCopper", "dustCopper", "dustTin"));
-            if (ingotBronze != null)
-                recipes.add(new ShapelessOreRecipe(ingotBronze.getMainEntry(4), "ingotCopper", "ingotCopper", "ingotCopper", "ingotTin"));
-            if (dustBrass != null)
-                recipes.add(new ShapelessOreRecipe(dustBrass.getMainEntry(4), "dustCopper", "dustCopper", "dustCopper", "dustZinc"));
-            if (dustInvar != null)
-                recipes.add(new ShapelessOreRecipe(dustInvar.getMainEntry(3), "dustIron", "dustIron", "dustNickel"));
-            if (plates != null)
-                createPlateRecipes();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        return threadName + "Why so many recipes? I had to deal with " + (recipes.size() - initialSize) + " recipes.";
+        experimentalRecipeResearcher();
+        return threadName + "Why so many recipes? I had to deal with a lot of recipes.";
     }
 
-    private void createPlateRecipes()
+    private void experimentalRecipeResearcher()
     {
-        final int platesResult = howManyPlatesWillBeCreatedPerRecipe;
-        plates.forEach(r -> new ShapedOreRecipe(r.getChild(plate).getMainEntry(platesResult), "III", "   ", "   ", 'I', r.getChild(ingot).name));
-        if (ic2)
-            createForgeHammerRecipes();
+        final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new THashMap<>();
+        IRecipe bufferRecipe;
+        UniResourceContainer bufferContainer;
+        for (final Iterator<IRecipe> recipeIterator = recipes.iterator(); recipeIterator.hasNext(); ) {
+            boolean isShapeless = false;
+            if ((bufferRecipe = recipeIterator.next()) == null || (bufferContainer = resourceHandler.getContainer(bufferRecipe.getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(bufferRecipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(bufferRecipe.getClass()))))
+                continue;
+            final int recipeKey = !isShapeless ? shapedResearcherMap.get(bufferRecipe.getClass()).getShapedRecipeKey(bufferRecipe, resourceHandler) : shapelessResearcherMap.get(bufferRecipe.getClass()).getShapelessRecipeKey(bufferRecipe, resourceHandler);
+            final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
+            if (!smartRecipeMap.containsKey(bufferContainer))
+                smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
+            else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
+            if (!evenSmarterRecipeMap.containsKey(recipeKey))
+                evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
+            else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
+            recipeIterator.remove();
+        }
+        smartRecipeMap.forEach((container, evenSmartRecipeMap) -> {
+            final Comparator<IRecipe> recipeComparator = new RecipeComparator(container.getComparator());
+            evenSmartRecipeMap.forEachValue(recipeList -> {
+                recipeList.sort(recipeComparator);
+                final IRecipe recipe = recipeList.get(0);
+                final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
+                final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
+                if (recipe.getRecipeSize() == 9)
+                    if (isShapeless)
+                        recipes.add(recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler));
+                    else
+                        recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler));
+                else if (recipe.getRecipeSize() == 1)
+                    if (!isShapeless)
+                        recipes.add(recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler));
+                    else
+                        recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler));
+                else if (!isShapeless)
+                    recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler));
+                else
+                    recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler));
+                return true;
+            });
+        });
     }
 
-    private void createForgeHammerRecipes()
+    private static final class RecipeComparator implements Comparator<IRecipe>
     {
-        final Item forgeHammer = itemRegistry.getObject(new ResourceLocation("ic2:forge_hammer"));
-        plates.forEach(r -> new ShapelessOreRecipe(r.getChild(plate).getMainEntry(1), new ItemStack(forgeHammer, 1, OreDictionary.WILDCARD_VALUE), r.getChild(ingot).name));
-    }
+        private final Comparator<ItemStack> itemStackComparator;
 
-    private void createRodRecipes()
-    {
-        final int ingotsRequired = howManyIngotsWillBeRequiredToCreateAnRod;
-        final int rodsPerRecipe = howManyRodsWillBeCreatedPerRecipe;
-        recipes.addAll(rods.stream().map(resource -> new ShapedOreRecipe(resource.getChild(rod).getMainEntry(rodsPerRecipe), (ingotsRequired == 3) ? new Object[]{"I  ", "I  ", "I  ", 'I', resource.getChild(ingot).name} : new Object[]{"I  ", "I  ", "   ", 'I', resource.getChild(ingot).name})).collect(Collectors.toList()));
-    }
+        private RecipeComparator(@Nonnull final Comparator<ItemStack> itemStackComparator)
+        {
+            this.itemStackComparator = itemStackComparator;
+        }
 
-    private void createUURecipes()
-    {
-        final ItemStack UUMatter = new ItemStack(itemRegistry.getObject(new ResourceLocation("techreborn:uumatter")));
-        if (oreIron != null)
-            recipes.add(new ShapedOreRecipe(oreIron.getMainEntry(2), "U U", " U ", "U U", 'U', UUMatter));
-        if (oreGold != null)
-            recipes.add(new ShapedOreRecipe(oreGold.getMainEntry(2), " U ", "UUU", " U ", 'U', UUMatter));
-        if (oreEmerald != null)
-            recipes.add(new ShapedOreRecipe(oreEmerald.getMainEntry(1), "UU ", "U U", " UU", 'U', UUMatter));
-        if (gemEmerald != null)
-            recipes.add(new ShapedOreRecipe(gemEmerald.getMainEntry(2), "UUU", "UUU", " U ", 'U', UUMatter));
-        if (gemDiamond != null)
-            recipes.add(new ShapedOreRecipe(gemDiamond.getMainEntry(), "UUU", "UUU", "UUU", 'U', UUMatter));
-        if (ingotIridium != null)
-            recipes.add(new ShapedOreRecipe(ingotIridium.getMainEntry(), "UUU", " U ", "UUU", 'U', UUMatter));
+        @Override
+        public int compare(IRecipe recipe1, IRecipe recipe2)
+        {
+            return itemStackComparator.compare(recipe1.getRecipeOutput(), recipe2.getRecipeOutput());
+        }
     }
 }

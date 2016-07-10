@@ -17,7 +17,6 @@ import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniDict.IDependence;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.resource.Resource;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,10 +36,10 @@ public class ResourceHelper implements IDependence
     {
         if (kind == 0)
             return;
-        for (Resource resource : uniDictAPI.getResources(kind)) {
-            Collection<ItemStack> entries = resource.getChild(kind).getEntries();
+        uniDictAPI.getResources(kind).forEach(resource -> {
+            final Collection<ItemStack> entries = resource.getChild(kind).getEntries();
             oreKindMap.put(entries, kind);
             MetaItem.populateMap(entries, stackKindMap, kind);
-        }
+        });
     }
 }

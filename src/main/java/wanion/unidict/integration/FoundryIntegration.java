@@ -47,7 +47,7 @@ final class FoundryIntegration extends AbstractIntegrationThread
     {
         final List<IAlloyFurnaceRecipe> alloyFurnaceRecipes = AlloyFurnaceRecipeManager.instance.recipes;
         final List<IAlloyFurnaceRecipe> newRecipes = new ArrayList<>();
-        for (Iterator<IAlloyFurnaceRecipe> alloyFurnaceRecipeIterator = alloyFurnaceRecipes.iterator(); alloyFurnaceRecipeIterator.hasNext(); )
+        for (final Iterator<IAlloyFurnaceRecipe> alloyFurnaceRecipeIterator = alloyFurnaceRecipes.iterator(); alloyFurnaceRecipeIterator.hasNext(); )
         {
             IAlloyFurnaceRecipe atomizerRecipe = alloyFurnaceRecipeIterator.next();
             ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
@@ -63,7 +63,7 @@ final class FoundryIntegration extends AbstractIntegrationThread
     {
         final List<IAtomizerRecipe> atomizerRecipes = AtomizerRecipeManager.instance.recipes;
         final List<IAtomizerRecipe> newRecipes = new ArrayList<>();
-        for (Iterator<IAtomizerRecipe> atomizerRecipeIterator = atomizerRecipes.iterator(); atomizerRecipeIterator.hasNext(); )
+        for (final Iterator<IAtomizerRecipe> atomizerRecipeIterator = atomizerRecipes.iterator(); atomizerRecipeIterator.hasNext(); )
         {
             IAtomizerRecipe atomizerRecipe = atomizerRecipeIterator.next();
             ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
@@ -79,7 +79,7 @@ final class FoundryIntegration extends AbstractIntegrationThread
     {
         final List<ICastingRecipe> castingRecipes = CastingRecipeManager.instance.recipes;
         final List<CastingRecipe> newRecipes = new ArrayList<>();
-        for (Iterator<ICastingRecipe> castingRecipeIterator = castingRecipes.iterator(); castingRecipeIterator.hasNext(); )
+        for (final Iterator<ICastingRecipe> castingRecipeIterator = castingRecipes.iterator(); castingRecipeIterator.hasNext(); )
         {
             ICastingRecipe castingRecipe = castingRecipeIterator.next();
             ItemStack correctOutput = resourceHandler.getMainItemStack(castingRecipe.getOutput());

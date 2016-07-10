@@ -14,8 +14,8 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
 import wanion.unidict.resource.ResourceHandler;
-import wanion.unidict.resource.UniResourceHandler;
 
+import javax.annotation.Nonnull;
 import java.util.Comparator;
 
 import static wanion.unidict.common.Util.getModName;
@@ -25,26 +25,25 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
     private static TLongObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TLongObjectHashMap<>();
     private final TObjectLongMap<String> ownerOfKind;
 
-    public SpecificKindItemStackComparator(long kind)
+    public SpecificKindItemStackComparator(final long kind)
     {
         if ((ownerOfKind = Config.getOwnerOfEveryKindMap(kind)) == null)
             throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
         kindSpecificComparators.put(kind, this);
     }
 
-    public static SpecificKindItemStackComparator getComparatorFor(long kind)
+    public static SpecificKindItemStackComparator getComparatorFor(final long kind)
     {
         return kindSpecificComparators.get(kind);
     }
 
-    public static void nullify(UniResourceHandler uniResourceHandler)
+    public static void nullify()
     {
-        if (uniResourceHandler != null)
-            kindSpecificComparators = null;
+        kindSpecificComparators = null;
     }
 
     @Override
-    public int compare(ItemStack itemStack1, ItemStack itemStack2)
+    public int compare(@Nonnull final ItemStack itemStack1, @Nonnull final ItemStack itemStack2)
     {
         final String stack1ModName = getModName(itemStack1);
         if (Config.keepOneEntry && Config.keepOneEntryModBlackSet.contains(stack1ModName))

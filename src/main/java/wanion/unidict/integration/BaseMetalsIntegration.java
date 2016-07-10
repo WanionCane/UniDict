@@ -41,16 +41,16 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
 
     private void fixCrackHammerDrops()
     {
-        List<ICrusherRecipe> crusherRecipes = Util.getField(CrusherRecipeRegistry.class, "recipes", CrusherRecipeRegistry.getInstance(), List.class);
+        final List<ICrusherRecipe> crusherRecipes = Util.getField(CrusherRecipeRegistry.class, "recipes", CrusherRecipeRegistry.getInstance(), List.class);
         if (crusherRecipes == null)
             return;
-        List<ICrusherRecipe> newRecipes = new ArrayList<>();
-        for (Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext(); )
+        final List<ICrusherRecipe> newRecipes = new ArrayList<>();
+        for (final Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext(); )
         {
-            ICrusherRecipe crusherRecipe = crusherRecipeIterator.next();
+            final ICrusherRecipe crusherRecipe = crusherRecipeIterator.next();
             if (crusherRecipe instanceof OreDictionaryCrusherRecipe) {
-                ItemStack output = crusherRecipe.getOutput();
-                ItemStack correctOutput = resourceHandler.getMainItemStack(output);
+                final ItemStack output = crusherRecipe.getOutput();
+                final ItemStack correctOutput = resourceHandler.getMainItemStack(output);
                 if (correctOutput == output)
                     continue;
                 newRecipes.add(new OreDictionaryCrusherRecipe(uniOreDictionary.getName(crusherRecipe.getValidInputs()), correctOutput));

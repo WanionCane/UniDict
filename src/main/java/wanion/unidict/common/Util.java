@@ -60,7 +60,7 @@ public final class Util
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    public static String getModName(ItemStack itemStack) {
+    public static String getModName(final ItemStack itemStack) {
         Item item;
         if (itemStack == null || (item = itemStack.getItem()) == null)
             return "";

@@ -8,6 +8,7 @@ package wanion.unidict.common;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+@FunctionalInterface
 public interface Instantiator<I>
 {
     I instantiate(Class<? extends I> moduleThreadClass) throws InstantiationException, IllegalAccessException;

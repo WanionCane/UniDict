@@ -29,10 +29,10 @@ public final class ModuleHandler
         modules.entrySet().forEach(e -> {
             final AbstractModule module = e.getKey();
             if (e.getValue() == null)
-                e.setValue(module.getAdder());
+                e.setValue(module.manager);
             final AbstractModule.Manager manager = e.getValue();
             if (manager.isEmpty())
-                module.init(manager);
+                module.init();
             if (!manager.isEmpty(loadStage))
                 module.start(loadStage, manager);
         });

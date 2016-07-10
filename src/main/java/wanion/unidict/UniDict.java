@@ -124,7 +124,7 @@ public final class UniDict
         return remoteVersions.containsKey(MOD_ID) && remoteVersions.get(MOD_ID).equals(MOD_VERSION);
     }
 
-    public interface IDependence { }
+    public interface IDependence {}
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)

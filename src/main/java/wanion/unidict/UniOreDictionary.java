@@ -19,15 +19,39 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
-public class UniOreDictionary implements IDependence
+public final class UniOreDictionary implements IDependence
 {
+    private final Map<Object, String> someThingToName = new HashMap<>();
+
     private static Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);
     private static List<String> idToName = Util.getField(OreDictionary.class, "idToName", null, List.class);
     private static List<List<ItemStack>> idToStack = Util.getField(OreDictionary.class, "idToStack", null, List.class);
     private static List<List<ItemStack>> idToStackUn = Util.getField(OreDictionary.class, "idToStackUn", null, List.class);
     private static Map<Integer, List<Integer>> stackToId = Util.getField(OreDictionary.class, "stackToId", null, Map.class);
 
-    private final Map<Object, String> someThingToName = new HashMap<>();
+    private UniOreDictionary() {}
+
+    public void prepare()
+    {
+        if (!someThingToName.isEmpty())
+            return;
+        nameToId.keySet().forEach(name -> {
+            final Integer oreDictId = nameToId.get(name);
+            final List<ItemStack> entries = getUn(oreDictId);
+            for (int hash : MetaItem.getArray(entries))
+                if (!someThingToName.containsKey(hash))
+                    someThingToName.put(hash, name);
+            someThingToName.put(entries, name);
+        });
+    }
+
+    public String getName(final Object thing)
+    {
+        if (thing instanceof ItemStack)
+            return someThingToName.get(MetaItem.get((ItemStack) thing));
+        else
+            return someThingToName.get(thing);
+    }
 
     public static List<ItemStack> get(final String oreDictName)
     {
@@ -120,27 +144,5 @@ public class UniOreDictionary implements IDependence
     private static boolean checkId(final Integer oreDictId)
     {
         return oreDictId != null && oreDictId <= idToStack.size();
-    }
-
-    public void prepare()
-    {
-        if (!someThingToName.isEmpty())
-            return;
-        nameToId.keySet().forEach(name -> {
-            final Integer oreDictId = nameToId.get(name);
-            final List<ItemStack> entries = getUn(oreDictId);
-            for (int hash : MetaItem.getArray(entries))
-                if (!someThingToName.containsKey(hash))
-                    someThingToName.put(hash, name);
-            someThingToName.put(entries, name);
-        });
-    }
-
-    public String getName(final Object thing)
-    {
-        if (thing instanceof ItemStack)
-            return someThingToName.get(MetaItem.get((ItemStack) thing));
-        else
-            return someThingToName.get(thing);
     }
 }

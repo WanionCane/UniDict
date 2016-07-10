@@ -32,7 +32,7 @@ final class AbyssalCraftIntegration extends AbstractIntegrationThread
 
     private void fixTransmutationRecipes()
     {
-        for (Map.Entry<ItemStack, ItemStack> entry : TransmutatorRecipes.instance().getTransmutationList().entrySet())
+        for (final Map.Entry<ItemStack, ItemStack> entry : TransmutatorRecipes.instance().getTransmutationList().entrySet())
             entry.setValue(resourceHandler.getMainItemStack(entry.getValue()));
     }
 }

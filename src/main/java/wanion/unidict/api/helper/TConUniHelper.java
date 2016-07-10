@@ -16,13 +16,14 @@ import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniJEIPlugin;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 public final class TConUniHelper
 {
     private TConUniHelper() {}
 
-    public static void removeCast(final ItemStack removeTarget)
+    public static void removeCast(@Nonnull final ItemStack removeTarget)
     {
         final int targetHash = MetaItem.get(removeTarget);
         CastingRecipe castingRecipe;

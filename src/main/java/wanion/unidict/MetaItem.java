@@ -19,23 +19,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import wanion.unidict.resource.Resource;
+import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.Collection;
+import java.util.List;
 
 public final class MetaItem
 {
     public static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
 
-    private MetaItem()
-    {
-    }
+    private MetaItem() {}
 
-    public static int get(ItemStack itemStack)
+    public static int get(final ItemStack itemStack)
     {
-        if (itemStack == null)
+        Item item;
+        if (itemStack == null || (item = itemStack.getItem()) == null)
             return 0;
-        final Item item = itemStack.getItem();
         final int id = itemRegistry.getId(item);
         return (id > 0) ? id | item.getDamage(itemStack) + 1 << 16 : 0;
     }
@@ -46,6 +46,21 @@ public final class MetaItem
             return 0;
         final int id = itemRegistry.getIDForObject(item);
         return (id > 0) ? id | 65536 : 0;
+    }
+
+    public static int getCumulative(final Object[] objects, final ResourceHandler resourceHandler)
+    {
+        int cumulativeKey = 0;
+        int key;
+        for (final Object object : objects) {
+            if (object instanceof ItemStack) {
+                if ((key = get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
+                    cumulativeKey += key;
+            } else if (object instanceof List && !((List) object).isEmpty())
+                if ((key = get((ItemStack) ((List) object).get(0))) > 0)
+                    cumulativeKey += key;
+        }
+        return cumulativeKey;
     }
 
     public static int[] getArray(final Collection<ItemStack> itemStackCollection)

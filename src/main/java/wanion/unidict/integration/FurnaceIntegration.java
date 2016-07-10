@@ -32,7 +32,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 
     private void optimizeFurnaceRecipes()
     {
-        for (Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
+        for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
             furnaceRecipe.setValue(resourceHandler.getMainItemStack(furnaceRecipe.getValue()));
     }
 }

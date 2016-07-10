@@ -50,23 +50,15 @@ public final class Config
     private static final String vanillaIntegrations = "vanillaIntegrations";
     public static final boolean craftingIntegration = config.getBoolean("craftingIntegration", vanillaIntegrations, true, "Crafting Integration");
     public static final boolean furnaceIntegration = config.getBoolean("furnaceIntegration", vanillaIntegrations, true, "Furnace Integration");
-    // recipe tweaks
-    private static final String recipeTweaks = "recipeTweaks";
-    public static final boolean gearRecipesRequiresSomeGear = config.getBoolean("gearRecipesRequiresSomeGear", recipeTweaks, false, "Change the gear recipes to use some gear as requirement?\nalso will remove the alternative gear recipes.");
-    public static final boolean gearRecipesUsesIngotsInsteadOfPlates = config.getBoolean("gearRecipesUsesIngotsInsteadOfPlates", recipeTweaks, false, "Substratum is using Plates instead of Ingots in it's recipes.");
-    public static final int howManyPlatesWillBeCreatedPerRecipe = config.getInt("howManyPlatesWillBeCreatedPerRecipe", recipeTweaks, 2, 1, 64, "How many plates will be created per recipe?");
-    public static final boolean useBaseMetalsShapeForGears = config.getBoolean("useBaseMetalsShapeForGears", recipeTweaks, false, "Uses the Base Metals Shape for Gear\nwhich is, a rod in the middle.\nenabling this force the Unification of rods.\nthis will be disabled if \"gearRecipesRequiresSomeGear\" is true.") && !gearRecipesRequiresSomeGear;
-    public static final int howManyIngotsWillBeRequiredToCreateAnRod = config.getInt("howManyIngotsWillBeRequiredToCreateAnRod", recipeTweaks, 3, 2, 3, "How many ingots are required to create an rod?");
-    public static final int howManyRodsWillBeCreatedPerRecipe = config.getInt("howManyRodsWillBeCreatedPerRecipe", recipeTweaks, 4, 1, 64, "How many rods will be created per recipe?");
     // ensure mod loaded
     public static boolean foundry;
     public static boolean ic2;
-    public static boolean techReborn;
     public static boolean tinkersConstruct;
     public static boolean autoHideInJEI;
     // integration
     public static boolean abyssalCraft;
     public static boolean baseMetalsIntegration;
+    //public static boolean botaniaIntegration;
     public static boolean enderIOIntegration;
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
@@ -83,7 +75,6 @@ public final class Config
             foundry = isModLoaded("foundry");
             //forestry = isModLoaded("forestry");
             ic2 = isModLoaded("IC2");
-            techReborn = isModLoaded("techreborn");
             tinkersConstruct = isModLoaded("tconstruct");
 
             // general configs
@@ -93,14 +84,12 @@ public final class Config
             final String integrations = "integrations";
             abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
             baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
+            //botaniaIntegration = config.getBoolean("botania", integrations, true, "Botania Integration.") && isModLoaded("Botania");
             enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
             //forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && foundry;
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
-            techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && techReborn;
-
-            // recipe tweaks
-            config.setCategoryComment(recipeTweaks, "everything in this category requires \"Crafting Integration\" to work.");
+            techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
         } catch (Exception e) {
             UniDict.getLogger().info("Something went wrong on " + config.getConfigFile() + "loading. " + e);
         }
@@ -108,13 +97,7 @@ public final class Config
             config.save();
     }
 
-    public static void saveIfHasChanged()
-    {
-        if (config.hasChanged())
-            config.save();
-    }
-
-    public static TObjectLongMap<String> getOwnerOfEveryKindMap(long kind)
+    public static TObjectLongMap<String> getOwnerOfEveryKindMap(final long kind)
     {
         final String kindName = WordUtils.capitalize(Resource.getNameOfKind(kind));
         final String[] ownerOfEveryKind = config.getStringList("ownerOfEvery" + kindName, resources, new String[]{"substratum", "minecraft", "IC2", "techreborn"}, "entries of kind \"" + kindName + "\" will be sorted according to the modID list below\nmust be the exact modID.\n");

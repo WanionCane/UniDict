@@ -17,39 +17,42 @@ import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniJEIPlugin;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 public final class FoundryUniHelper
 {
     private FoundryUniHelper() {}
 
-    public static void removeMold(final ItemStack removeTarget)
+    public static void removeMold(@Nonnull final ItemStack removeTarget)
     {
         final int targetHash = MetaItem.get(removeTarget);
-        for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
+        for (final Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if (MetaItem.get(castingRecipeIterator.next().getMold()) == targetHash)
                 castingRecipeIterator.remove();
         if (Config.autoHideInJEI)
             UniJEIPlugin.hide(removeTarget);
     }
 
-    public static void removeCast(final ItemStack removeTarget)
+    public static void removeCast(@Nonnull final ItemStack removeTarget)
     {
         final int targetHash = MetaItem.get(removeTarget);
         ICastingRecipe bufferRecipe;
-        for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
+        for (final Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if ((bufferRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(bufferRecipe.getMold()) == targetHash || MetaItem.get(bufferRecipe.getOutput()) == targetHash))
                 castingRecipeIterator.remove();
         if (Config.autoHideInJEI)
             UniJEIPlugin.hide(removeTarget);
     }
 
-    public static void removeMoldRecipe(final ItemStack removeTarget)
+    public static void removeMoldRecipe(@Nonnull final ItemStack removeTarget)
     {
         final int targetHash = MetaItem.get(removeTarget);
         IMoldRecipe bufferRecipe;
-        for (Iterator<IMoldRecipe> moldRecipeIterator = MoldRecipeManager.instance.recipes.iterator(); moldRecipeIterator.hasNext(); )
+        for (final Iterator<IMoldRecipe> moldRecipeIterator = MoldRecipeManager.instance.recipes.iterator(); moldRecipeIterator.hasNext(); )
             if ((bufferRecipe = moldRecipeIterator.next()) != null && MetaItem.get(bufferRecipe.getOutput()) == targetHash)
                 moldRecipeIterator.remove();
+        if (Config.autoHideInJEI)
+            UniJEIPlugin.hide(removeTarget);
     }
 }

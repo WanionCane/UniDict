@@ -36,7 +36,7 @@ public class FixedSizeList<E> extends AbstractList<E>
     }
 
     @SuppressWarnings("unchecked")
-    private FixedSizeList(Collection<E> collection)
+    private FixedSizeList(@Nonnull final Collection<E> collection)
     {
         allTheData = (E[]) Arrays.copyOf(collection.toArray(), capacity = size = collection.size());
     }
@@ -54,7 +54,7 @@ public class FixedSizeList<E> extends AbstractList<E>
     }
 
     @Override
-    public boolean add(E e)
+    public boolean add(final E e)
     {
         if (size == capacity)
             return false;
@@ -63,13 +63,13 @@ public class FixedSizeList<E> extends AbstractList<E>
     }
 
     @Override
-    public void add(int index, E e)
+    public void add(final int index, E e)
     {
         allTheData[index] = e;
     }
 
     @Override
-    public E get(int index)
+    public E get(final int index)
     {
         if (index > size)
             return null;
@@ -77,7 +77,7 @@ public class FixedSizeList<E> extends AbstractList<E>
     }
 
     @Override
-    public E remove(int index)
+    public E remove(final int index)
     {
         if (index >= size)
             throw new IndexOutOfBoundsException();

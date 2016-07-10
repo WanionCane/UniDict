@@ -34,83 +34,18 @@ public class Resource
     private long children = 0;
     private boolean updated;
 
-    public Resource(@Nonnull final String name, TLongObjectMap<UniResourceContainer> containerMap)
+    public Resource(@Nonnull final String name)
     {
         this.name = name;
-        childrenMap.putAll(containerMap);
-        populateChildren();
     }
 
-    public static long registerKind(final String kindName)
+    public Resource(@Nonnull final String name, @Nonnull final TLongObjectMap<UniResourceContainer> containerMap)
     {
-        if (nameToKind.containsKey(kindName))
-            return nameToKind.get(kindName);
-        final int kind = 1 << totalKindsRegistered++;
-        nameToKind.put(kindName, kind);
-        kindToName.put(kind, kindName);
-        return kind;
-    }
-
-    public static List<Resource> getResources(final Collection<Resource> resources, final String... kinds)
-    {
-        long kindsId = 0;
-        for (final String kind : kinds) {
-            long kindId;
-            if ((kindId = Resource.getKindOfName(kind)) == 0)
-                return Collections.emptyList();
-            kindsId |= kindId;
-        }
-        return getResources(resources, kindsId);
-    }
-
-    public static List<Resource> getResources(final Collection<Resource> resources, final long kinds)
-    {
-        return (kinds != 0) ? resources.stream().filter(resource -> (kinds & resource.getChildren()) == kinds).collect(Collectors.toList()) : Collections.emptyList();
-    }
-
-    public static List<Resource> getResources(final Collection<Resource> resources, final long... kinds)
-    {
-        long trueKinds = 0;
-        for (final long kind : kinds)
-            if (kind != 0)
-                trueKinds |= kind;
-            else
-                return Collections.emptyList();
-        return getResources(resources, trueKinds);
-    }
-
-    public static List<String> getKinds()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(nameToKind.keySet()));
-    }
-
-    public static long getKindOfName(String name)
-    {
-        return nameToKind.get(name);
-    }
-
-    public static String getNameOfKind(final long kind)
-    {
-        return kindToName.get(kind);
-    }
-
-    public static boolean kindExists(String name)
-    {
-        return nameToKind.containsKey(name);
-    }
-
-    public static boolean kindExists(String... names)
-    {
-        for (String name : names)
-            if (!nameToKind.containsKey(name))
-                return false;
-        return true;
-    }
-
-    private void populateChildren()
-    {
-        for (final long kind : childrenMap.keys())
-            children |= kind;
+        this.name = name;
+        containerMap.forEachValue(container -> {
+            children |= container.kind;
+            return childrenMap.put(container.kind, container) == null;
+        });
     }
 
     public long getChildren()
@@ -118,7 +53,7 @@ public class Resource
         return children;
     }
 
-    public UniResourceContainer getChild(final String childName)
+    public UniResourceContainer getChild(@Nonnull final String childName)
     {
         return childrenMap.get(nameToKind.get(childName));
     }
@@ -149,6 +84,25 @@ public class Resource
         return new Resource(name, newChildrenMap);
     }
 
+    public boolean addChild(@Nonnull final UniResourceContainer child)
+    {
+        final long kind = child.kind;
+        if ((children & kind) > 0 || !child.name.endsWith(name))
+            return false;
+        children |= kind;
+        childrenMap.put(kind, child);
+        return true;
+    }
+
+    public Resource setSortOfChildren(final boolean sort)
+    {
+        childrenMap.forEachValue(child -> {
+            child.setSort(sort);
+            return true;
+        });
+        return this;
+    }
+
     public void updateEntries()
     {
         if (updated)
@@ -173,5 +127,80 @@ public class Resource
         for (TLongIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); )
             output.append(kindToName.get(childrenIterator.next())).append((childrenIterator.hasNext()) ? ", " : "}");
         return output.toString();
+    }
+
+    public static void register(@Nonnull final String kindName)
+    {
+        if (nameToKind.containsKey(kindName))
+            return;
+        final int kind = 1 << totalKindsRegistered++;
+        nameToKind.put(kindName, kind);
+        kindToName.put(kind, kindName);
+    }
+
+    public static long registerAndGet(@Nonnull final String kindName)
+    {
+        if (nameToKind.containsKey(kindName))
+            return nameToKind.get(kindName);
+        final int kind = 1 << totalKindsRegistered++;
+        nameToKind.put(kindName, kind);
+        kindToName.put(kind, kindName);
+        return kind;
+    }
+
+    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final String... kinds)
+    {
+        long kindsId = 0;
+        for (final String kind : kinds) {
+            long kindId;
+            if ((kindId = Resource.getKindOfName(kind)) == 0)
+                return Collections.emptyList();
+            kindsId |= kindId;
+        }
+        return getResources(resources, kindsId);
+    }
+
+    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final long kinds)
+    {
+        return (kinds != 0) ? resources.stream().filter(resource -> (kinds & resource.getChildren()) == kinds).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
+    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final long... kinds)
+    {
+        long trueKinds = 0;
+        for (final long kind : kinds)
+            if (kind != 0)
+                trueKinds |= kind;
+            else
+                return Collections.emptyList();
+        return getResources(resources, trueKinds);
+    }
+
+    public static List<String> getKinds()
+    {
+        return Collections.unmodifiableList(new ArrayList<>(nameToKind.keySet()));
+    }
+
+    public static long getKindOfName(@Nonnull final String name)
+    {
+        return nameToKind.get(name);
+    }
+
+    public static String getNameOfKind(final long kind)
+    {
+        return kindToName.get(kind);
+    }
+
+    public static boolean kindExists(@Nonnull final String name)
+    {
+        return nameToKind.containsKey(name);
+    }
+
+    public static boolean kindExists(@Nonnull final String... names)
+    {
+        for (final String name : names)
+            if (!nameToKind.containsKey(name))
+                return false;
+        return true;
     }
 }
