@@ -8,13 +8,18 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniOreDictionary;
+import wanion.unidict.helper.RecipeHelper;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ForgeResearcher implements IRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
 {
@@ -44,31 +49,69 @@ public class ForgeResearcher implements IRecipeResearcher<ShapedOreRecipe, Shape
         return ShapelessOreRecipe.class;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+    public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
-        return null;
+        final Object[] newRecipeInputs = new Object[9];
+        Object[] recipeInputs = ((ShapedOreRecipe)recipe).getInput();
+        String bufferOreName;
+        for (int i = 0; i < 9; i++) {
+            Object input = i < recipeInputs.length ? recipeInputs[i] : null;
+            newRecipeInputs[i] = input != null ? (bufferOreName = uniOreDictionary.getName(input)) != null ? bufferOreName : input : null;
+        }
+        return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+    public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
-        return null;
+        final Object[] newRecipeInputs = new Object[9];
+        Object[] recipeInputs = ((ShapelessOreRecipe)recipe).getInput().toArray();
+        String bufferOreName;
+        for (int i = 0; i < recipeInputs.length; i++) {
+            Object input = recipeInputs[i];
+            newRecipeInputs[i] = (bufferOreName = uniOreDictionary.getName(input)) != null ? bufferOreName : input;
+        }
+        return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+    public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
-        return null;
+        final List<Object> inputs = new ArrayList<>();
+        ((ShapelessOreRecipe) recipe).getInput().forEach(object -> {
+            if (object != null) {
+                final String bufferOreName = uniOreDictionary.getName(object);
+                if (bufferOreName != null)
+                    inputs.add(bufferOreName);
+                else if (object instanceof ItemStack)
+                    inputs.add(object);
+            }
+        });
+        return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     @Override
-    public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+    public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
-        return null;
+        final List<Object> inputs = new ArrayList<>();
+        for (Object object : ((ShapedOreRecipe) recipe).getInput()) {
+            if (object != null) {
+                final String bufferOreName = uniOreDictionary.getName(object);
+                if (bufferOreName != null)
+                    inputs.add(bufferOreName);
+                else if (object instanceof ItemStack)
+                    inputs.add(object);
+            }
+        }
+        return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
     }
 }

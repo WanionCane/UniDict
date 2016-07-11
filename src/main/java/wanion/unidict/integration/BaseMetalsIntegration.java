@@ -27,7 +27,6 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
     BaseMetalsIntegration()
     {
         super("Base Metals");
-        uniOreDictionary.prepare();
     }
 
     @Override

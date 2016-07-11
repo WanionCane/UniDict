@@ -15,6 +15,8 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import wanion.unidict.Config;
+import wanion.unidict.UniDict;
+import wanion.unidict.UniOreDictionary;
 import wanion.unidict.helper.RecipeHelper;
 import wanion.unidict.recipe.ForgeResearcher;
 import wanion.unidict.recipe.IC2Researcher;
@@ -27,6 +29,7 @@ import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
+    private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
     private final List<IRecipe> recipes = RecipeHelper.recipes;
     private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new THashMap<>();
     private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new THashMap<>();
@@ -80,18 +83,18 @@ final class CraftingIntegration extends AbstractIntegrationThread
                 final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
                 if (recipe.getRecipeSize() == 9)
                     if (isShapeless)
-                        recipes.add(recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler));
+                        recipes.add(recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
                     else
-                        recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler));
+                        recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                 else if (recipe.getRecipeSize() == 1)
                     if (!isShapeless)
-                        recipes.add(recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler));
+                        recipes.add(recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                     else
-                        recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler));
+                        recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
                 else if (!isShapeless)
-                    recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler));
+                    recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                 else
-                    recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler));
+                    recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
                 return true;
             });
         });

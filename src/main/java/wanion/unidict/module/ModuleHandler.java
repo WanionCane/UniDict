@@ -8,10 +8,10 @@ package wanion.unidict.module;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+import gnu.trove.map.hash.THashMap;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import wanion.unidict.LoadStage;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +19,7 @@ import java.util.Set;
 public final class ModuleHandler
 {
     private final Set<Class<? extends AbstractModule>> moduleClasses = new HashSet<>();
-    private final Map<AbstractModule, AbstractModule.Manager> modules = new HashMap<>();
+    private final Map<AbstractModule, AbstractModule.Manager> modules = new THashMap<>();
 
     public void startModules(final FMLStateEvent event)
     {

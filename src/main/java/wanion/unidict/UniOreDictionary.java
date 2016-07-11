@@ -8,11 +8,15 @@ package wanion.unidict;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import wanion.unidict.UniDict.IDependence;
 import wanion.unidict.common.Util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.RegEx;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,7 +25,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class UniOreDictionary implements IDependence
 {
-    private final Map<Object, String> someThingToName = new HashMap<>();
+    private final Map<List<ItemStack>, String> entryToName = new THashMap<>();
+    private final TIntObjectMap<String> stackToName = new TIntObjectHashMap<>();
 
     private static Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);
     private static List<String> idToName = Util.getField(OreDictionary.class, "idToName", null, List.class);
@@ -29,28 +34,26 @@ public final class UniOreDictionary implements IDependence
     private static List<List<ItemStack>> idToStackUn = Util.getField(OreDictionary.class, "idToStackUn", null, List.class);
     private static Map<Integer, List<Integer>> stackToId = Util.getField(OreDictionary.class, "stackToId", null, Map.class);
 
-    private UniOreDictionary() {}
-
-    public void prepare()
+    private UniOreDictionary()
     {
-        if (!someThingToName.isEmpty())
-            return;
         nameToId.keySet().forEach(name -> {
             final Integer oreDictId = nameToId.get(name);
             final List<ItemStack> entries = getUn(oreDictId);
             for (int hash : MetaItem.getArray(entries))
-                if (!someThingToName.containsKey(hash))
-                    someThingToName.put(hash, name);
-            someThingToName.put(entries, name);
+                if (!stackToName.containsKey(hash))
+                    stackToName.put(hash, name);
+            entryToName.put(entries, name);
         });
     }
 
     public String getName(final Object thing)
     {
         if (thing instanceof ItemStack)
-            return someThingToName.get(MetaItem.get((ItemStack) thing));
+            return stackToName.get(MetaItem.get((ItemStack) thing));
+        else if (thing instanceof List)
+            return entryToName.get(thing);
         else
-            return someThingToName.get(thing);
+            return null;
     }
 
     public static List<ItemStack> get(final String oreDictName)
@@ -66,6 +69,11 @@ public final class UniOreDictionary implements IDependence
     public static List<ItemStack> getUn(final Integer oreDictId)
     {
         return checkId(oreDictId) ? idToStackUn.get(oreDictId) : null;
+    }
+
+    public static List<ItemStack> getUn(@Nonnull final String oreDictName)
+    {
+        return idToStackUn.get(nameToId.get(oreDictName));
     }
 
     public static ItemStack getFirstEntry(final String oreDictName)
@@ -114,8 +122,10 @@ public final class UniOreDictionary implements IDependence
     public static void removeFromElsewhere(final String oreDictName)
     {
         final ItemStack mainEntry = getFirstEntry(oreDictName);
+        if (mainEntry == null)
+            return;
         final int[] ids = OreDictionary.getOreIDs(mainEntry);
-        if (mainEntry == null || ids.length == 0)
+        if (ids.length == 0)
             return;
         final int mainEntryHash = MetaItem.get(mainEntry);
         final int oreDictId = getId(oreDictName);

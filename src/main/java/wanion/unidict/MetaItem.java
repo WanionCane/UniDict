@@ -48,18 +48,20 @@ public final class MetaItem
         return (id > 0) ? id | 65536 : 0;
     }
 
+    public static ItemStack toItemStack(final int metaItemKey)
+    {
+        final Item item = itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 1<<16));
+        return new ItemStack(item, 0, metaItemKey >> 16);
+    }
+
     public static int getCumulative(final Object[] objects, final ResourceHandler resourceHandler)
     {
         int cumulativeKey = 0;
-        int key;
-        for (final Object object : objects) {
-            if (object instanceof ItemStack) {
-                if ((key = get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
-                    cumulativeKey += key;
-            } else if (object instanceof List && !((List) object).isEmpty())
-                if ((key = get((ItemStack) ((List) object).get(0))) > 0)
-                    cumulativeKey += key;
-        }
+        for (final Object object : objects)
+            if (object instanceof ItemStack)
+                cumulativeKey += get(resourceHandler.getMainItemStack((ItemStack) object));
+            else if (object instanceof List && !((List) object).isEmpty())
+                cumulativeKey += get((ItemStack) ((List) object).get(0));
         return cumulativeKey;
     }
 
@@ -90,6 +92,8 @@ public final class MetaItem
 
     public static TIntSet getSet(final Collection<ItemStack> itemStackCollection)
     {
+        if (itemStackCollection.isEmpty())
+            return new TIntHashSet(0);
         final TIntSet keys = new TIntHashSet();
         int hash;
         for (final ItemStack itemStack : itemStackCollection)

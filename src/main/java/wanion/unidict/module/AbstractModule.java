@@ -46,7 +46,7 @@ public abstract class AbstractModule
             final long took = System.nanoTime() - initialTime;
             for (final Future<String> threadModuleSay : futureOfThreads)
                 logger.info(threadModuleSay.get());
-            logger.info("All " + threadList.size() + " " + moduleName + "s took " + took / 1000000 + "ms to finish. " + loadStage.name());
+            logger.info("All " + threadList.size() + " " + moduleName + "s took " + took / 1000000 + "ms to finish. at load stage " + loadStage.name());
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Something really bad happened on " + moduleName + " at load stage "+ loadStage.name());
             e.printStackTrace();
