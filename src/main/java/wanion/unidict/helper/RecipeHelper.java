@@ -29,7 +29,7 @@ import java.util.Map;
 public class RecipeHelper
 {
     public static final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
-    private static final Character[] DEFAULT_RECIPE_CHARS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
+    private static final char[] DEFAULT_RECIPE_CHARS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
     private static final char[][] SHAPE = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 
     private RecipeHelper() {}
