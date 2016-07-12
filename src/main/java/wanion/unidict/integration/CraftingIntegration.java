@@ -51,11 +51,13 @@ final class CraftingIntegration extends AbstractIntegrationThread
     @Override
     public String call()
     {
-        experimentalRecipeResearcher();
+        try {
+            doTheResearch();
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "Why so many recipes? I had to deal with a lot of recipes.";
     }
 
-    private void experimentalRecipeResearcher()
+    private void doTheResearch()
     {
         final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new THashMap<>();
         IRecipe bufferRecipe;

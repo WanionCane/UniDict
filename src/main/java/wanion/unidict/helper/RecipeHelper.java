@@ -29,25 +29,24 @@ import java.util.Map;
 public class RecipeHelper
 {
     public static final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
-    private static final char[] DEFAULT_RECIPE_CHARS = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
-    private static final char[][] SHAPE = new char[][]{{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+    private static final Character[] DEFAULT_RECIPE_CHARS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
+    private static final char[][] SHAPE = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 
     private RecipeHelper() {}
 
     @Nonnull
     public static Object[] rawShapeToShape(@Nonnull final Object[] objects)
     {
-        int f = 1;
+        int f = 0;
         final char[][] almostTheShape = Arrays.copyOf(SHAPE, 3);
         final TObjectCharMap<Object> thingToCharMap = new TObjectCharHashMap<>();
-        final Map<Integer ,ItemStack> keyStackMap = new THashMap<>();
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                int value = x * 3 + y;
-                if (objects[value] == null) {
-                    almostTheShape[x][y] = DEFAULT_RECIPE_CHARS[0];
+        final Map<Integer, ItemStack> keyStackMap = new THashMap<>();
+        boolean done = false;
+        for (int x = 0; x < 3 && !done; x++) {
+            for (int y = 0; y < 3 && !done; y++) {
+                final int value = x * 3 + y;
+                if ((done = !(value < objects.length)) || objects[value] == null)
                     continue;
-                }
                 final Object key = objects[value] instanceof ItemStack ? MetaItem.get((ItemStack) objects[value]) : objects[value];
                 if (key instanceof Integer)
                     keyStackMap.put((Integer) key, (ItemStack) objects[value]);

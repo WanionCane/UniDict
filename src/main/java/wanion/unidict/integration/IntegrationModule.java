@@ -38,5 +38,7 @@ public final class IntegrationModule extends AbstractModule
             manager.add(IC2Integration.class);
         if (techRebornIntegration)
             manager.add(TechRebornIntegration.class);
+        if (techyIntegration)
+            manager.add(TechyIntegration.class);
     }
 }

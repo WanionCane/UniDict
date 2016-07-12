@@ -63,6 +63,7 @@ public final class Config
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
     public static boolean techRebornIntegration;
+    public static boolean techyIntegration;
 
     static void init()
     {
@@ -90,6 +91,7 @@ public final class Config
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && foundry;
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
+            techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");
         } catch (Exception e) {
             UniDict.getLogger().info("Something went wrong on " + config.getConfigFile() + "loading. " + e);
         }
@@ -109,7 +111,7 @@ public final class Config
 
     private static TObjectLongMap<String> getOwnerOfEveryThingMap()
     {
-        final String[] ownerOfEveryThing = config.getStringList("ownerOfEveryThing", resources, new String[]{"substratum", "minecraft", "IC2", "techreborn"}, "all the entries will be sorted according to the modID list below\nmust be the exact modID.\n");
+        final String[] ownerOfEveryThing = config.getStringList("ownerOfEveryThing", resources, new String[]{"substratum", "minecraft", "ic2", "techreborn"}, "all the entries will be sorted according to the modID list below\nmust be the exact modID.\n");
         final TObjectLongMap<String> ownerOfEveryThingMap = new TObjectLongHashMap<>(10, 1, Long.MAX_VALUE);
         for (int i = 0; i < ownerOfEveryThing.length; i++)
             ownerOfEveryThingMap.put(ownerOfEveryThing[i], i);
