@@ -8,8 +8,8 @@ package wanion.unidict.helper;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import com.sun.istack.internal.NotNull;
 import gnu.trove.map.TObjectCharMap;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectCharHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeHelper
 {
@@ -33,12 +34,13 @@ public class RecipeHelper
 
     private RecipeHelper() {}
 
-    @NotNull
+    @Nonnull
     public static Object[] rawShapeToShape(@Nonnull final Object[] objects)
     {
         int f = 1;
         final char[][] almostTheShape = Arrays.copyOf(SHAPE, 3);
         final TObjectCharMap<Object> thingToCharMap = new TObjectCharHashMap<>();
+        final Map<Integer ,ItemStack> keyStackMap = new THashMap<>();
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 int value = x * 3 + y;
@@ -47,6 +49,8 @@ public class RecipeHelper
                     continue;
                 }
                 final Object key = objects[value] instanceof ItemStack ? MetaItem.get((ItemStack) objects[value]) : objects[value];
+                if (key instanceof Integer)
+                    keyStackMap.put((Integer) key, (ItemStack) objects[value]);
                 if (thingToCharMap.containsKey(key))
                     almostTheShape[x][y] = thingToCharMap.get(key);
                 else
@@ -57,7 +61,7 @@ public class RecipeHelper
         int i = 0;
         for (final Object object : thingToCharMap.keySet()) {
             shape[3 + (2 * i)] = thingToCharMap.get(object);
-            shape[4 + (2 * i++)] = (object instanceof Integer) ? MetaItem.toItemStack((Integer) object) : object;
+            shape[4 + (2 * i++)] = (object instanceof Integer) ? keyStackMap.get(object).copy() : object;
         }
         return shape;
     }

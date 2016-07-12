@@ -56,11 +56,11 @@ public class VanillaResearcher implements IRecipeResearcher<ShapedRecipes, Shape
     public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
         final Object[] newRecipeInputs = new Object[9];
-        ItemStack[] recipeInputs = ((ShapedRecipes) recipe).recipeItems;
+        final ItemStack[] recipeInputs = ((ShapedRecipes) recipe).recipeItems;
         String bufferOreName;
         for (int i = 0; i < 9; i++) {
             ItemStack input = i < recipeInputs.length ? recipeInputs[i] : null;
-            newRecipeInputs[i] = input != null ? (bufferOreName = uniOreDictionary.getName(input)) != null ? bufferOreName : input : null;
+            newRecipeInputs[i] = input != null ? (bufferOreName = resourceHandler.getContainerName(input)) != null ? bufferOreName : input : null;
         }
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }
@@ -70,10 +70,10 @@ public class VanillaResearcher implements IRecipeResearcher<ShapedRecipes, Shape
     public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
         final Object[] newRecipeInputs = new Object[9];
-        List<ItemStack> recipeInputs = ((ShapelessRecipes)recipe).recipeItems;
+        final List<ItemStack> recipeInputs = ((ShapelessRecipes)recipe).recipeItems;
         String bufferOreName;
         for (int i = 0; i < recipeInputs.size(); i++)
-            newRecipeInputs[i] = (bufferOreName = uniOreDictionary.getName(recipeInputs.get(i))) != null ? bufferOreName : recipeInputs.get(i);
+            newRecipeInputs[i] = (bufferOreName = resourceHandler.getContainerName(recipeInputs.get(i))) != null ? bufferOreName : recipeInputs.get(i);
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }
 

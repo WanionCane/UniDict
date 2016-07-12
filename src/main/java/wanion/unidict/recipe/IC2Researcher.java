@@ -67,7 +67,7 @@ public class IC2Researcher implements IRecipeResearcher<AdvRecipe, AdvShapelessR
     public ShapedOreRecipe getNewShapedRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
         final Object[] newRecipeInputs = new Object[9];
-        IRecipeInput[] recipeInputs = ((AdvRecipe)recipe).input;
+        final IRecipeInput[] recipeInputs = ((AdvRecipe)recipe).input;
         String bufferOreName;
         for (int i = 0; i < 9; i++) {
             List<ItemStack> input = i < recipeInputs.length ? recipeInputs[i].getInputs() : null;
@@ -79,8 +79,9 @@ public class IC2Researcher implements IRecipeResearcher<AdvRecipe, AdvShapelessR
     @Nonnull
     @Override
     public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
-    {final Object[] newRecipeInputs = new Object[9];
-        IRecipeInput[] recipeInputs = ((AdvShapelessRecipe)recipe).input;
+    {
+        final Object[] newRecipeInputs = new Object[9];
+        final IRecipeInput[] recipeInputs = ((AdvShapelessRecipe)recipe).input;
         String bufferOreName;
         for (int i = 0; i < recipeInputs.length; i++) {
             List<ItemStack> input = recipeInputs[i].getInputs();

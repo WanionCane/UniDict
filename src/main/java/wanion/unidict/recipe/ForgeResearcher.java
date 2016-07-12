@@ -55,7 +55,7 @@ public class ForgeResearcher implements IRecipeResearcher<ShapedOreRecipe, Shape
     public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
         final Object[] newRecipeInputs = new Object[9];
-        Object[] recipeInputs = ((ShapedOreRecipe)recipe).getInput();
+        final Object[] recipeInputs = ((ShapedOreRecipe)recipe).getInput();
         String bufferOreName;
         for (int i = 0; i < 9; i++) {
             Object input = i < recipeInputs.length ? recipeInputs[i] : null;
@@ -70,7 +70,7 @@ public class ForgeResearcher implements IRecipeResearcher<ShapedOreRecipe, Shape
     public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
     {
         final Object[] newRecipeInputs = new Object[9];
-        Object[] recipeInputs = ((ShapelessOreRecipe)recipe).getInput().toArray();
+        final Object[] recipeInputs = ((ShapelessOreRecipe)recipe).getInput().toArray();
         String bufferOreName;
         for (int i = 0; i < recipeInputs.length; i++) {
             Object input = recipeInputs[i];

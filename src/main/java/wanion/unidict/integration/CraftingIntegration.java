@@ -82,19 +82,11 @@ final class CraftingIntegration extends AbstractIntegrationThread
                 final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
                 final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
                 if (recipe.getRecipeSize() == 9)
-                    if (isShapeless)
-                        recipes.add(recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
-                    else
-                        recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
+                    recipes.add(isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                 else if (recipe.getRecipeSize() == 1)
-                    if (!isShapeless)
-                        recipes.add(recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
-                    else
-                        recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
-                else if (!isShapeless)
-                    recipes.add(recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
+                    recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                 else
-                    recipes.add(recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary));
+                    recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
                 return true;
             });
         });

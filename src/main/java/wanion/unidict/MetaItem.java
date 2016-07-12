@@ -20,7 +20,6 @@ import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
-import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.Collection;
 import java.util.List;
@@ -50,8 +49,7 @@ public final class MetaItem
 
     public static ItemStack toItemStack(final int metaItemKey)
     {
-        final Item item = itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 1<<16));
-        return new ItemStack(item, 0, metaItemKey >> 16);
+        return metaItemKey > 0 ?  new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65536)), 0, metaItemKey >> 16) : null;
     }
 
     public static int getCumulative(final Object[] objects, final ResourceHandler resourceHandler)
@@ -83,23 +81,13 @@ public final class MetaItem
     public static TIntSet getSet(final Collection<Resource> resourceCollection, final long kind)
     {
         final TIntSet keys = new TIntHashSet();
-        UniResourceContainer container;
-        for (final Resource resource : resourceCollection)
-            if ((container = resource.getChild(kind)) != null)
-                keys.addAll(getList(container.getEntries()));
+        resourceCollection.stream().filter(resource -> (resource.getChildren() & kind) > 0).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
         return keys;
     }
 
     public static TIntSet getSet(final Collection<ItemStack> itemStackCollection)
     {
-        if (itemStackCollection.isEmpty())
-            return new TIntHashSet(0);
-        final TIntSet keys = new TIntHashSet();
-        int hash;
-        for (final ItemStack itemStack : itemStackCollection)
-            if ((hash = get(itemStack)) != 0)
-                keys.add(hash);
-        return keys;
+        return new TIntHashSet(getList(itemStackCollection));
     }
 
     public static <E> void populateMap(final Collection<ItemStack> itemStackCollection, final TIntObjectMap<E> map, final E defaultValue)
