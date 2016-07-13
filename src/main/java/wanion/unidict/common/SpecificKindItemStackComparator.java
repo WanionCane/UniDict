@@ -25,15 +25,16 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
     private static TLongObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TLongObjectHashMap<>();
     private final TObjectLongMap<String> ownerOfKind;
 
-    public SpecificKindItemStackComparator(final long kind)
+    private SpecificKindItemStackComparator(final long kind)
     {
         if ((ownerOfKind = Config.getOwnerOfEveryKindMap(kind)) == null)
             throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
-        kindSpecificComparators.put(kind, this);
     }
 
     public static SpecificKindItemStackComparator getComparatorFor(final long kind)
     {
+        if (!kindSpecificComparators.containsKey(kind))
+            kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));
         return kindSpecificComparators.get(kind);
     }
 

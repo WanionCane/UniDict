@@ -13,12 +13,13 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @JEIPlugin
 public class UniJEIPlugin implements IModPlugin
 {
-    private static final List<ItemStack> stacksToHideList = new ArrayList<>();
+    private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
     private IItemBlacklist itemBlackList;
 
     public static void hide(final ItemStack itemStack)

@@ -12,6 +12,8 @@ import com.google.common.collect.Sets;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.Config;
@@ -19,7 +21,6 @@ import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
-import wanion.unidict.common.SpecificKindItemStackComparator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -27,6 +28,7 @@ import java.util.regex.Pattern;
 
 public final class UniResourceHandler
 {
+    private static final TLongSet kindBlackSet = new TLongHashSet();
     private static boolean hasInit;
     private final Map<String, Resource> apiResourceMap = new THashMap<>();
     private final Map<String, Resource> resourceMap = new THashMap<>();
@@ -75,9 +77,9 @@ public final class UniResourceHandler
 
     private void createResources()
     {
-        final List<String> allTheResourceNames = new ArrayList<>();
+        final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
         final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small).*");
-        UniOreDictionary.getThoseThatMatches("^ingot").stream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
+        UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).parallel().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
         final StringBuilder patternBuilder = new StringBuilder("(");
         for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
             patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
@@ -95,8 +97,6 @@ public final class UniResourceHandler
             }
         });
         allTheKinds.forEach(Resource::register);
-        if (Config.enableSpecificKindSort)
-            Config.childrenOfMetals.forEach(child -> new SpecificKindItemStackComparator(Resource.registerAndGet(child)));
         basicResourceMap.forEach((resourceName, kinds) -> {
             final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
             kinds.forEach(kindName -> {
@@ -120,13 +120,7 @@ public final class UniResourceHandler
                     kinds.forEach(kindName -> {
                         final String oreDictName = kindName + resourceName;
                         if (OreDictionary.doesOreNameExist(oreDictName)) {
-                            final long kind;
-                            if (!Resource.kindExists(kindName))
-                                if (Config.enableSpecificKindSort)
-                                    new SpecificKindItemStackComparator(kind = Resource.registerAndGet(kindName));
-                                else kind = Resource.registerAndGet(kindName);
-                            else
-                                kind = Resource.getKindOfName(kindName);
+                            final long kind = Resource.registerAndGet(kindName);
                             if (resourceMap.containsKey(resourceName))
                                 childrenOfCustomResource.put(kind, new UniResourceContainer(oreDictName, kind).setSortAndGet(true));
                             if (!childrenOfCustomResource.isEmpty())
@@ -142,13 +136,13 @@ public final class UniResourceHandler
     public void postInit()
     {
         updateEverything();
-        ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
         Resource customResource;
         for (String customEntry : Config.customUnifiedResources.keySet())
             if ((customResource = resourceMap.get(customEntry)) != null)
                 customResource.updateEntries();
         if (Config.keepOneEntry)
             OreDictionary.rebakeMap();
+        final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
         resourceHandler.populateIndividualStackAttributes();
         for (String blackListedResource : Config.resourceBlackList) {
             resourceMap.remove(blackListedResource);
@@ -158,6 +152,14 @@ public final class UniResourceHandler
 
     private void updateEverything()
     {
-        apiResourceMap.values().forEach(Resource::updateEntries);
+        apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
+        resourceMap.values().parallelStream().forEach(Resource::updateEntries);
+    }
+
+    static TLongSet getKindBlackSet()
+    {
+        if (kindBlackSet.isEmpty())
+            Config.hideInJEIBlackSet.forEach(blackKind -> kindBlackSet.add(Resource.getKindOfName(blackKind)));
+        return kindBlackSet;
     }
 }

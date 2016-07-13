@@ -14,9 +14,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
-import wanion.unidict.Config;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -101,7 +98,6 @@ public class Resource
             children &= ~kindId;
             childrenIterator.remove();
         }
-        cleanEverything();
     }
 
     @Override
@@ -127,34 +123,6 @@ public class Resource
             return true;
         });
         return this;
-    }
-
-    private void cleanEverything()
-    {
-        hideInNEI();
-        keepOneEntry();
-    }
-
-    private void hideInNEI()
-    {
-        if (!Config.autoHideInJEI)
-            return;
-        if (!Config.keepOneEntry) {
-            TLongSet blackSet = new TLongHashSet();
-            for (String blackThing : Config.hideInJEIBlackSet)
-                blackSet.add(Resource.getKindOfName(blackThing));
-            for (long kind : childrenMap.keys())
-                if (!blackSet.contains(kind))
-                    childrenMap.get(kind).removeBadEntriesFromNEI();
-        } else
-            childrenMap.valueCollection().forEach(UniResourceContainer::removeBadEntriesFromNEI);
-    }
-
-    private void keepOneEntry()
-    {
-        if (!Config.keepOneEntry)
-            return;
-        childrenMap.valueCollection().forEach(UniResourceContainer::keepOneEntry);
     }
 
     public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final String... kinds)

@@ -27,9 +27,7 @@ import static wanion.unidict.common.Reference.SLASH;
 
 public final class Config
 {
-    private Config()
-    {
-    }
+    private Config() {}
 
     // config
     private static final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
@@ -37,6 +35,7 @@ public final class Config
     // general configs
     private static final String general = Configuration.CATEGORY_GENERAL;
     public static final boolean keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
+    public static boolean autoHideInJEI;
     public static final Set<String> hideInJEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
     // resource related stuff
     private static final String resources = "resources";
@@ -54,10 +53,7 @@ public final class Config
     public static final boolean craftingIntegration = config.getBoolean("craftingIntegration", vanillaIntegrations, true, "Crafting Integration");
     public static final boolean furnaceIntegration = config.getBoolean("furnaceIntegration", vanillaIntegrations, true, "Furnace Integration");
     // ensure mod loaded
-    public static boolean foundry;
     public static boolean ic2;
-    public static boolean tinkersConstruct;
-    public static boolean autoHideInJEI;
     // integration
     public static boolean abyssalCraft;
     public static boolean baseMetalsIntegration;
@@ -75,11 +71,8 @@ public final class Config
             if (!config.getDefinedConfigVersion().equals(config.getLoadedConfigVersion()))
                 deleted = config.getConfigFile().delete();
 
-            // ensure mod loaded
-            foundry = isModLoaded("foundry");
             //forestry = isModLoaded("forestry");
             ic2 = isModLoaded("IC2");
-            tinkersConstruct = isModLoaded("tconstruct");
 
             // general configs
             autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("JEI");
@@ -91,7 +84,7 @@ public final class Config
             //botaniaIntegration = config.getBoolean("botania", integrations, true, "Botania Integration.") && isModLoaded("Botania");
             enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
             //forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
-            foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && foundry;
+            foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
             techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");
@@ -111,7 +104,7 @@ public final class Config
     public static TObjectLongMap<String> getOwnerOfEveryKindMap(final long kind)
     {
         final String kindName = WordUtils.capitalize(Resource.getNameOfKind(kind));
-        final String[] ownerOfEveryKind = config.getStringList("ownerOfEvery" + kindName, resources, new String[]{"substratum", "minecraft", "IC2", "techreborn"}, "entries of kind \"" + kindName + "\" will be sorted according to the modID list below\nmust be the exact modID.\n");
+        final String[] ownerOfEveryKind = config.getStringList("ownerOfEvery" + kindName, resources, new String[]{"substratum", "minecraft", "ic2", "techreborn"}, "entries of kind \"" + kindName + "\" will be sorted according to the modID list below\nmust be the exact modID.\n");
         final TObjectLongMap<String> ownerOfEveryThingMap = new TObjectLongHashMap<>(10, 1, Long.MAX_VALUE);
         for (int i = 0; i < ownerOfEveryKind.length; i++)
             ownerOfEveryThingMap.put(ownerOfEveryKind[i], i);
@@ -131,7 +124,7 @@ public final class Config
     {
         Map<String, Set<String>> customUnifiedResources = new THashMap<>();
         Pattern splitPattern = Pattern.compile("\\|");
-        for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust"}, "Here you can put a list to custom unify them.\nmay break some recipes.\nmust be in this format \"ResourceName:kind1|kind2|...\".\nif you put gems here, be aware that it will include the \"block\" of that gem too.")) {
+        for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust"}, "Here you can put a list to custom unify them.\nmust be in this format \"ResourceName:kind1|kind2|...\".")) {
             int baseSeparatorIndex;
             Set<String> kindSet;
             if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newLinkedHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1, customUnifiedResource.length()))))).isEmpty())

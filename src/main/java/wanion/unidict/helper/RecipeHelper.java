@@ -30,7 +30,6 @@ public final class RecipeHelper
 {
     public static final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
     private static final char[] DEFAULT_RECIPE_CHARS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
-    private static final char[][] SHAPE = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 
     private RecipeHelper() {}
 
@@ -38,7 +37,7 @@ public final class RecipeHelper
     public static Object[] rawShapeToShape(@Nonnull final Object[] objects)
     {
         int f = 0;
-        final char[][] almostTheShape = new char[][]{Arrays.copyOf(SHAPE[0], 3), Arrays.copyOf(SHAPE[1], 3), Arrays.copyOf(SHAPE[2], 3)};
+        final char[][] almostTheShape = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
         final TObjectCharMap<Object> thingToCharMap = new TObjectCharHashMap<>();
         final Map<Integer, ItemStack> keyStackMap = new THashMap<>();
         boolean done = false;
