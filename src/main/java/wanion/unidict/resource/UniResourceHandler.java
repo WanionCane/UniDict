@@ -83,7 +83,7 @@ public final class UniResourceHandler
             patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
         final Map<String, Set<String>> basicResourceMap = new HashMap<>();
         final Set<String> allTheKinds = new LinkedHashSet<>();
-        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine");
+        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "Door", "Bells", "Arrow");
         UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
             final String kindName = matcher.replaceFirst("");
             if (!allTheKindsBlackSet.contains(kindName)) {
@@ -94,10 +94,9 @@ public final class UniResourceHandler
                 allTheKinds.add(kindName);
             }
         });
-        if (!Config.enableSpecificKindSort)
-            allTheKinds.forEach(Resource::register);
-        else
-            allTheKinds.forEach(kind -> new SpecificKindItemStackComparator(Resource.registerAndGet(kind)));
+        allTheKinds.forEach(Resource::register);
+        if (Config.enableSpecificKindSort)
+            Config.childrenOfMetals.forEach(child -> new SpecificKindItemStackComparator(Resource.registerAndGet(child)));
         basicResourceMap.forEach((resourceName, kinds) -> {
             final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
             kinds.forEach(kindName -> {
