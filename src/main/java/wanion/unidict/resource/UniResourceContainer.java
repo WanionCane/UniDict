@@ -50,7 +50,7 @@ public final class UniResourceContainer
     }
 
     void keepOneEntry() {
-        if (entries.size() == 1)
+        if (!sort || entries.size() == 1)
             return;
         Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
         if (!keepOneEntryBlackSet.isEmpty()) {
@@ -60,9 +60,11 @@ public final class UniResourceContainer
         } else entries.subList(1, entries.size()).clear();
     }
 
-    void removeBadEntriesFromNEI() {
-        if (entries.size() > 1)
-            entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
+    void removeBadEntriesFromNEI()
+    {
+        if (sort)
+            if (entries.size() > 1)
+                entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
     }
 
     boolean updateEntries() {

@@ -27,7 +27,10 @@ import static wanion.unidict.common.Reference.SLASH;
 
 public final class Config
 {
-    private Config() {}
+    private Config()
+    {
+    }
+
     // config
     private static final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
     public static final Set<String> keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", Configuration.CATEGORY_GENERAL, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
@@ -96,6 +99,12 @@ public final class Config
             UniDict.getLogger().info("Something went wrong on " + config.getConfigFile() + "loading. " + e);
         }
         if (config.hasChanged() || deleted)
+            config.save();
+    }
+
+    public static void saveIfHasChanged()
+    {
+        if (config.hasChanged())
             config.save();
     }
 

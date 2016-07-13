@@ -57,10 +57,10 @@ public class VanillaResearcher implements IRecipeResearcher<ShapedRecipes, Shape
     {
         final Object[] newRecipeInputs = new Object[9];
         final ItemStack[] recipeInputs = ((ShapedRecipes) recipe).recipeItems;
-        String bufferOreName;
         for (int i = 0; i < 9; i++) {
-            ItemStack input = i < recipeInputs.length ? recipeInputs[i] : null;
-            newRecipeInputs[i] = input != null ? (bufferOreName = resourceHandler.getContainerName(input)) != null ? bufferOreName : input : null;
+            final ItemStack input = i < recipeInputs.length ? recipeInputs[i] : null;
+            final String bufferOreName = resourceHandler.getContainerName(input);
+            newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : input : null;
         }
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }

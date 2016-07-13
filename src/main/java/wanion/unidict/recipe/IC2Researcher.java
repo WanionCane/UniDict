@@ -68,10 +68,11 @@ public class IC2Researcher implements IRecipeResearcher<AdvRecipe, AdvShapelessR
     {
         final Object[] newRecipeInputs = new Object[9];
         final IRecipeInput[] recipeInputs = ((AdvRecipe)recipe).input;
-        String bufferOreName;
         for (int i = 0; i < 9; i++) {
-            List<ItemStack> input = i < recipeInputs.length ? recipeInputs[i].getInputs() : null;
-            newRecipeInputs[i] = input != null ? ((bufferOreName = uniOreDictionary.getName(input)) != null) ? bufferOreName : input.get(0) : null;
+            final List<ItemStack> input = i < recipeInputs.length && !recipeInputs[i].getInputs().isEmpty() ? recipeInputs[i].getInputs() : null;
+            final String bufferOreName = input != null ? uniOreDictionary.getName(input) : null;
+            String secondaryBufferOreName;
+            newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : (secondaryBufferOreName = uniOreDictionary.getName(input.get(0))) != null ? secondaryBufferOreName : null : null;
         }
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }
@@ -82,10 +83,11 @@ public class IC2Researcher implements IRecipeResearcher<AdvRecipe, AdvShapelessR
     {
         final Object[] newRecipeInputs = new Object[9];
         final IRecipeInput[] recipeInputs = ((AdvShapelessRecipe)recipe).input;
-        String bufferOreName;
         for (int i = 0; i < recipeInputs.length; i++) {
-            List<ItemStack> input = recipeInputs[i].getInputs();
-            newRecipeInputs[i] = ((bufferOreName = uniOreDictionary.getName(input)) != null) ? bufferOreName : (input != null) ? input.get(0) : null;
+            final List<ItemStack> input = i < recipeInputs.length && !recipeInputs[i].getInputs().isEmpty() ? recipeInputs[i].getInputs() : null;
+            final String bufferOreName = input != null ? uniOreDictionary.getName(input) : null;
+            String secondaryBufferOreName;
+            newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : (secondaryBufferOreName = uniOreDictionary.getName(input.get(0))) != null ? secondaryBufferOreName : null : null;
         }
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
     }

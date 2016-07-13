@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class RecipeHelper
+public final class RecipeHelper
 {
     public static final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
     private static final char[] DEFAULT_RECIPE_CHARS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
@@ -38,7 +38,7 @@ public class RecipeHelper
     public static Object[] rawShapeToShape(@Nonnull final Object[] objects)
     {
         int f = 0;
-        final char[][] almostTheShape = Arrays.copyOf(SHAPE, 3);
+        final char[][] almostTheShape = new char[][]{Arrays.copyOf(SHAPE[0], 3), Arrays.copyOf(SHAPE[1], 3), Arrays.copyOf(SHAPE[2], 3)};
         final TObjectCharMap<Object> thingToCharMap = new TObjectCharHashMap<>();
         final Map<Integer, ItemStack> keyStackMap = new THashMap<>();
         boolean done = false;
@@ -60,7 +60,7 @@ public class RecipeHelper
         int i = 0;
         for (final Object object : thingToCharMap.keySet()) {
             shape[3 + (2 * i)] = thingToCharMap.get(object);
-            shape[4 + (2 * i++)] = (object instanceof Integer) ? keyStackMap.get(object).copy() : object;
+            shape[4 + (2 * i++)] = (object instanceof Integer) ? keyStackMap.get(object) : object;
         }
         return shape;
     }

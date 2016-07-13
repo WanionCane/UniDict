@@ -19,6 +19,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
+import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.module.AbstractModule;
 import wanion.unidict.module.ModuleHandler;
@@ -91,6 +92,7 @@ public final class UniDict
     public void loadComplete(final FMLLoadCompleteEvent event)
     {
         moduleHandler.startModules(event);
+        SpecificKindItemStackComparator.nullify();
         uniResourceHandler = null;
         moduleHandler = null;
         dependencies = null;

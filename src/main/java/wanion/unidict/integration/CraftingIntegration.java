@@ -53,7 +53,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
     {
         try {
             doTheResearch();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); e.printStackTrace(); }
         return threadName + "Why so many recipes? I had to deal with a lot of recipes.";
     }
 
