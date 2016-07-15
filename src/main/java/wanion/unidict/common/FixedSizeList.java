@@ -101,8 +101,7 @@ public class FixedSizeList<E> extends AbstractList<E>
     public void clear()
     {
         modCount++;
-        for (int i = 0; i < size; i++)
-            allTheData[i] = null;
-        size = 0;
+        while (size > 0)
+            allTheData[--size] = null;
     }
 }

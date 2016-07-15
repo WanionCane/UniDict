@@ -153,7 +153,6 @@ public final class UniResourceHandler
     private void updateEverything()
     {
         apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
-        resourceMap.values().parallelStream().forEach(Resource::updateEntries);
     }
 
     static TLongSet getKindBlackSet()

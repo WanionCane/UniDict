@@ -31,7 +31,7 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
             throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
     }
 
-    public static SpecificKindItemStackComparator getComparatorFor(final long kind)
+    public static synchronized SpecificKindItemStackComparator getComparatorFor(final long kind)
     {
         if (!kindSpecificComparators.containsKey(kind))
             kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));

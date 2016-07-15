@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict.IDependence;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,12 +28,12 @@ public final class ResourceHandler implements IDependence
     private final Map<String, UniResourceContainer> containerMap = new THashMap<>();
     private final Map<String, Resource> resourceMap;
 
-    ResourceHandler(final Map<String, Resource> resourceMap)
+    ResourceHandler(@Nonnull final Map<String, Resource> resourceMap)
     {
         resources = (this.resourceMap = resourceMap).values();
     }
 
-    public static void addToKeepOneEntryModBlackSet(final ItemStack itemStack)
+    public static void addToKeepOneEntryModBlackSet(@Nonnull final ItemStack itemStack)
     {
         keepOneEntryBlackSet.add(itemStack);
     }
@@ -47,7 +48,7 @@ public final class ResourceHandler implements IDependence
         return individualStackAttributes.containsKey(MetaItem.get(thing));
     }
 
-    public boolean resourceExists(final String name)
+    public boolean resourceExists(@Nonnull final String name)
     {
         return resourceMap.containsKey(name);
     }

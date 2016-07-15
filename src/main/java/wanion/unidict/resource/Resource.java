@@ -31,6 +31,7 @@ public class Resource
     private static boolean populated;
     public final String name;
     private final TLongObjectMap<UniResourceContainer> childrenMap = new TLongObjectHashMap<>();
+    private final List<Resource> copies = new ArrayList<>();
     private long children = 0;
     private boolean updated;
     private boolean sorted = false;
@@ -72,7 +73,9 @@ public class Resource
                 newChildrenMap.put(child, container);
             return true;
         });
-        return new Resource(name, newChildrenMap);
+        final Resource copiedResource = new Resource(name, newChildrenMap);
+        copies.add(copiedResource);
+        return copiedResource;
     }
 
     public boolean addChild(@Nonnull final UniResourceContainer child)
@@ -98,6 +101,12 @@ public class Resource
             children &= ~kindId;
             childrenIterator.remove();
         }
+        copies.forEach(Resource::updateEntries);
+    }
+
+    public Collection<UniResourceContainer> getChildrenCollection()
+    {
+        return childrenMap.valueCollection();
     }
 
     @Override
