@@ -4,8 +4,8 @@ package wanion.unidict.resource;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import com.google.common.collect.Sets;
@@ -37,15 +37,6 @@ public final class UniResourceHandler
 
     private UniResourceHandler()
     {
-        dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
-        {
-            @Override
-            @Nonnull
-            public ResourceHandler instantiate()
-            {
-                return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
-            }
-        });
         dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
         {
             @Override
@@ -53,6 +44,15 @@ public final class UniResourceHandler
             public UniDictAPI instantiate()
             {
                 return new UniDictAPI(Collections.unmodifiableMap(apiResourceMap));
+            }
+        });
+        dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
+        {
+            @Override
+            @Nonnull
+            public ResourceHandler instantiate()
+            {
+                return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
             }
         });
         long childrenOfMetals = 0;
@@ -135,7 +135,7 @@ public final class UniResourceHandler
 
     public void postInit()
     {
-        updateEverything();
+        apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
         Resource customResource;
         for (String customEntry : Config.customUnifiedResources.keySet())
             if ((customResource = resourceMap.get(customEntry)) != null)
@@ -144,15 +144,10 @@ public final class UniResourceHandler
             OreDictionary.rebakeMap();
         final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
         resourceHandler.populateIndividualStackAttributes();
-        for (String blackListedResource : Config.resourceBlackList) {
+        for (final String blackListedResource : Config.resourceBlackList) {
             resourceMap.remove(blackListedResource);
             apiResourceMap.remove(blackListedResource);
         }
-    }
-
-    private void updateEverything()
-    {
-        apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
     }
 
     static TLongSet getKindBlackSet()

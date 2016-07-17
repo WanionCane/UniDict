@@ -4,8 +4,8 @@ package wanion.unidict;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import com.google.common.collect.Sets;
@@ -31,10 +31,10 @@ public final class Config
 
     // config
     private static final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
-    public static final Set<String> keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", Configuration.CATEGORY_GENERAL, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
     // general configs
     private static final String general = Configuration.CATEGORY_GENERAL;
     public static final boolean keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
+    public static final Set<String> keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
     public static boolean autoHideInJEI;
     public static final Set<String> hideInJEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
     // resource related stuff
@@ -46,12 +46,13 @@ public final class Config
     public static final List<String> resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
     public static final Map<String, Set<String>> customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
     // modules
-    private static final String modules = "modules";
-    static final boolean integrationModule = config.getBoolean("integration", modules, true, "Integration Module enabled?\nif false all the Integrations will be disabled.\nthis will affect non-standalone tweak.\n");
+    static final boolean integrationModule = config.getBoolean("integration", "modules", true, "Integration Module enabled?\nif false all the Integrations will be disabled.\n");
     // vanilla integrations
-    private static final String vanillaIntegrations = "vanillaIntegrations";
-    public static final boolean craftingIntegration = config.getBoolean("craftingIntegration", vanillaIntegrations, true, "Crafting Integration");
-    public static final boolean furnaceIntegration = config.getBoolean("furnaceIntegration", vanillaIntegrations, true, "Furnace Integration");
+    public static final boolean craftingIntegration = config.getBoolean("craftingIntegration", "vanillaIntegrations", true, "Crafting Integration");
+    public static final boolean furnaceIntegration = config.getBoolean("furnaceIntegration", "vanillaIntegrations", true, "Furnace Integration");
+    // ore gen integration
+    //public static final boolean oreGenIntegration = config.getBoolean("enabled", "oreGenIntegration", false, "Ore Gen Integration (alpha)\nbe sure to keep enabled all the ore generation in the configuration of other mods, because this will compensate the missing ores.");
+    //public static final int oreGenIntegrationRadius = config.getInt("radius", "oreGenIntegration", 3, 1, 32, "this is the radius (square root) of chuncks that the profiling of Ore Gen integration will use;\nhigher values means more accuracy, but in exchange of a really long loading time;\nthe profiling is done only once.");
     // ensure mod loaded
     public static boolean ic2;
     // integration
@@ -61,6 +62,7 @@ public final class Config
     public static boolean enderIOIntegration;
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
+    public static boolean mekanismIntegration;
     public static boolean techRebornIntegration;
     public static boolean techyIntegration;
 
@@ -86,6 +88,7 @@ public final class Config
             //forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
+            mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.");
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
             techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");
         } catch (Exception e) {

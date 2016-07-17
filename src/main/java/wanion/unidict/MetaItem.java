@@ -4,8 +4,8 @@ package wanion.unidict;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import gnu.trove.list.TIntList;
@@ -60,6 +60,14 @@ public final class MetaItem
                 cumulativeKey += get(resourceHandler.getMainItemStack((ItemStack) object));
             else if (object instanceof List && !((List) object).isEmpty())
                 cumulativeKey += get((ItemStack) ((List) object).get(0));
+        return cumulativeKey;
+    }
+
+    public static int getCumulative(final ItemStack... itemStacks)
+    {
+        int cumulativeKey = 0;
+        for (final ItemStack itemStack : itemStacks)
+            cumulativeKey += get(itemStack);
         return cumulativeKey;
     }
 
