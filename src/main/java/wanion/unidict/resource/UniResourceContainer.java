@@ -11,6 +11,7 @@ package wanion.unidict.resource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
+import wanion.unidict.MetaItem;
 import wanion.unidict.UniJEIPlugin;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.SpecificKindItemStackComparator;
@@ -31,6 +32,7 @@ public final class UniResourceContainer
     private boolean updated = false;
     private Item mainEntryItem;
     private int mainEntryMeta;
+    private int[] hashes;
 
     public UniResourceContainer(String name, long kind)
     {
@@ -66,12 +68,18 @@ public final class UniResourceContainer
         ItemStack mainEntry = entries.get(0);
         mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
         if (sort) {
+            hashes = MetaItem.getArray(entries);
             if (autoHideInJEI)
                 removeBadEntriesFromNEI();
             if (keepOneEntry)
                 keepOneEntry();
         }
         return updated = true;
+    }
+
+    int[] getHashes()
+    {
+        return hashes;
     }
 
     private void keepOneEntry()

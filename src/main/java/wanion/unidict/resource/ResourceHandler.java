@@ -132,7 +132,8 @@ public final class ResourceHandler implements IDependence
         resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
             containerMap.put(container.name, container);
             UniAttributes uniAttributes = new UniAttributes(resource, container);
-            MetaItem.populateMap(container.getEntries(), individualStackAttributes, uniAttributes);
+            for (final int hash : container.getHashes())
+                individualStackAttributes.put(hash, uniAttributes);
             return true;
         }));
     }
