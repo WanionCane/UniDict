@@ -46,11 +46,8 @@ final class EnderIOIntegration extends AbstractIntegrationThread
     private void fixOreDictPreferences()
     {
         final Map preferences = Util.getField(OreDictionaryPreferences.class, "preferences", OreDictionaryPreferences.instance, Map.class);
-        final Map stackCache = Util.getField(OreDictionaryPreferences.class, "stackCache", OreDictionaryPreferences.instance, Map.class);
         if (preferences != null)
             preferences.clear();
-        if (stackCache != null)
-            stackCache.clear();
     }
 
     private void fixAlloySmelterRecipes()
