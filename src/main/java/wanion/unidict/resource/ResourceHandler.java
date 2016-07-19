@@ -112,6 +112,14 @@ public final class ResourceHandler implements IDependence
         return things;
     }
 
+    public Object[] getMainItemStacks(final Object[] things)
+    {
+        for (int i = 0; i < things.length; i++)
+            if (things[i] instanceof ItemStack)
+                things[i] = getMainItemStack((ItemStack) things[i]);
+        return things;
+    }
+
     public boolean containerExists(final String name)
     {
         return containerMap.containsKey(name);
@@ -131,7 +139,7 @@ public final class ResourceHandler implements IDependence
     {
         resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
             containerMap.put(container.name, container);
-            UniAttributes uniAttributes = new UniAttributes(resource, container);
+            final UniAttributes uniAttributes = new UniAttributes(resource, container);
             for (final int hash : container.getHashes())
                 individualStackAttributes.put(hash, uniAttributes);
             return true;

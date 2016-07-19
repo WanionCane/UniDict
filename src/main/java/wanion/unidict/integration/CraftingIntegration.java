@@ -23,17 +23,14 @@ import wanion.unidict.recipe.IRecipeResearcher;
 import wanion.unidict.recipe.VanillaResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
     private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
     private final List<IRecipe> recipes = RecipeHelper.recipes;
-    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new THashMap<>();
-    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new THashMap<>();
+    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
+    private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
 
     CraftingIntegration()
     {

@@ -41,8 +41,8 @@ public final class Config
     private static final String resources = "resources";
     public static final boolean enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nalso will make \"S:ownerOfEveryThing\" be ignored.");
     public static final TObjectLongMap<String> ownerOfEveryThing = new TUnmodifiableObjectLongMap<>((!enableSpecificKindSort) ? getOwnerOfEveryThingMap() : new TObjectLongHashMap<>());
-    public static final Set<String> metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Aluminum", "Aluminium", "Ardite", "Cobalt", "Osmium", "Mithril", "Zinc", "Invar", "Steel", "Bronze", "Electrum", "Brass"}, "list of things to do unifying things.\n"))));
-    public static final Set<String> childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear"}, "what kind of child do you want to make a standard?\n"))));
+    public static final Set<String> metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chrome", "Chromium", "Iridium", "Osmium", "Titanium", "Tungsten", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Signalum", "Cupronickel"}, "list of things to do unifying things.\n"))));
+    public static final Set<String> childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
     public static final List<String> resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
     public static final Map<String, Set<String>> customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
     // modules
@@ -58,6 +58,7 @@ public final class Config
     // integration
     public static boolean abyssalCraft;
     public static boolean baseMetalsIntegration;
+    public static boolean calculatorIntegration;
     //public static boolean botaniaIntegration;
     public static boolean enderIOIntegration;
     public static boolean foundryIntegration;
@@ -84,11 +85,12 @@ public final class Config
             abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
             baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
             //botaniaIntegration = config.getBoolean("botania", integrations, true, "Botania Integration.") && isModLoaded("Botania");
+            calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
             enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
             //forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
-            mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.");
+            mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
             techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");
         } catch (Exception e) {
@@ -125,11 +127,11 @@ public final class Config
 
     private static Map<String, Set<String>> getCustomUnifiedResourcesMap()
     {
-        Map<String, Set<String>> customUnifiedResources = new THashMap<>();
-        Pattern splitPattern = Pattern.compile("\\|");
-        for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust"}, "Here you can put a list to custom unify them.\nmust be in this format \"ResourceName:kind1|kind2|...\".")) {
-            int baseSeparatorIndex;
-            Set<String> kindSet;
+        final Map<String, Set<String>> customUnifiedResources = new THashMap<>();
+        final Pattern splitPattern = Pattern.compile("\\|");
+        for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust", "Stone:dust"}, "Here you can put a list to custom unify them.\nmust be in this format \"ResourceName:kind1|kind2|...\".")) {
+            final int baseSeparatorIndex;
+            final Set<String> kindSet;
             if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newLinkedHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1, customUnifiedResource.length()))))).isEmpty())
                 customUnifiedResources.put(customUnifiedResource.substring(0, baseSeparatorIndex), kindSet);
         }
