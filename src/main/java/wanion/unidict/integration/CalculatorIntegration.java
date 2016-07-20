@@ -12,6 +12,8 @@ import sonar.calculator.mod.common.recipes.machines.AlgorithmSeparatorRecipes;
 import sonar.calculator.mod.common.recipes.machines.StoneSeparatorRecipes;
 import wanion.unidict.UniDict;
 
+import java.util.Map;
+
 final class CalculatorIntegration extends AbstractIntegrationThread
 {
     CalculatorIntegration()
@@ -31,11 +33,13 @@ final class CalculatorIntegration extends AbstractIntegrationThread
 
     private void fixStoneSeparatorRecipes()
     {
-        StoneSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::getMainItemStacks);
+        Map<Object[], Object[]> recipes = StoneSeparatorRecipes.instance().getRecipes();
+        recipes.values().forEach(resourceHandler::setMainItemStacks);
     }
 
     private void fixAlgorithmSeparatorRecipes()
     {
-        AlgorithmSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::getMainItemStacks);
+        Map<Object[], Object[]> recipes = AlgorithmSeparatorRecipes.instance().getRecipes();
+        recipes.values().forEach(resourceHandler::setMainItemStacks);
     }
 }

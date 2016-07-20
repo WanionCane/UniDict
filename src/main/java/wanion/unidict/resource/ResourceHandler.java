@@ -112,12 +112,11 @@ public final class ResourceHandler implements IDependence
         return things;
     }
 
-    public Object[] getMainItemStacks(final Object[] things)
+    public void setMainItemStacks(final Object[] things)
     {
         for (int i = 0; i < things.length; i++)
             if (things[i] instanceof ItemStack)
                 things[i] = getMainItemStack((ItemStack) things[i]);
-        return things;
     }
 
     public boolean containerExists(final String name)

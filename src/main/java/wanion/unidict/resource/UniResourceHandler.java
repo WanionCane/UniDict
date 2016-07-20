@@ -108,26 +108,14 @@ public final class UniResourceHandler
         Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(childrenOfMetals).setSortOfChildren(true)));
         if (!Config.customUnifiedResources.isEmpty()) {
             Config.customUnifiedResources.forEach((resourceName, kinds) -> {
-                if (resourceMap.containsKey(resourceName)) {
-                    kinds.forEach(kindName -> {
-                        final String oreDictName = kindName + resourceName;
-                        final long kind = Resource.registerAndGet(kindName);
-                        if (OreDictionary.doesOreNameExist(oreDictName))
-                            resourceMap.get(resourceName).addChild(new UniResourceContainer(oreDictName, kind).setSortAndGet(true));
-                    });
-                } else {
-                    final TLongObjectMap<UniResourceContainer> childrenOfCustomResource = new TLongObjectHashMap<>();
-                    kinds.forEach(kindName -> {
-                        final String oreDictName = kindName + resourceName;
-                        if (OreDictionary.doesOreNameExist(oreDictName)) {
-                            final long kind = Resource.registerAndGet(kindName);
-                            if (resourceMap.containsKey(resourceName))
-                                childrenOfCustomResource.put(kind, new UniResourceContainer(oreDictName, kind).setSortAndGet(true));
-                            if (!childrenOfCustomResource.isEmpty())
-                                resourceMap.put(resourceName, new Resource(resourceName, childrenOfCustomResource));
-                        }
-                    });
-                }
+                final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
+                kinds.forEach(kindName -> {
+                    final String oreDictName = kindName + resourceName;
+                    if (OreDictionary.doesOreNameExist(oreDictName))
+                        customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName)).setSortAndGet(true));
+                });
+                if (!resourceMap.containsKey(resourceName) && customResource.getChildren() != 0)
+                    resourceMap.put(resourceName, customResource);
             });
         }
         Config.saveIfHasChanged();
