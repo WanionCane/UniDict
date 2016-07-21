@@ -28,7 +28,7 @@ public final class TConUniHelper
         final int targetHash = MetaItem.get(removeTarget);
         CastingRecipe castingRecipe;
         RecipeMatch recipeMatch;
-        for (Iterator<CastingRecipe> castingRecipeIterator = TinkerRegistry.getAllTableCastingRecipes().iterator(); castingRecipeIterator.hasNext(); )
+        for (final Iterator<CastingRecipe> castingRecipeIterator = TinkerRegistry.getAllTableCastingRecipes().iterator(); castingRecipeIterator.hasNext(); )
             if ((castingRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(castingRecipe.getResult()) == targetHash || ((recipeMatch = castingRecipe.cast) != null && MetaItem.getSet(recipeMatch.getInputs()).contains(targetHash))))
                 castingRecipeIterator.remove();
         if (Config.autoHideInJEI)

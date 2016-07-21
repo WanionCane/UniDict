@@ -15,6 +15,7 @@ import wanion.unidict.UniOreDictionary;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public interface IRecipeResearcher<S extends IRecipe, L extends IRecipe>
 {
@@ -23,10 +24,10 @@ public interface IRecipeResearcher<S extends IRecipe, L extends IRecipe>
     int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler);
 
     @Nonnull
-    Class<S> getShapedRecipeClass();
+    List<Class<? extends S>> getShapedRecipeClasses();
 
     @Nonnull
-    Class<L> getShapelessRecipeClass();
+    List<Class<? extends L>> getShapelessRecipeClasses();
 
     @Nonnull
     ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary);

@@ -17,10 +17,10 @@ import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.helper.RecipeHelper;
-import wanion.unidict.recipe.ForgeResearcher;
-import wanion.unidict.recipe.IC2Researcher;
+import wanion.unidict.recipe.ForgeRecipeResearcher;
+import wanion.unidict.recipe.IC2RecipeResearcher;
 import wanion.unidict.recipe.IRecipeResearcher;
-import wanion.unidict.recipe.VanillaResearcher;
+import wanion.unidict.recipe.VanillaRecipeResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.*;
@@ -36,13 +36,13 @@ final class CraftingIntegration extends AbstractIntegrationThread
     {
         super("Crafting");
         final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
-        researcherList.add(new VanillaResearcher());
-        researcherList.add(new ForgeResearcher());
+        researcherList.add(new VanillaRecipeResearcher());
+        researcherList.add(new ForgeRecipeResearcher());
         if (Config.ic2)
-            researcherList.add(new IC2Researcher());
+            researcherList.add(new IC2RecipeResearcher());
         researcherList.forEach(researcher -> {
-            shapedResearcherMap.put(researcher.getShapedRecipeClass(), researcher);
-            shapelessResearcherMap.put(researcher.getShapelessRecipeClass(), researcher);
+            researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
+            researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
         });
     }
 
@@ -65,13 +65,15 @@ final class CraftingIntegration extends AbstractIntegrationThread
             if ((bufferRecipe = recipeIterator.next()) == null || (bufferContainer = resourceHandler.getContainer(bufferRecipe.getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(bufferRecipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(bufferRecipe.getClass()))))
                 continue;
             final int recipeKey = !isShapeless ? shapedResearcherMap.get(bufferRecipe.getClass()).getShapedRecipeKey(bufferRecipe, resourceHandler) : shapelessResearcherMap.get(bufferRecipe.getClass()).getShapelessRecipeKey(bufferRecipe, resourceHandler);
-            final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
-            if (!smartRecipeMap.containsKey(bufferContainer))
-                smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
-            else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
-            if (!evenSmarterRecipeMap.containsKey(recipeKey))
-                evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
-            else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
+            if (recipeKey != 0) {
+                final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
+                if (!smartRecipeMap.containsKey(bufferContainer))
+                    smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
+                else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
+                if (!evenSmarterRecipeMap.containsKey(recipeKey))
+                    evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
+                else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
+            }
             recipeIterator.remove();
         }
         smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {

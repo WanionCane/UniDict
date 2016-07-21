@@ -70,7 +70,7 @@ public final class UniResourceContainer
         if (sort) {
             hashes = MetaItem.getArray(entries);
             if (autoHideInJEI)
-                removeBadEntriesFromNEI();
+                removeBadEntriesFromJEI();
             if (keepOneEntry)
                 keepOneEntry();
         }
@@ -94,7 +94,7 @@ public final class UniResourceContainer
         } else entries.subList(1, entries.size()).clear();
     }
 
-    private void removeBadEntriesFromNEI()
+    private void removeBadEntriesFromJEI()
     {
         if (entries.size() > 1)
             if (Config.keepOneEntry)
