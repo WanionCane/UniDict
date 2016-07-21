@@ -19,6 +19,7 @@ import wanion.unidict.common.FixedSizeList;
 import wanion.unidict.helper.ResourceHelper;
 import wanion.unidict.resource.Resource;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,7 +54,7 @@ final class HydraulicraftIntegration extends AbstractIntegrationThread
         return threadName + "All this pressure...";
     }
 
-    private void fixHydrulicraftRecipes(@NotNull final List<IFluidRecipe> hydrauliCraftRecipeList, boolean onlyOutputItemStack)
+    private void fixHydrulicraftRecipes(@Nonnull final List<IFluidRecipe> hydrauliCraftRecipeList, boolean onlyOutputItemStack)
     {
         final List<IFluidRecipe> newRecipes = new FixedSizeList<>(hydrauliCraftRecipeList.size());
         for (final Iterator<IFluidRecipe> fluidRecipeIterator = hydrauliCraftRecipeList.iterator(); fluidRecipeIterator.hasNext(); )
