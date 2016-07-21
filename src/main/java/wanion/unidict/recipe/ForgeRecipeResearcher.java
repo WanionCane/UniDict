@@ -8,17 +8,21 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import cpw.mods.fml.common.Loader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.helper.RecipeHelper;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
@@ -35,18 +39,24 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
         return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     @Nonnull
-    public Class<ShapedOreRecipe> getShapedRecipeClass()
+    public List<Class<? extends ShapedOreRecipe>> getShapedRecipeClasses()
     {
-        return ShapedOreRecipe.class;
+        Class<? extends ShapedOreRecipe> shapedCustomRecipe = null;
+        try {
+            if (Loader.isModLoaded("Forestry"))
+                shapedCustomRecipe = (Class<? extends ShapedOreRecipe>) Class.forName("forestry.core.recipes.ShapedRecipeCustom");
+        } catch (ClassNotFoundException e) { UniDict.getLogger().error(e); }
+        return shapedCustomRecipe == null ? Collections.singletonList(ShapedOreRecipe.class) : Arrays.asList(ShapedOreRecipe.class, shapedCustomRecipe);
     }
 
     @Override
     @Nonnull
-    public Class<ShapelessOreRecipe> getShapelessRecipeClass()
+    public List<Class<? extends ShapelessOreRecipe>> getShapelessRecipeClasses()
     {
-        return ShapelessOreRecipe.class;
+        return Collections.singletonList(ShapelessOreRecipe.class);
     }
 
     @SuppressWarnings("unchecked")

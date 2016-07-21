@@ -21,6 +21,7 @@ import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes, ShapelessRecipes>
@@ -39,16 +40,16 @@ public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes,
 
     @Override
     @Nonnull
-    public Class<ShapedRecipes> getShapedRecipeClass()
+    public List<Class<? extends ShapedRecipes>> getShapedRecipeClasses()
     {
-        return ShapedRecipes.class;
+        return Collections.singletonList(ShapedRecipes.class);
     }
 
     @Override
     @Nonnull
-    public Class<ShapelessRecipes> getShapelessRecipeClass()
+    public List<Class<? extends ShapelessRecipes>> getShapelessRecipeClasses()
     {
-        return ShapelessRecipes.class;
+        return Collections.singletonList(ShapelessRecipes.class);
     }
 
     @Override

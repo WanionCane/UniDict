@@ -9,11 +9,13 @@ package wanion.unidict.integration;
  */
 
 import mods.railcraft.common.util.crafting.BlastFurnaceCraftingManager;
+import mods.railcraft.common.util.crafting.RockCrusherCraftingManager;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 import wanion.unidict.common.FixedSizeList;
 import wanion.unidict.common.Util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,9 +42,9 @@ final class RailcraftIntegration extends AbstractIntegrationThread
         if (blastFurnaceRecipes == null)
             return;
         final List<BlastFurnaceCraftingManager.BlastFurnaceRecipe> newRecipes = new FixedSizeList<>(blastFurnaceRecipes.size());
-        for (final Iterator blastFurnaceRecipeIterator = blastFurnaceRecipes.iterator(); blastFurnaceRecipeIterator.hasNext(); )
+        for (final Iterator<BlastFurnaceCraftingManager.BlastFurnaceRecipe> blastFurnaceRecipeIterator = blastFurnaceRecipes.iterator(); blastFurnaceRecipeIterator.hasNext(); )
         {
-            final BlastFurnaceCraftingManager.BlastFurnaceRecipe recipe = (BlastFurnaceCraftingManager.BlastFurnaceRecipe) blastFurnaceRecipeIterator.next();
+            final BlastFurnaceCraftingManager.BlastFurnaceRecipe recipe = blastFurnaceRecipeIterator.next();
             final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.getOutput());
             if (correctOutput == recipe.getOutput())
                 continue;

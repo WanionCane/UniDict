@@ -49,17 +49,17 @@ final class MekanismIntegration extends AbstractIntegrationThread
         final int initialSize = recipes.size();
         final Map<ItemStackInput, MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
         final TIntSet uniques = new TIntHashSet(initialSize, 1);
-        for (Iterator<MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
+        for (final Iterator<MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
         {
-            MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe> mekanismRecipe = mekanismRecipeIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(mekanismRecipe.recipeOutput.output);
+            final MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe> mekanismRecipe = mekanismRecipeIterator.next();
+            final ItemStack correctOutput = resourceHandler.getMainItemStack(mekanismRecipe.recipeOutput.output);
             if (correctOutput == mekanismRecipe.recipeOutput.output)
                 continue;
-            MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe> newRecipe = mekanismRecipe.copy();
+            final MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe> newRecipe = mekanismRecipe.copy();
             newRecipe.recipeOutput.output = correctOutput;
             if (Config.keepOneEntry)
                 newRecipe.recipeInput.ingredient = resourceHandler.getMainItemStack(newRecipe.recipeInput.ingredient);
-            int recipeID = MetaItem.getCumulative(newRecipe.recipeOutput.output, newRecipe.recipeInput.ingredient);
+            final int recipeID = MetaItem.getCumulative(newRecipe.recipeOutput.output, newRecipe.recipeInput.ingredient);
             if (!uniques.contains(recipeID)) {
                 correctRecipes.put(newRecipe.recipeInput, newRecipe);
                 uniques.add(recipeID);
@@ -84,7 +84,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
             newRecipe.recipeOutput.output = correctOutput;
             if (Config.keepOneEntry)
                 newRecipe.recipeInput.inputStack = resourceHandler.getMainItemStack(newRecipe.recipeInput.inputStack);
-            int recipeID = MetaItem.getCumulative(newRecipe.recipeOutput.output, newRecipe.recipeInput.inputStack);
+            final int recipeID = MetaItem.getCumulative(newRecipe.recipeOutput.output, newRecipe.recipeInput.inputStack);
             if (!uniques.contains(recipeID)) {
                 correctRecipes.put(newRecipe.recipeInput, newRecipe);
                 uniques.add(recipeID);

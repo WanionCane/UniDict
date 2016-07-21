@@ -38,8 +38,8 @@ final class CraftingIntegration extends AbstractIntegrationThread
         if (Config.ic2)
             researcherList.add(new IC2RecipeResearcher());
         researcherList.forEach(researcher -> {
-            shapedResearcherMap.put(researcher.getShapedRecipeClass(), researcher);
-            shapelessResearcherMap.put(researcher.getShapelessRecipeClass(), researcher);
+            researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
+            researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
         });
     }
 
