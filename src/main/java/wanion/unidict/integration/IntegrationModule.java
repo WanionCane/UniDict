@@ -4,8 +4,8 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import wanion.unidict.module.AbstractModule;
@@ -16,45 +16,45 @@ public final class IntegrationModule extends AbstractModule
 {
     public IntegrationModule()
     {
-        super("Integration");
+        super("Integration", Class::newInstance);
     }
 
     @Override
     protected void init()
     {
         if (craftingIntegration)
-            add(new CraftingIntegration());
+            manager.add(CraftingIntegration.class);
         if (chestIntegration)
-            add(new ChestIntegration());
+            manager.add(ChestIntegration.class);
         if (furnaceIntegration)
-            add(new FurnaceIntegration());
+            manager.add(FurnaceIntegration.class);
         if (abyssalCraft)
-            add(new AbyssalCraftIntegration());
+            manager.add(AbyssalCraftIntegration.class);
         if (ae2Integration)
-            add(new AE2Integration());
+            manager.add(AE2Integration.class);
         if (electricalAgeIntegration)
-            add(new ElectricalAgeIntegration());
+            manager.add(ElectricalAgeIntegration.class);
         if (enderIOIntegration)
-            add(new EnderIOIntegration());
+            manager.add(EnderIOIntegration.class);
         if (forestryIntegration)
-            add(new ForestryIntegration());
+            manager.add(ForestryIntegration.class);
         if (foundryIntegration)
-            add(new FoundryIntegration());
+            manager.add(FoundryIntegration.class);
         if (fspIntegration)
-            add(new FSPIntegration());
+            manager.add(FSPIntegration.class);
         if (hydrauliCraftIntegration)
-            add(new HydraulicraftIntegration());
+            manager.add(HydraulicraftIntegration.class);
         if (ic2Integration)
-            add(new IC2Integration());
+            manager.add(IC2Integration.class);
         if (ieIntegration)
-            add(new IEIntegration());
+            manager.add(IEIntegration.class);
         if (magnetiCraftIntegration)
-            add(new MagneticraftIntegration());
+            manager.add(MagneticraftIntegration.class);
         if (mekanismIntegration)
-            add(new MekanismIntegration());
+            manager.add(MekanismIntegration.class);
         if (railCraftIntegration)
-            add(new RailcraftIntegration());
+            manager.add(RailcraftIntegration.class);
         if (teIntegration)
-            add(new TEIntegration());
+            manager.add(TEIntegration.class);
     }
 }

@@ -4,8 +4,8 @@ package wanion.unidict.api.helper;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import gnu.trove.map.TIntObjectMap;
@@ -15,6 +15,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict.IDependence;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,17 +31,16 @@ public final class FurnaceUniHelper implements IDependence
         populateSmartFurnaceRecipes();
     }
 
-    public void remove(ItemStack itemStack)
+    public void remove(@Nonnull final ItemStack itemStack)
     {
         remove(MetaItem.get(itemStack));
     }
 
-    public void remove (int hash)
+    public void remove (final int hash)
     {
-        List<ItemStack> furnaceInputStacks = smartFurnaceRecipes.get(hash);
+        final List<ItemStack> furnaceInputStacks = smartFurnaceRecipes.get(hash);
         if (furnaceInputStacks != null) {
-            for (ItemStack furnaceInputStack : furnaceInputStacks)
-                furnaceRecipes.remove(furnaceInputStack);
+            furnaceInputStacks.forEach(furnaceRecipes::remove);
             smartFurnaceRecipes.remove(hash);
         }
     }
@@ -50,7 +50,7 @@ public final class FurnaceUniHelper implements IDependence
         int hash;
         for (ItemStack furnaceInputStack : furnaceRecipes.keySet()) {
             if ((hash = MetaItem.get(furnaceInputStack)) != 0) {
-                List<ItemStack> furnaceInputStacks = (!smartFurnaceRecipes.containsKey(hash)) ? new ArrayList<ItemStack>() : smartFurnaceRecipes.get(hash);
+                final List<ItemStack> furnaceInputStacks = (!smartFurnaceRecipes.containsKey(hash)) ? new ArrayList<ItemStack>() : smartFurnaceRecipes.get(hash);
                 furnaceInputStacks.add(furnaceInputStack);
                 smartFurnaceRecipes.put(hash, furnaceInputStacks);
             }

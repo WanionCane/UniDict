@@ -4,8 +4,8 @@ package wanion.unidict.api.helper;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -23,6 +23,7 @@ import wanion.unidict.common.Util;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.UniResourceContainer;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,27 +34,26 @@ public final class ForestryUniHelper
 
     private ForestryUniHelper() {}
 
-    public static void createCrates(String kindName)
+    public static void createCrates(@Nonnull final String kindName)
     {
-        Map<UniResourceContainer, ItemCrated> crates = new LinkedHashMap<>();
-        int kind = Resource.getKindOfName(kindName);
+        final Map<UniResourceContainer, ItemCrated> crates = new LinkedHashMap<>();
+        final long kind = Resource.getKindOfName(kindName);
         if (kind == 0)
             return;
-
-        for (Resource resource : UniDict.getResourceHandler().resources) {
-            UniResourceContainer container = resource.getChild(kind);
+        for (final Resource resource : UniDict.getResourceHandler().resources) {
+            final UniResourceContainer container = resource.getChild(kind);
             if (container != null)
                 crates.put(container, new ItemCrated(container.getMainEntry(), true));
         }
         registerCratesAndCreateRecipes(crates);
     }
 
-    public static void registerCratesAndCreateRecipes(Map<UniResourceContainer, ItemCrated> crates)
+    public static void registerCratesAndCreateRecipes(@Nonnull final Map<UniResourceContainer, ItemCrated> crates)
     {
         if (carpenterRecipes == null)
             return;
-        for (UniResourceContainer container : crates.keySet()) {
-            ItemCrated crate = crates.get(container);
+        for (final UniResourceContainer container : crates.keySet()) {
+            final ItemCrated crate = crates.get(container);
             crate.setUnlocalizedName(WordUtils.capitalize(container.name));
             GameRegistry.registerItem(crate, crate.getUnlocalizedName().replaceFirst("^item\\.", "crated"));
             PluginStorage.registerCrate(crate);

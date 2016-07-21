@@ -4,16 +4,17 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
+import wanion.unidict.UniDict;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -29,24 +30,23 @@ final class ChestIntegration extends AbstractIntegrationThread
     {
         String integrationSay = threadName + "Now you can find things that aren't so useless in chests.";
         try {
-            Map<String, ChestGenHooks> chestInfo = Util.getField(ChestGenHooks.class, "chestInfo", null, Map.class);
+            final Map<String, ChestGenHooks> chestInfo = Util.getField(ChestGenHooks.class, "chestInfo", null, Map.class);
             if (chestInfo != null)
-                for (ChestGenHooks chestGenHooks : chestInfo.values())
-                    lootChest(chestGenHooks);
+                chestInfo.values().forEach(this::lootChest);
         } catch (Exception e) {
             integrationSay = threadName + "i can't find any chests! T.T";
-            LogHelper.error(e);
+            UniDict.getLogger().error(e);
         }
         return integrationSay;
     }
 
-    private void lootChest(ChestGenHooks chestGenHooks)
+    private void lootChest(@Nonnull final ChestGenHooks chestGenHooks)
     {
-        List<WeightedRandomChestContent> contents = Util.getField(ChestGenHooks.class, "contents", chestGenHooks, List.class);
+        final List<WeightedRandomChestContent> contents = Util.getField(ChestGenHooks.class, "contents", chestGenHooks, List.class);
         if (contents == null)
             return;
-        for (WeightedRandomChestContent someThing : contents) {
-            ItemStack someStack = resourceHandler.getMainItemStack(someThing.theItemId);
+        for (final WeightedRandomChestContent someThing : contents) {
+            final ItemStack someStack = resourceHandler.getMainItemStack(someThing.theItemId);
             if (someStack != someThing.theItemId)
                 someThing.theItemId = someStack;
         }

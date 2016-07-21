@@ -4,8 +4,8 @@ package wanion.unidict.api.helper;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import blusunrize.immersiveengineering.api.crafting.MetalPressRecipe;
@@ -22,8 +22,8 @@ public final class IEUniHelper
 
     public static void removeMold(ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
-        for (Iterator<MetalPressRecipe> metalPressRecipesIterator = MetalPressRecipe.recipeList.values().iterator(); metalPressRecipesIterator.hasNext(); )
+        final int targetHash = MetaItem.get(removeTarget);
+        for (final Iterator<MetalPressRecipe> metalPressRecipesIterator = MetalPressRecipe.recipeList.values().iterator(); metalPressRecipesIterator.hasNext(); )
             if (MetaItem.get(metalPressRecipesIterator.next().mold.stack) == targetHash)
                 metalPressRecipesIterator.remove();
         if (Config.autoHideInNEI)

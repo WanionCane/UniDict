@@ -4,14 +4,14 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 import java.util.Map;
 
@@ -31,16 +31,13 @@ final class IC2Integration extends AbstractIntegrationThread
             fixMachinesOutputs(Recipes.blastfurance.getRecipes());
             fixMachinesOutputs(Recipes.compressor.getRecipes());
             fixMachinesOutputs(Recipes.macerator.getRecipes());
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "The world appears to be entirely industrialized.";
     }
 
     private void fixMachinesOutputs(Map<IRecipeInput, RecipeOutput> recipes)
     {
-        for (Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
+        for (final Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
             recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStackList(recipe.getValue().items)));
     }
 }

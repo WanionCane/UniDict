@@ -4,8 +4,8 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import cpw.mods.fml.common.registry.GameData;
@@ -18,9 +18,9 @@ import forestry.factory.recipes.CarpenterRecipeManager;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.api.helper.ForestryUniHelper;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 import wanion.unidict.helper.NEIHelper;
 import wanion.unidict.resource.UniResourceContainer;
 
@@ -59,27 +59,21 @@ final class ForestryIntegration extends AbstractIntegrationThread
             removeBadCarpenterOutputs(carpenterRecipes);
             if (resourceHandler.containerExists("ingotBronze"))
                 bronzeThings();
-            if (!Config.forestryTweak) {
                 createCratesDefault();
                 ForestryUniHelper.registerCratesAndCreateRecipes(uniDictCrates);
-            } else
-                ForestryUniHelper.createCrates("ingot");
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "All these bees... they can hurt, you know?";
     }
 
     private void removeBadCarpenterOutputs(Set<ICarpenterRecipe> carpenterRecipes)
     {
-        for (Iterator<ICarpenterRecipe> carpenterRecipeIterator = carpenterRecipes.iterator(); carpenterRecipeIterator.hasNext(); )
+        for (final Iterator<ICarpenterRecipe> carpenterRecipeIterator = carpenterRecipes.iterator(); carpenterRecipeIterator.hasNext(); )
         {
-            IDescriptiveRecipe carpenterRecipe = carpenterRecipeIterator.next().getCraftingGridRecipe();
-            ItemStack output = carpenterRecipe.getRecipeOutput();
-            int id = MetaItem.get(output);
-            boolean existsInResource = resourceHandler.exists(id);
-            boolean existsInThingsToRemove = thingsToRemove.contains(id);
+            final IDescriptiveRecipe carpenterRecipe = carpenterRecipeIterator.next().getCraftingGridRecipe();
+            final ItemStack output = carpenterRecipe.getRecipeOutput();
+            final int id = MetaItem.get(output);
+            final boolean existsInResource = resourceHandler.exists(id);
+            final boolean existsInThingsToRemove = thingsToRemove.contains(id);
             if (Config.autoHideInNEI && existsInThingsToRemove)
                 NEIHelper.hide(output);
             if (existsInResource || existsInThingsToRemove)
@@ -89,17 +83,17 @@ final class ForestryIntegration extends AbstractIntegrationThread
 
     private void bronzeThings()
     {
-        UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
+        final UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
         carpenterRecipes.add(new CarpenterRecipe(5, null, null, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(GameData.getItemRegistry().getRaw("Forestry:brokenBronzePickaxe")))));
         carpenterRecipes.add(new CarpenterRecipe(5, null, null, new ShapedRecipeCustom(ingotBronze.getMainEntry(1), "X  ", "   ", "   ", 'X', new ItemStack(GameData.getItemRegistry().getRaw("Forestry:brokenBronzeShovel")))));
     }
 
     private void createCratesDefault()
     {
-        UniResourceContainer ingotCopper = resourceHandler.getContainer("ingotCopper");
-        UniResourceContainer ingotTin = resourceHandler.getContainer("ingotTin");
-        UniResourceContainer ingotSilver = resourceHandler.getContainer("ingotSilver");
-        UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
+        final UniResourceContainer ingotCopper = resourceHandler.getContainer("ingotCopper");
+        final UniResourceContainer ingotTin = resourceHandler.getContainer("ingotTin");
+        final UniResourceContainer ingotSilver = resourceHandler.getContainer("ingotSilver");
+        final UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
         if (ingotCopper != null)
             uniDictCrates.put(ingotCopper, new ItemCrated(ingotCopper.getMainEntry(), true));
         if (ingotTin != null)

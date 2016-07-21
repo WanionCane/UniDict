@@ -4,8 +4,8 @@ package wanion.unidict.api.helper;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import exter.foundry.api.recipe.ICastingRecipe;
@@ -23,7 +23,7 @@ public final class FoundryUniHelper
 
     public static void removeMold(ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
         for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if (MetaItem.get(castingRecipeIterator.next().GetInputMold()) == targetHash)
                 castingRecipeIterator.remove();
@@ -33,7 +33,7 @@ public final class FoundryUniHelper
 
     public static void removeCast(ItemStack removeTarget)
     {
-        int targetHash = MetaItem.get(removeTarget);
+        final int targetHash = MetaItem.get(removeTarget);
         ICastingRecipe bufferRecipe;
         for (Iterator<ICastingRecipe> castingRecipeIterator = CastingRecipeManager.instance.recipes.iterator(); castingRecipeIterator.hasNext(); )
             if ((bufferRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(bufferRecipe.GetInputMold()) == targetHash || MetaItem.get(bufferRecipe.GetOutputItem()) == targetHash))

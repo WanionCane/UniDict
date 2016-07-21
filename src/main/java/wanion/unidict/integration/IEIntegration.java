@@ -4,8 +4,8 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import blusunrize.immersiveengineering.api.ComparableItemStack;
@@ -18,11 +18,12 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.FixedSizeList;
-import wanion.unidict.helper.LogHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 final class IEIntegration extends AbstractIntegrationThread
 {
@@ -39,20 +40,17 @@ final class IEIntegration extends AbstractIntegrationThread
             fixBlastFurnaceRecipes();
             fixCrusherRecipes();
             fixMetalPressRecipes();
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "The world's engineer appears to be more immersive.";
     }
 
     private void fixArcFurnaceRecipes()
     {
-        List<ArcFurnaceRecipe> arcFurnaceRecipes = ArcFurnaceRecipe.recipeList;
-        List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
-        for (Iterator arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); ) {
-            ArcFurnaceRecipe recipe = (ArcFurnaceRecipe) arcFurnaceRecipeIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
+        final List<ArcFurnaceRecipe> arcFurnaceRecipes = ArcFurnaceRecipe.recipeList;
+        final List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
+        for (final Iterator arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); ) {
+            final ArcFurnaceRecipe recipe = (ArcFurnaceRecipe) arcFurnaceRecipeIterator.next();
+            final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
             if (correctOutput == recipe.output)
                 continue;
             correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.oreInputString, recipe.slag, recipe.time, recipe.energyPerTick, recipe.additives));
@@ -63,26 +61,25 @@ final class IEIntegration extends AbstractIntegrationThread
 
     private void fixBlastFurnaceRecipes()
     {
-        List<BlastFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(BlastFurnaceRecipe.recipeList.size() * 1.3).intValue());
-        for (BlastFurnaceRecipe blastFurnaceRecipe : BlastFurnaceRecipe.recipeList)
-            correctRecipes.add(new BlastFurnaceRecipe(resourceHandler.getMainItemStack(blastFurnaceRecipe.output), blastFurnaceRecipe.input, blastFurnaceRecipe.time, blastFurnaceRecipe.slag));
+        final List<BlastFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(BlastFurnaceRecipe.recipeList.size() * 1.3).intValue());
+        correctRecipes.addAll(BlastFurnaceRecipe.recipeList.stream().map(blastFurnaceRecipe -> new BlastFurnaceRecipe(resourceHandler.getMainItemStack(blastFurnaceRecipe.output), blastFurnaceRecipe.input, blastFurnaceRecipe.time, blastFurnaceRecipe.slag)).collect(Collectors.toList()));
         BlastFurnaceRecipe.recipeList.clear();
         BlastFurnaceRecipe.recipeList.addAll(correctRecipes);
     }
 
     private void fixCrusherRecipes()
     {
-        List<CrusherRecipe> crusherRecipes = CrusherRecipe.recipeList;
-        List<CrusherRecipe> correctRecipes = new FixedSizeList<>(crusherRecipes.size());
-        Set<Integer> uniques = new HashSet<>(correctRecipes.size(), 1);
-        for (Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); )
+        final List<CrusherRecipe> crusherRecipes = CrusherRecipe.recipeList;
+        final List<CrusherRecipe> correctRecipes = new FixedSizeList<>(crusherRecipes.size());
+        final TIntSet uniques = new TIntHashSet(crusherRecipes.size(), 1);
+        for (final Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); )
         {
-            CrusherRecipe crusherRecipe = crusherRecipesIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(crusherRecipe.output);
+            final CrusherRecipe crusherRecipe = crusherRecipesIterator.next();
+            final ItemStack correctOutput = resourceHandler.getMainItemStack(crusherRecipe.output);
             if (correctOutput == crusherRecipe.output)
                 continue;
-            ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
-            Integer recipeId = MetaItem.getCumulativeKey(input, correctOutput);
+            final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
+            final int recipeId = MetaItem.getCumulative(input, correctOutput);
             if (!uniques.contains(recipeId)) {
                 if (crusherRecipe.secondaryOutput == null)
                     correctRecipes.add(new CrusherRecipe(correctOutput, crusherRecipe.input, crusherRecipe.energy));
@@ -97,16 +94,16 @@ final class IEIntegration extends AbstractIntegrationThread
 
     private void fixMetalPressRecipes()
     {
-        ArrayListMultimap<ComparableItemStack, MetalPressRecipe> metalPressRecipes = MetalPressRecipe.recipeList;
-        ArrayListMultimap<ComparableItemStack, MetalPressRecipe> correctRecipes = ArrayListMultimap.create();
-        TIntSet uniques = new TIntHashSet(metalPressRecipes.size(), 1);
-        for (Iterator<MetalPressRecipe> metalPressRecipesIterator = metalPressRecipes.values().iterator(); metalPressRecipesIterator.hasNext(); )
+        final ArrayListMultimap<ComparableItemStack, MetalPressRecipe> metalPressRecipes = MetalPressRecipe.recipeList;
+        final ArrayListMultimap<ComparableItemStack, MetalPressRecipe> correctRecipes = ArrayListMultimap.create();
+        final TIntSet uniques = new TIntHashSet(metalPressRecipes.size(), 1);
+        for (final Iterator<MetalPressRecipe> metalPressRecipesIterator = metalPressRecipes.values().iterator(); metalPressRecipesIterator.hasNext(); )
         {
-            MetalPressRecipe metalPressRecipe = metalPressRecipesIterator.next();
-            ItemStack output = resourceHandler.getMainItemStack(metalPressRecipe.output);
+            final MetalPressRecipe metalPressRecipe = metalPressRecipesIterator.next();
+            final ItemStack output = resourceHandler.getMainItemStack(metalPressRecipe.output);
             if (output == metalPressRecipe.output)
                 continue;
-            int id = MetaItem.getCumulativeKey(output, metalPressRecipe.mold.stack);
+            final int id = MetaItem.getCumulative(output, metalPressRecipe.mold.stack);
             if (!uniques.contains(id)) {
                 correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, metalPressRecipe.input, metalPressRecipe.mold.stack, metalPressRecipe.energy));
                 uniques.add(id);

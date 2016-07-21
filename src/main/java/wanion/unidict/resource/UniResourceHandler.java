@@ -4,15 +4,16 @@ package wanion.unidict.resource;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import gnu.trove.map.TIntObjectMap;
+import com.google.common.collect.Sets;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.Config;
@@ -20,38 +21,45 @@ import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
-import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.common.Util;
-import wanion.unidict.helper.LogHelper;
 
+import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class UniResourceHandler
 {
+    private static final TLongSet kindBlackSet = new TLongHashSet();
     private static boolean hasInit;
     private final Map<String, Resource> apiResourceMap = new THashMap<>();
     private final Map<String, Resource> resourceMap = new THashMap<>();
     private final Dependencies<UniDict.IDependence> dependencies = UniDict.getDependencies();
+    private final long childrenOfMetals;
 
     private UniResourceHandler()
     {
-        dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
-        {
-            @Override
-            public ResourceHandler instantiate()
-            {
-                return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
-            }
-        });
         dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
         {
             @Override
+            @Nonnull
             public UniDictAPI instantiate()
             {
                 return new UniDictAPI(Collections.unmodifiableMap(apiResourceMap));
             }
         });
+        dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
+        {
+            @Override
+            @Nonnull
+            public ResourceHandler instantiate()
+            {
+                return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
+            }
+        });
+        long childrenOfMetals = 0;
+        for (final String child : Config.childrenOfMetals)
+            childrenOfMetals += Resource.registerAndGet(child);
+        this.childrenOfMetals = childrenOfMetals;
     }
 
     public static UniResourceHandler create()
@@ -70,7 +78,7 @@ public final class UniResourceHandler
                 UniOreDictionary.removeFromElsewhere("oreberry" + metal);
             try {
                 Util.setField(Class.forName("tconstruct.util.config.PHConstruct"), "tconComesFirst", null, false);
-            } catch (ClassNotFoundException e) { LogHelper.info(e); }
+            } catch (ClassNotFoundException e) { UniDict.getLogger().info(e); }
         }
     }
 
@@ -81,123 +89,71 @@ public final class UniResourceHandler
 
     private void createResources()
     {
-        Set<String> kinds = Config.childrenOfMetals;
-        if (kinds.isEmpty())
-            throw new RuntimeException();
-        if (Config.enableSpecificKindSort) {
-            for (String kind : kinds)
-                new SpecificKindItemStackComparator(Resource.registerKind(kind));
-            Config.saveIfHasChanged();
-        } else
-            for (String kind : kinds)
-                Resource.registerKind(kind);
-        Map<String, Set<String>> basicResourceMap = new THashMap<>();
-        StringBuilder patternBaseString = new StringBuilder("^(");
-        for (Iterator<String> kindIterator = kinds.iterator(); kindIterator.hasNext(); )
-            patternBaseString.append(kindIterator.next()).append((kindIterator.hasNext()) ? "|" : ")");
-        for (Matcher matcher : UniOreDictionary.getThoseThatMatches(patternBaseString.toString())) {
-            String resourceName = WordUtils.capitalize(matcher.replaceFirst(""));
-            if (!basicResourceMap.containsKey(resourceName))
-                basicResourceMap.put(resourceName, new LinkedHashSet<String>());
-            basicResourceMap.get(resourceName).add(matcher.group());
-        }
-        List<String> blackList = Arrays.asList("ingot", "dust");
-        List<String> secondaryBlackList = Arrays.asList("dustTiny", "dust");
-        for (String resourceName : basicResourceMap.keySet()) {
-            Set<String> kindSet = basicResourceMap.get(resourceName);
-            if (!(kindSet.containsAll(blackList) || kindSet.containsAll(secondaryBlackList)))
-                continue;
-            boolean sort = Config.metalsToUnify.contains(resourceName);
-            TIntObjectMap<UniResourceContainer> childrenOfThisResource = new TIntObjectHashMap<>();
-            int kind;
-            for (String kindName : kindSet)
-                childrenOfThisResource.put(kind = Resource.getKindOfName(kindName), new UniResourceContainer(kindName + resourceName, kind, sort));
-            Resource resource = new Resource(resourceName, childrenOfThisResource);
-            apiResourceMap.put(resourceName, resource);
-            if (sort)
-                resourceMap.put(resourceName, resource);
-        }
-        if (Config.customUnifiedResources.isEmpty())
-            return;
-        final List<String> gemRequires = Arrays.asList("nugget", "block");
-        for (Map.Entry<String, Set<String>> customEntries : Config.customUnifiedResources.entrySet()) {
-            final String resourceName = customEntries.getKey();
-            final TIntObjectMap<UniResourceContainer> childrenOfCustomResource = new TIntObjectHashMap<>();
-            final Set<String> customEntriesKindSet = customEntries.getValue();
-            if (customEntriesKindSet.contains("gem"))
-                customEntriesKindSet.addAll(gemRequires);
-            int kind;
-            for (String kindName : customEntriesKindSet) {
-                final String oreDictName = kindName + resourceName;
-                if (!OreDictionary.doesOreNameExist(oreDictName))
-                    continue;
-                if ((kind = Resource.getKindOfName(kindName)) == 0)
-                    kind = Resource.registerKind(kindName);
-                childrenOfCustomResource.put(kind, new UniResourceContainer(oreDictName, kind, true));
+        final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
+        final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small).*");
+        UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).parallel().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
+        final StringBuilder patternBuilder = new StringBuilder("(");
+        for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
+            patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
+        final Map<String, Set<String>> basicResourceMap = new HashMap<>();
+        final Set<String> allTheKinds = new LinkedHashSet<>();
+        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "Door", "Bells", "Arrow");
+        UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
+            final String kindName = matcher.replaceFirst("");
+            if (!allTheKindsBlackSet.contains(kindName)) {
+                final String resourceName = matcher.group();
+                if (!basicResourceMap.containsKey(resourceName))
+                    basicResourceMap.put(resourceName, new LinkedHashSet<>());
+                basicResourceMap.get(resourceName).add(kindName);
+                allTheKinds.add(kindName);
             }
-            if (!childrenOfCustomResource.isEmpty())
-                resourceMap.put(resourceName, new Resource(resourceName, childrenOfCustomResource));
+        });
+        allTheKinds.forEach(Resource::register);
+        basicResourceMap.forEach((resourceName, kinds) -> {
+            final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
+            kinds.forEach(kindName -> {
+                final long kind = Resource.getKindOfName(kindName);
+                kindMap.put(kind, new UniResourceContainer(kindName + resourceName, kind));
+            });
+            apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
+        });
+        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(childrenOfMetals).setSortOfChildren(true)));
+        if (!Config.customUnifiedResources.isEmpty()) {
+            Config.customUnifiedResources.forEach((resourceName, kinds) -> {
+                final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
+                kinds.forEach(kindName -> {
+                    final String oreDictName = kindName + resourceName;
+                    if (OreDictionary.doesOreNameExist(oreDictName))
+                        customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName)).setSortAndGet(true));
+                });
+                if (!resourceMap.containsKey(resourceName) && customResource.getChildren() != 0)
+                    resourceMap.put(resourceName, customResource);
+            });
         }
+        Config.saveIfHasChanged();
     }
 
     public void postInit()
     {
-        updateEverything();
-        ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
+        apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
         Resource customResource;
         for (String customEntry : Config.customUnifiedResources.keySet())
             if ((customResource = resourceMap.get(customEntry)) != null)
                 customResource.updateEntries();
+        if (Config.keepOneEntry)
+            OreDictionary.rebakeMap();
+        final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
         resourceHandler.populateIndividualStackAttributes();
-        for (String blackListedResource : Config.resourceBlackList)
-        {
+        for (final String blackListedResource : Config.resourceBlackList) {
             resourceMap.remove(blackListedResource);
             apiResourceMap.remove(blackListedResource);
         }
-        cleanEverything();
-        if (Config.enableSpecificKindSort)
-            SpecificKindItemStackComparator.nullify(this);
     }
 
-    private void updateEverything()
+    static TLongSet getKindBlackSet()
     {
-        for (Resource resource : apiResourceMap.values())
-            resource.updateEntries();
-    }
-
-    private void cleanEverything()
-    {
-        hideInNEI();
-        keepOneEntry();
-    }
-
-    private void hideInNEI()
-    {
-        if (!Config.autoHideInNEI)
-            return;
-        if (!Config.keepOneEntry) {
-            TIntSet blackSet = new TIntHashSet();
-            for (String blackThing : Config.hideInNEIBlackSet)
-                blackSet.add(Resource.getKindOfName(blackThing));
-            for (Resource resource : resourceMap.values()) {
-                TIntObjectMap<UniResourceContainer> childrenMap = resource.getChildrenMap();
-                for (int kind : childrenMap.keys())
-                    if (!blackSet.contains(kind))
-                        childrenMap.get(kind).removeBadEntriesFromNEI();
-            }
-        } else
-            for (Resource resource : resourceMap.values())
-                for (UniResourceContainer container : resource.getChildrenCollection())
-                    container.removeBadEntriesFromNEI();
-    }
-
-    private void keepOneEntry()
-    {
-        if (!Config.keepOneEntry)
-            return;
-        for (Resource resource : resourceMap.values())
-            for (UniResourceContainer container : resource.getChildrenCollection())
-                container.keepOneEntry();
-        OreDictionary.rebakeMap();
+        if (kindBlackSet.isEmpty())
+            Config.hideInNEIBlackSet.forEach(blackKind -> kindBlackSet.add(Resource.getKindOfName(blackKind)));
+        return kindBlackSet;
     }
 }

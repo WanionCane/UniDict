@@ -4,8 +4,8 @@ package wanion.unidict.integration;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import flaxbeard.steamcraft.api.CrucibleLiquid;
@@ -13,7 +13,7 @@ import flaxbeard.steamcraft.api.SteamcraftRegistry;
 import flaxbeard.steamcraft.tile.TileEntitySmasher;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.MutablePair;
-import wanion.unidict.helper.LogHelper;
+import wanion.unidict.UniDict;
 
 import java.util.Map;
 
@@ -30,16 +30,13 @@ final class FSPIntegration extends AbstractIntegrationThread
         try {
             fixCrucibleRecipes();
             fixRockCrusherRecipes();
-        } catch (Exception e) {
-            LogHelper.error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "All this steam...";
     }
 
     private void fixCrucibleRecipes()
     {
-        for (MutablePair<CrucibleLiquid, Integer> liquidRecipe : SteamcraftRegistry.liquidRecipes.values()) {
+        for (final MutablePair<CrucibleLiquid, Integer> liquidRecipe : SteamcraftRegistry.liquidRecipes.values()) {
             CrucibleLiquid crucibleLiquid = liquidRecipe.getLeft();
             crucibleLiquid.ingot = resourceHandler.getMainItemStack(crucibleLiquid.ingot);
             crucibleLiquid.nugget = resourceHandler.getMainItemStack(crucibleLiquid.nugget);
@@ -49,8 +46,8 @@ final class FSPIntegration extends AbstractIntegrationThread
 
     private void fixRockCrusherRecipes()
     {
-        Map<String, ItemStack> oreDicts = TileEntitySmasher.REGISTRY.oreDicts;
-        for (String oreDictName : oreDicts.keySet())
+        final Map<String, ItemStack> oreDicts = TileEntitySmasher.REGISTRY.oreDicts;
+        for (final String oreDictName : oreDicts.keySet())
             oreDicts.put(oreDictName, resourceHandler.getMainItemStack(oreDicts.get(oreDictName)));
     }
 }

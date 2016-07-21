@@ -4,12 +4,14 @@ package wanion.unidict.resource;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import wanion.unidict.Config;
+import wanion.unidict.MetaItem;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.common.Util;
@@ -17,27 +19,26 @@ import wanion.unidict.helper.NEIHelper;
 
 import java.util.*;
 
-import static wanion.unidict.Config.enableSpecificKindSort;
+import static wanion.unidict.Config.*;
 
 public final class UniResourceContainer
 {
     public final String name;
+    public final long kind;
     private final int id;
-    private final int kind;
     private final List<ItemStack> entries;
-    private final boolean sort;
     private final int initialSize;
+    private boolean sort = false;
+    private boolean updated = false;
     private Item mainEntryItem;
     private int mainEntryMeta;
+    private int[] hashes;
 
-    public UniResourceContainer(String name, int kind, boolean sort)
+    public UniResourceContainer(String name, long kind)
     {
-        if ((entries = UniOreDictionary.get(id = UniOreDictionary.getId(this.name = name))) == null)
+        if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
         this.kind = kind;
-        if (this.sort = sort)
-            if (entries.size() > 1)
-                sort();
         initialSize = entries.size();
     }
 
@@ -56,11 +57,36 @@ public final class UniResourceContainer
         return UniOreDictionary.getUn(id);
     }
 
-    void keepOneEntry()
+    boolean updateEntries()
+    {
+        if (entries.isEmpty())
+            return false;
+        if (updated)
+            return true;
+        if (sort && initialSize != entries.size())
+            sort();
+        ItemStack mainEntry = entries.get(0);
+        mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
+        if (sort) {
+            hashes = MetaItem.getArray(entries);
+            if (autoHideInNEI)
+                removeBadEntriesFromNEI();
+            if (keepOneEntry)
+                keepOneEntry();
+        }
+        return updated = true;
+    }
+
+    int[] getHashes()
+    {
+        return hashes;
+    }
+
+    private void keepOneEntry()
     {
         if (entries.size() == 1)
             return;
-        Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
+        final Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
         if (!keepOneEntryBlackSet.isEmpty()) {
             for (Iterator<ItemStack> keepOneEntryIterator = entries.subList(1, entries.size()).iterator(); keepOneEntryIterator.hasNext(); )
                 if (!keepOneEntryBlackSet.contains(keepOneEntryIterator.next()))
@@ -68,27 +94,36 @@ public final class UniResourceContainer
         } else entries.subList(1, entries.size()).clear();
     }
 
-    void removeBadEntriesFromNEI()
+    private void removeBadEntriesFromNEI()
     {
         if (entries.size() > 1)
-            for (ItemStack entry : entries.subList(1, entries.size()))
-                NEIHelper.hide(entry);
+            if (Config.keepOneEntry)
+                entries.subList(1, entries.size()).forEach(NEIHelper::hide);
+            else if (!UniResourceHandler.getKindBlackSet().contains(kind))
+                entries.subList(1, entries.size()).forEach(NEIHelper::hide);
     }
 
-    boolean updateEntries()
+    public Comparator<ItemStack> getComparator()
     {
-        if (entries.isEmpty())
-            return false;
-        if (sort && initialSize != entries.size())
+        return enableSpecificKindSort ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+    }
+
+    public UniResourceContainer setSortAndGet(final boolean sort)
+    {
+        if (this.sort = sort)
             sort();
-        ItemStack mainEntry = entries.get(0);
-        mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
-        return true;
+        return this;
+    }
+
+    void setSort(final boolean sort)
+    {
+        if (this.sort = sort)
+            sort();
     }
 
     public void sort()
     {
-        final Comparator<ItemStack> itemStackComparator = (enableSpecificKindSort) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+        final Comparator<ItemStack> itemStackComparator = getComparator();
         if (itemStackComparator != null)
             Collections.sort(entries, itemStackComparator);
     }

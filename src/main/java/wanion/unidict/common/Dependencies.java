@@ -4,10 +4,11 @@ package wanion.unidict.common;
  * Created by WanionCane(https://github.com/WanionCane).
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 1.1. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/1.1/.
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -20,19 +21,17 @@ public class Dependencies<D>
     private final Map<Class, D> dependencies = new IdentityHashMap<>();
     private final Map<Class, DependenceWatcher<? extends D>> dependenciesWatchers = new IdentityHashMap<>();
 
-    public Dependencies() {}
-
-    public final <I extends D> void add(Class<I> typeClass)
+    public final <I extends D> void add(final Class<? extends I> typeClass)
     {
         if (dependencies.containsKey(typeClass))
             return;
-        DependenceWatcher<? extends D> dependenceWatcher = dependenciesWatchers.get(typeClass);
+        final DependenceWatcher<? extends D> dependenceWatcher = dependenciesWatchers.get(typeClass);
         if (dependenceWatcher != null) {
             add(dependenceWatcher.instantiate());
             return;
         }
         try {
-            Constructor constructor = typeClass.getDeclaredConstructor();
+            final Constructor constructor = typeClass.getDeclaredConstructor();
             constructor.setAccessible(true);
             add((I) constructor.newInstance());
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -40,29 +39,29 @@ public class Dependencies<D>
         }
     }
 
-    public final <I extends D> void add(I instance)
+    public final <I extends D> void add(final I instance)
     {
-        Class typeClass = instance.getClass();
+        final Class typeClass = instance.getClass();
         if (dependencies.containsKey(typeClass))
             return;
         dependencies.put(typeClass, instance);
     }
 
-    public final <I extends D> I get(Class<I> typeClass)
+    public final <I extends D> I get(final Class<I> typeClass)
     {
-        I instance = (I) dependencies.get(typeClass);
+        final I instance = (I) dependencies.get(typeClass);
         if (instance != null)
             return instance;
         add(typeClass);
         return (I) dependencies.get(typeClass);
     }
 
-    public final boolean contains(Class<? extends D> typeClass)
+    public final boolean contains(final Class<? extends D> typeClass)
     {
         return dependencies.containsKey(typeClass);
     }
 
-    public final void subscribe(DependenceWatcher<? extends D> dependenceWatcher)
+    public final void subscribe(final DependenceWatcher<? extends D> dependenceWatcher)
     {
         if (!dependenciesWatchers.containsKey(dependenceWatcher.dependenceClass))
             dependenciesWatchers.put(dependenceWatcher.dependenceClass, dependenceWatcher);
@@ -77,6 +76,7 @@ public class Dependencies<D>
             this.dependenceClass = (Class<W>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         }
 
+        @Nonnull
         public abstract W instantiate();
     }
 }
