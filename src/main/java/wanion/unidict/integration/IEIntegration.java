@@ -22,7 +22,9 @@ import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.FixedSizeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 final class IEIntegration extends AbstractIntegrationThread

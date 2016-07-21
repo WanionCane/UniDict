@@ -8,7 +8,6 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/1.1/.
  */
 
-import com.sun.istack.internal.NotNull;
 import k4unl.minecraft.Hydraulicraft.api.recipes.FluidShapelessOreRecipe;
 import k4unl.minecraft.Hydraulicraft.api.recipes.IFluidRecipe;
 import k4unl.minecraft.Hydraulicraft.lib.recipes.HydraulicRecipes;

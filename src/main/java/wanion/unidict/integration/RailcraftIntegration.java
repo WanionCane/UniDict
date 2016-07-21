@@ -9,13 +9,11 @@ package wanion.unidict.integration;
  */
 
 import mods.railcraft.common.util.crafting.BlastFurnaceCraftingManager;
-import mods.railcraft.common.util.crafting.RockCrusherCraftingManager;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 import wanion.unidict.common.FixedSizeList;
 import wanion.unidict.common.Util;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 

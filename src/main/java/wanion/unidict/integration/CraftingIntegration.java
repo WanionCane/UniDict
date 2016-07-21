@@ -17,7 +17,10 @@ import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.helper.RecipeHelper;
-import wanion.unidict.recipe.*;
+import wanion.unidict.recipe.ForgeRecipeResearcher;
+import wanion.unidict.recipe.IC2RecipeResearcher;
+import wanion.unidict.recipe.IRecipeResearcher;
+import wanion.unidict.recipe.VanillaRecipeResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.*;
