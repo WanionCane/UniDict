@@ -17,6 +17,7 @@ import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.common.Util;
 import wanion.unidict.helper.NEIHelper;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 import static wanion.unidict.Config.*;
@@ -34,12 +35,18 @@ public final class UniResourceContainer
     private int mainEntryMeta;
     private int[] hashes;
 
-    public UniResourceContainer(String name, long kind)
+    public UniResourceContainer(@Nonnull String name, final long kind)
     {
         if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
         this.kind = kind;
         initialSize = entries.size();
+    }
+
+    public UniResourceContainer(@Nonnull String name, final long kind, final boolean sort)
+    {
+        this(name, kind);
+        setSort(sort);
     }
 
     public ItemStack getMainEntry()
