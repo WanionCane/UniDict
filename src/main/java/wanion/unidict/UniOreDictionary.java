@@ -9,7 +9,6 @@ package wanion.unidict;
  */
 
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -25,7 +24,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class UniOreDictionary implements IDependence
 {
-    private final Map<List<ItemStack>, String> entryToName = new THashMap<>();
+    private final Map<List<ItemStack>, String> entryToName = new IdentityHashMap<>();
     private final TIntObjectMap<String> stackToName = new TIntObjectHashMap<>();
 
     private static Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);

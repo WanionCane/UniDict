@@ -21,8 +21,13 @@ import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Dependencies;
+import wanion.unidict.common.Reference;
 
 import javax.annotation.Nonnull;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -85,7 +90,7 @@ public final class UniResourceHandler
             patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
         final Map<String, Set<String>> basicResourceMap = new HashMap<>();
         final Set<String> allTheKinds = new LinkedHashSet<>();
-        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "Door", "Bells", "Arrow");
+        final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "door", "bells", "arrow", "itemCompressed", "enlightenedFused", "darkFused", "crystalShard", "food", "hardened");
         UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
             final String kindName = matcher.replaceFirst("");
             if (!allTheKindsBlackSet.contains(kindName)) {
@@ -97,6 +102,20 @@ public final class UniResourceHandler
             }
         });
         allTheKinds.forEach(Resource::register);
+        if (Config.kindDebugMode) {
+            try (final BufferedWriter bw = new BufferedWriter(new FileWriter(new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt")))) {
+                allTheKinds.forEach(kind -> {
+                    try {
+                        bw.write(kind);
+                        bw.newLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         basicResourceMap.forEach((resourceName, kinds) -> {
             final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
             kinds.forEach(kindName -> {
@@ -112,7 +131,7 @@ public final class UniResourceHandler
                 kinds.forEach(kindName -> {
                     final String oreDictName = kindName + resourceName;
                     if (OreDictionary.doesOreNameExist(oreDictName))
-                        customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName)).setSortAndGet(true));
+                        customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName), true));
                 });
                 if (!resourceMap.containsKey(resourceName) && customResource.getChildren() != 0)
                     resourceMap.put(resourceName, customResource);
