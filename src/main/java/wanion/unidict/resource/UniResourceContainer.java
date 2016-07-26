@@ -35,7 +35,7 @@ public final class UniResourceContainer
     private int mainEntryMeta;
     private int[] hashes;
 
-    public UniResourceContainer(@Nonnull String name, final long kind)
+    public UniResourceContainer(@Nonnull final String name, final long kind)
     {
         if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
@@ -43,7 +43,7 @@ public final class UniResourceContainer
         initialSize = entries.size();
     }
 
-    public UniResourceContainer(@Nonnull String name, final long kind, final boolean sort)
+    public UniResourceContainer(@Nonnull final String name, final long kind, final boolean sort)
     {
         this(name, kind);
         setSort(sort);
@@ -54,7 +54,7 @@ public final class UniResourceContainer
         return new ItemStack(mainEntryItem, 1, mainEntryMeta);
     }
 
-    public ItemStack getMainEntry(int size)
+    public ItemStack getMainEntry(final int size)
     {
         return new ItemStack(mainEntryItem, size, mainEntryMeta);
     }
@@ -72,7 +72,7 @@ public final class UniResourceContainer
             return true;
         if (sort && initialSize != entries.size())
             sort();
-        ItemStack mainEntry = entries.get(0);
+        final ItemStack mainEntry = entries.get(0);
         mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
         if (sort) {
             hashes = MetaItem.getArray(entries);
@@ -113,13 +113,6 @@ public final class UniResourceContainer
     public Comparator<ItemStack> getComparator()
     {
         return enableSpecificKindSort ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
-    }
-
-    public UniResourceContainer setSortAndGet(final boolean sort)
-    {
-        if (this.sort = sort)
-            sort();
-        return this;
     }
 
     void setSort(final boolean sort)

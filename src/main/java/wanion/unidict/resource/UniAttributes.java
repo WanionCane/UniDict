@@ -8,12 +8,14 @@ package wanion.unidict.resource;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import javax.annotation.Nonnull;
+
 class UniAttributes
 {
     final Resource resource;
     final UniResourceContainer uniResourceContainer;
 
-    UniAttributes(Resource resource, UniResourceContainer uniResourceContainer)
+    UniAttributes(@Nonnull final Resource resource, @Nonnull final UniResourceContainer uniResourceContainer)
     {
         this.resource = resource;
         this.uniResourceContainer = uniResourceContainer;

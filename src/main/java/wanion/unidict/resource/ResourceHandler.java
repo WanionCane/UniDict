@@ -92,12 +92,12 @@ public final class ResourceHandler implements IDependence
         return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.stackSize) : thing;
     }
 
-    public List<ItemStack> getMainItemStackList(final Collection<ItemStack> things)
+    public List<ItemStack> getMainItemStackList(@Nonnull final Collection<ItemStack> things)
     {
         return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
     }
 
-    public void setMainItemStacks(final List<ItemStack> thingList)
+    public void setMainItemStacks(@Nonnull final List<ItemStack> thingList)
     {
         final List<ItemStack> newThings = new ArrayList<>();
         for (Iterator<ItemStack> thingListIterator = thingList.iterator(); thingListIterator.hasNext(); thingListIterator.remove())
@@ -105,21 +105,21 @@ public final class ResourceHandler implements IDependence
         thingList.addAll(newThings);
     }
 
-    public ItemStack[] getMainItemStacks(final ItemStack[] things)
+    public ItemStack[] getMainItemStacks(@Nonnull final ItemStack[] things)
     {
         for (int i = 0; i < things.length; i++)
             things[i] = getMainItemStack(things[i]);
         return things;
     }
 
-    public void setMainItemStacks(final Object[] things)
+    public void setMainItemStacks(@Nonnull final Object[] things)
     {
         for (int i = 0; i < things.length; i++)
             if (things[i] instanceof ItemStack)
                 things[i] = getMainItemStack((ItemStack) things[i]);
     }
 
-    public boolean containerExists(final String name)
+    public boolean containerExists(@Nonnull final String name)
     {
         return containerMap.containsKey(name);
     }
