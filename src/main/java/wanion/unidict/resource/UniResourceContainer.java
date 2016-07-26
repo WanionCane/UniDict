@@ -43,7 +43,7 @@ public final class UniResourceContainer
         initialSize = entries.size();
     }
 
-    public UniResourceContainer(@Nonnull final String name, final long kind, boolean sort)
+    public UniResourceContainer(@Nonnull final String name, final long kind, final boolean sort)
     {
         this(name, kind);
         setSort(sort);
@@ -54,7 +54,7 @@ public final class UniResourceContainer
         return new ItemStack(mainEntryItem, 1, mainEntryMeta);
     }
 
-    public ItemStack getMainEntry(int size)
+    public ItemStack getMainEntry(final int size)
     {
         return new ItemStack(mainEntryItem, size, mainEntryMeta);
     }
@@ -72,7 +72,7 @@ public final class UniResourceContainer
             return true;
         if (sort && initialSize != entries.size())
             sort();
-        ItemStack mainEntry = entries.get(0);
+        final ItemStack mainEntry = entries.get(0);
         mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
         if (sort) {
             hashes = MetaItem.getArray(entries);
