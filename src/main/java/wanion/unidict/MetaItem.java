@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public final class MetaItem
         return metaItemKey > 0 ?  new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65536)), 0, metaItemKey >> 16) : null;
     }
 
-    public static int getCumulative(final Object[] objects, final ResourceHandler resourceHandler)
+    public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
     {
         int cumulativeKey = 0;
         for (final Object object : objects)
@@ -63,7 +64,7 @@ public final class MetaItem
         return cumulativeKey;
     }
 
-    public static int getCumulative(final ItemStack... itemStacks)
+    public static int getCumulative(@Nonnull final ItemStack... itemStacks)
     {
         int cumulativeKey = 0;
         for (final ItemStack itemStack : itemStacks)
@@ -71,12 +72,12 @@ public final class MetaItem
         return cumulativeKey;
     }
 
-    public static int[] getArray(final Collection<ItemStack> itemStackCollection)
+    public static int[] getArray(@Nonnull final Collection<ItemStack> itemStackCollection)
     {
         return getList(itemStackCollection).toArray();
     }
 
-    public static TIntList getList(final Collection<ItemStack> itemStackCollection)
+    public static TIntList getList(@Nonnull final Collection<ItemStack> itemStackCollection)
     {
         final TIntList keys = new TIntArrayList();
         int hash;
@@ -86,25 +87,25 @@ public final class MetaItem
         return keys;
     }
 
-    public static TIntSet getSet(final Collection<Resource> resourceCollection, final long kind)
+    public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final long kind)
     {
         final TIntSet keys = new TIntHashSet();
         resourceCollection.stream().filter(resource -> (resource.getChildren() & kind) > 0).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
         return keys;
     }
 
-    public static TIntSet getSet(final Collection<ItemStack> itemStackCollection)
+    public static TIntSet getSet(@Nonnull final Collection<ItemStack> itemStackCollection)
     {
         return new TIntHashSet(getList(itemStackCollection));
     }
 
-    public static <E> void populateMap(final Collection<ItemStack> itemStackCollection, final TIntObjectMap<E> map, final E defaultValue)
+    public static <E> void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntObjectMap<E> map, final E defaultValue)
     {
         for (final int id : getArray(itemStackCollection))
             map.put(id, defaultValue);
     }
 
-    public static void populateMap(final Collection<ItemStack> itemStackCollection, final TIntLongMap map, long defaultValue)
+    public static void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntLongMap map, final long defaultValue)
     {
         for (final int id : getArray(itemStackCollection))
             map.put(id, defaultValue);
