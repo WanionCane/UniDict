@@ -27,7 +27,7 @@ import java.util.List;
 
 public final class MetaItem
 {
-    private static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
+    public static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
 
     private MetaItem() {}
 

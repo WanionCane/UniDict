@@ -32,10 +32,14 @@ public final class IntegrationModule extends AbstractModule
             manager.add(AbyssalCraftIntegration.class);
         if (baseMetalsIntegration)
             manager.add(BaseMetalsIntegration.class);
+        if (bloodMagicIntegration)
+            manager.add(BloodMagicIntegration.class);
         if (calculatorIntegration)
             manager.add(CalculatorIntegration.class);
         if (enderIOIntegration)
             manager.add(EnderIOIntegration.class);
+        if (forestryIntegration)
+            manager.add(ForestryIntegration.class);
         if (foundryIntegration)
             manager.add(FoundryIntegration.class);
         if (ic2Integration)

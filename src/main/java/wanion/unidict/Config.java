@@ -55,13 +55,16 @@ public final class Config
     //public static final boolean oreGenIntegration = config.getBoolean("enabled", "oreGenIntegration", false, "Ore Gen Integration (alpha)\nbe sure to keep enabled all the ore generation in the configuration of other mods, because this will compensate the missing ores.");
     //public static final int oreGenIntegrationRadius = config.getInt("radius", "oreGenIntegration", 3, 1, 32, "this is the radius (square root) of chuncks that the profiling of Ore Gen integration will use;\nhigher values means more accuracy, but in exchange of a really long loading time;\nthe profiling is done only once.");
     // ensure mod loaded
+    public static boolean forestry;
     public static boolean ic2;
     // integration
     public static boolean abyssalCraft;
     public static boolean baseMetalsIntegration;
     public static boolean calculatorIntegration;
+    public static boolean bloodMagicIntegration;
     //public static boolean botaniaIntegration;
     public static boolean enderIOIntegration;
+    public static boolean forestryIntegration;
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
     public static boolean mekanismIntegration;
@@ -75,7 +78,7 @@ public final class Config
             if (!config.getDefinedConfigVersion().equals(config.getLoadedConfigVersion()))
                 deleted = config.getConfigFile().delete();
 
-            //forestry = isModLoaded("forestry");
+            forestry = isModLoaded("forestry");
             ic2 = isModLoaded("IC2");
 
             // general configs
@@ -85,10 +88,11 @@ public final class Config
             final String integrations = "integrations";
             abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
             baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
+            bloodMagicIntegration = config.getBoolean("bloodMagic", integrations, true, "Blood Magic Integration.") && isModLoaded("BloodMagic");
             //botaniaIntegration = config.getBoolean("botania", integrations, true, "Botania Integration.") && isModLoaded("Botania");
             calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
             enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
-            //forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
+            forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
             mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");

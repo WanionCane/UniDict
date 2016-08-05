@@ -10,9 +10,9 @@ package wanion.unidict.recipe;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
@@ -46,7 +46,7 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
     {
         Class<? extends ShapedOreRecipe> shapedCustomRecipe = null;
         try {
-            if (Loader.isModLoaded("Forestry"))
+            if (Config.forestry)
                 shapedCustomRecipe = (Class<? extends ShapedOreRecipe>) Class.forName("forestry.core.recipes.ShapedRecipeCustom");
         } catch (ClassNotFoundException e) { UniDict.getLogger().error(e); }
         return shapedCustomRecipe == null ? Collections.singletonList(ShapedOreRecipe.class) : Arrays.asList(ShapedOreRecipe.class, shapedCustomRecipe);
