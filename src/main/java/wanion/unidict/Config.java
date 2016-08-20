@@ -34,7 +34,6 @@ public final class Config
     public static boolean forestry;
     public static boolean foundry;
     public static boolean ic2;
-    //public static boolean ic2Classic;
     public static boolean tinkersConstruct;
 
     // general configs
@@ -70,6 +69,7 @@ public final class Config
     public static boolean ieIntegration;
     public static boolean magnetiCraftIntegration;
     public static boolean mekanismIntegration;
+    public static boolean nuclearCraftIntegration;
     public static boolean railCraftIntegration;
     public static boolean teIntegration;
 
@@ -109,6 +109,7 @@ public final class Config
             ieIntegration = config.getBoolean("immersiveEngineering", integrations, true, "Immersive Engineering Integration.") && isModLoaded("ImmersiveEngineering");
             magnetiCraftIntegration = config.getBoolean("magnetiCraft", integrations, true, "Magneticraft Integration.") && isModLoaded("Magneticraft");
             mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
+            nuclearCraftIntegration = config.getBoolean("nuclearCraft", integrations, true, "NuclearCraft Integration") && isModLoaded("NuclearCraft");
             railCraftIntegration = config.getBoolean("railcraft", integrations, true, "Railcraft Integration.") && isModLoaded("Railcraft");
             teIntegration = config.getBoolean("thermalExpansion", integrations, true, "Thermal Expansion Integration.") && isModLoaded("ThermalExpansion");
         } catch (Exception e) {

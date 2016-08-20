@@ -52,6 +52,8 @@ public final class IntegrationModule extends AbstractModule
             manager.add(MagneticraftIntegration.class);
         if (mekanismIntegration)
             manager.add(MekanismIntegration.class);
+        if (nuclearCraftIntegration)
+            manager.add(NuclearCraftIntegration.class);
         if (railCraftIntegration)
             manager.add(RailcraftIntegration.class);
         if (teIntegration)
