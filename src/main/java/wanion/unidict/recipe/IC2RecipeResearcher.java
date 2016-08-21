@@ -43,7 +43,7 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
             } else if (input instanceof IRecipeInput)
                 recipeId += MetaItem.get(((IRecipeInput) input).getInputs().get(0));
         }
-        return recipeId;
+        return recipeId + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
                     recipeId += MetaItem.get(((IRecipeInput) obj).getInputs().get(0));
             }
         }
-        return recipeId;
+        return recipeId + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @Override

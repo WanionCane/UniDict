@@ -29,13 +29,13 @@ public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes,
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedRecipes) recipe).recipeItems, resourceHandler);
+        return MetaItem.getCumulative(((ShapedRecipes) recipe).recipeItems, resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
+        return MetaItem.getCumulative(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @Override

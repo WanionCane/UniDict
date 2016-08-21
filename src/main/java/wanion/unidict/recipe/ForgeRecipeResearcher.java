@@ -30,13 +30,13 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedOreRecipe) recipe).getInput(), resourceHandler);
+        return MetaItem.getCumulative(((ShapedOreRecipe) recipe).getInput(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
+        return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
     }
 
     @SuppressWarnings("unchecked")
