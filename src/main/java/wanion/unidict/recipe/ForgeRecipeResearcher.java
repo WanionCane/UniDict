@@ -25,18 +25,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
+public final class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
 {
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedOreRecipe) recipe).getInput(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return MetaItem.getCumulative(((ShapedOreRecipe) recipe).getInput(), resourceHandler);
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
     }
 
     @SuppressWarnings("unchecked")

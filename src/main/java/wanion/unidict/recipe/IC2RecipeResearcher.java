@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
+public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
 {
     @Override
     public int getShapedRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
@@ -43,7 +43,7 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
             } else if (input instanceof IRecipeInput)
                 recipeId += MetaItem.get(((IRecipeInput) input).getInputs().get(0));
         }
-        return recipeId + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return recipeId;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
                     recipeId += MetaItem.get(((IRecipeInput) obj).getInputs().get(0));
             }
         }
-        return recipeId + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return recipeId;
     }
 
     @Override

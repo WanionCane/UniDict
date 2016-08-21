@@ -24,18 +24,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes, ShapelessRecipes>
+public final class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes, ShapelessRecipes>
 {
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedRecipes) recipe).recipeItems, resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return MetaItem.getCumulative(((ShapedRecipes) recipe).recipeItems, resourceHandler);
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler) + MetaItem.get(resourceHandler.getMainItemStack(recipe.getRecipeOutput()));
+        return MetaItem.getCumulative(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
     }
 
     @Override
