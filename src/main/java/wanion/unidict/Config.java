@@ -67,6 +67,7 @@ public final class Config
     public static boolean forestryIntegration;
     public static boolean foundryIntegration;
     public static boolean ic2Integration;
+    public static boolean ieIntegration;
     public static boolean mekanismIntegration;
     public static boolean techRebornIntegration;
     public static boolean techyIntegration;
@@ -95,6 +96,7 @@ public final class Config
             forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
             foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
             ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
+            ieIntegration = config.getBoolean("immersiveEngineering", integrations, true, "Immersive Engineering Integration.") && isModLoaded("immersiveengineering");
             mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
             techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");

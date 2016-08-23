@@ -44,6 +44,8 @@ public final class IntegrationModule extends AbstractModule
             manager.add(FoundryIntegration.class);
         if (ic2Integration)
             manager.add(IC2Integration.class);
+        if (ieIntegration)
+            manager.add(IEIntegration.class);
         if (mekanismIntegration)
             manager.add(MekanismIntegration.class);
         if (techRebornIntegration)
