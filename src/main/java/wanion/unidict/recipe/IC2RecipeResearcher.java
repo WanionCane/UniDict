@@ -8,6 +8,9 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import ic2.api.recipe.IRecipeInput;
 import ic2.core.AdvRecipe;
 import ic2.core.AdvShapelessRecipe;
@@ -30,40 +33,48 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
     @Override
     public int getShapedRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        int recipeId = 0;
+        final TIntList recipeKeys = new TIntArrayList();
+        int recipeKey = 0;
         for (final Object input : ((AdvRecipe) recipe).input) {
             if (input instanceof ItemStack)
-                recipeId += MetaItem.get(resourceHandler.getMainItemStack((ItemStack) input));
+                recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack((ItemStack) input)));
             else if (input instanceof List) {
                 if (((List) input).isEmpty())
                     continue;
                 final Object obj = ((List) input).get(0);
                 if (obj instanceof ItemStack)
-                    recipeId += MetaItem.get(resourceHandler.getMainItemStack((ItemStack) obj));
+                    recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack((ItemStack) obj)));
             } else if (input instanceof IRecipeInput)
-                recipeId += MetaItem.get(((IRecipeInput) input).getInputs().get(0));
+                recipeKeys.add(MetaItem.get(((IRecipeInput) input).getInputs().get(0)));
         }
-        return recipeId;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        int recipeId = 0;
+        final TIntList recipeKeys = new TIntArrayList();
+        int recipeKey = 0;
         for (final Object input : ((AdvShapelessRecipe) recipe).input) {
             if (input instanceof ItemStack)
-                recipeId += MetaItem.get(resourceHandler.getMainItemStack((ItemStack) input));
+                recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack((ItemStack) input)));
             else if (input instanceof List) {
                 if (((List) input).isEmpty())
                     continue;
                 final Object obj = ((List) input).get(0);
                 if (obj instanceof ItemStack)
-                    recipeId += MetaItem.get(resourceHandler.getMainItemStack((ItemStack) obj));
+                    recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack((ItemStack) obj)));
                 else if (obj instanceof IRecipeInput)
-                    recipeId += MetaItem.get(((IRecipeInput) obj).getInputs().get(0));
+                    recipeKeys.add(MetaItem.get(((IRecipeInput) obj).getInputs().get(0)));
             }
         }
-        return recipeId;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override

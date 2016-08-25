@@ -8,6 +8,8 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
@@ -29,13 +31,23 @@ public final class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRe
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedRecipes) recipe).recipeItems, resourceHandler);
+        final TIntList recipeKeys = MetaItem.getList(((ShapedRecipes) recipe).recipeItems, resourceHandler);
+        int recipeKey = 0;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
+        final TIntList recipeKeys = MetaItem.getList(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
+        int recipeKey = 0;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override
