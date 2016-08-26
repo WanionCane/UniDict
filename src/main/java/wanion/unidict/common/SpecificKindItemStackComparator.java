@@ -8,9 +8,9 @@ package wanion.unidict.common;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.TObjectLongMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
 import wanion.unidict.resource.ResourceHandler;
@@ -22,16 +22,16 @@ import static wanion.unidict.common.Util.getModName;
 
 public final class SpecificKindItemStackComparator implements Comparator<ItemStack>
 {
-    private static TLongObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TLongObjectHashMap<>();
-    private final TObjectLongMap<String> ownerOfKind;
+    private static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
+    private final TObjectIntMap<String> ownerOfKind;
 
-    private SpecificKindItemStackComparator(final long kind)
+    private SpecificKindItemStackComparator(final int kind)
     {
         if ((ownerOfKind = Config.getOwnerOfEveryKindMap(kind)) == null)
             throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
     }
 
-    public static synchronized SpecificKindItemStackComparator getComparatorFor(final long kind)
+    public static synchronized SpecificKindItemStackComparator getComparatorFor(final int kind)
     {
         if (!kindSpecificComparators.containsKey(kind))
             kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));

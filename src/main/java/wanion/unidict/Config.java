@@ -9,10 +9,9 @@ package wanion.unidict;
  */
 
 import com.google.common.collect.Sets;
-import gnu.trove.impl.unmodifiable.TUnmodifiableObjectLongMap;
-import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.common.Reference;
@@ -41,11 +40,13 @@ public final class Config
     // resource related stuff
     private static final String resources = "resources";
     public static final boolean enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nalso will make \"S:ownerOfEveryThing\" be ignored.");
-    public static final TObjectLongMap<String> ownerOfEveryThing = new TUnmodifiableObjectLongMap<>((!enableSpecificKindSort) ? getOwnerOfEveryThingMap() : new TObjectLongHashMap<>());
+    public static final TObjectIntMap<String> ownerOfEveryThing = new TObjectIntHashMap<>((!enableSpecificKindSort) ? getOwnerOfEveryThingMap() : new TObjectIntHashMap<>());
     public static final Set<String> metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chrome", "Chromium", "Iridium", "Osmium", "Titanium", "Tungsten", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Signalum", "Cupronickel"}, "list of things to do unifying things.\n"))));
     public static final Set<String> childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
     public static final List<String> resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
     public static final Map<String, Set<String>> customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
+    // userRegisteredOreDictEntries
+    public static final List<String> userRegisteredOreDictEntries = Arrays.asList(config.getStringList("userRegisteredOreDictEntries", general, new String[]{}, "This allows to the user register their own ore entries before the Unification happen.\nthis is mainly useful when the user is trying to unify things that aren't registered previously in the Ore Dictionary.\n\nFormat:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone."));
     // modules
     static final boolean integrationModule = config.getBoolean("integration", "modules", true, "Integration Module enabled?\nif false all the Integrations will be disabled.\n");
     // vanilla integrations
@@ -101,7 +102,7 @@ public final class Config
             techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
             techyIntegration = config.getBoolean("techy", integrations, true, "Techy Integration.") && isModLoaded("Techy");
         } catch (Exception e) {
-            UniDict.getLogger().info("Something went wrong on " + config.getConfigFile() + "loading. " + e);
+            UniDict.getLogger().info("Something went wrong on " + config.getConfigFile() + " loading. " + e);
         }
         if (config.hasChanged() || deleted)
             config.save();
@@ -113,20 +114,20 @@ public final class Config
             config.save();
     }
 
-    public static TObjectLongMap<String> getOwnerOfEveryKindMap(final long kind)
+    public static TObjectIntMap<String> getOwnerOfEveryKindMap(final int kind)
     {
         final String kindName = WordUtils.capitalize(Resource.getNameOfKind(kind));
         final String[] ownerOfEveryKind = config.getStringList("ownerOfEvery" + kindName, resources, new String[]{"substratum", "minecraft", "ic2", "techreborn"}, "entries of kind \"" + kindName + "\" will be sorted according to the modID list below\nmust be the exact modID.\n");
-        final TObjectLongMap<String> ownerOfEveryThingMap = new TObjectLongHashMap<>(10, 1, Long.MAX_VALUE);
+        final TObjectIntMap<String> ownerOfEveryThingMap = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
         for (int i = 0; i < ownerOfEveryKind.length; i++)
             ownerOfEveryThingMap.put(ownerOfEveryKind[i], i);
         return ownerOfEveryThingMap;
     }
 
-    private static TObjectLongMap<String> getOwnerOfEveryThingMap()
+    private static TObjectIntMap<String> getOwnerOfEveryThingMap()
     {
         final String[] ownerOfEveryThing = config.getStringList("ownerOfEveryThing", resources, new String[]{"substratum", "minecraft", "ic2", "techreborn"}, "all the entries will be sorted according to the modID list below\nmust be the exact modID.\n");
-        final TObjectLongMap<String> ownerOfEveryThingMap = new TObjectLongHashMap<>(10, 1, Long.MAX_VALUE);
+        final TObjectIntMap<String> ownerOfEveryThingMap = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
         for (int i = 0; i < ownerOfEveryThing.length; i++)
             ownerOfEveryThingMap.put(ownerOfEveryThing[i], i);
         return ownerOfEveryThingMap;

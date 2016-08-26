@@ -9,14 +9,17 @@ package wanion.unidict.resource;
  */
 
 import com.google.common.collect.Sets;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.Config;
+import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
@@ -38,7 +41,6 @@ public final class UniResourceHandler
     private final Map<String, Resource> apiResourceMap = new THashMap<>();
     private final Map<String, Resource> resourceMap = new THashMap<>();
     private final Dependencies<UniDict.IDependence> dependencies = UniDict.getDependencies();
-    private final long childrenOfMetals;
 
     private UniResourceHandler()
     {
@@ -60,10 +62,6 @@ public final class UniResourceHandler
                 return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
             }
         });
-        long childrenOfMetals = 0;
-        for (final String child : Config.childrenOfMetals)
-            childrenOfMetals += Resource.registerAndGet(child);
-        this.childrenOfMetals = childrenOfMetals;
     }
 
     public static UniResourceHandler create()
@@ -77,13 +75,34 @@ public final class UniResourceHandler
 
     public void init()
     {
+        registerCustomEntries();
         createResources();
+    }
+
+    private void registerCustomEntries()
+    {
+        Config.userRegisteredOreDictEntries.forEach(customEntries -> {
+            final int plusSeparator = customEntries.indexOf('+');
+            if (plusSeparator != -1 && plusSeparator > 0) {
+                final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
+                final int separatorChar = itemName.indexOf('#');
+                final Item item = MetaItem.itemRegistry.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
+                if (item != null) {
+                    try {
+                        final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+                        OreDictionary.registerOre(customEntries.substring(0, plusSeparator), new ItemStack(item, 1, metadata));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     private void createResources()
     {
         final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
-        final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small).*");
+        final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small|ore).*");
         UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).parallel().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
         final StringBuilder patternBuilder = new StringBuilder("(");
         for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
@@ -117,14 +136,14 @@ public final class UniResourceHandler
             }
         }
         basicResourceMap.forEach((resourceName, kinds) -> {
-            final TLongObjectMap<UniResourceContainer> kindMap = new TLongObjectHashMap<>();
+            final TIntObjectHashMap<UniResourceContainer> kindMap = new TIntObjectHashMap<>();
             kinds.forEach(kindName -> {
-                final long kind = Resource.getKindOfName(kindName);
+                final int kind = Resource.getKindOfName(kindName);
                 kindMap.put(kind, new UniResourceContainer(kindName + resourceName, kind));
             });
             apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
         });
-        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(childrenOfMetals).setSortOfChildren(true)));
+        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(Resource.kindNamesToKindList(Config.childrenOfMetals.toArray(new String[Config.childrenOfMetals.size()]))).setSortOfChildren(true)));
         if (!Config.customUnifiedResources.isEmpty()) {
             Config.customUnifiedResources.forEach((resourceName, kinds) -> {
                 final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
@@ -133,7 +152,7 @@ public final class UniResourceHandler
                     if (OreDictionary.doesOreNameExist(oreDictName))
                         customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName), true));
                 });
-                if (!resourceMap.containsKey(resourceName) && customResource.getChildren() != 0)
+                if (!resourceMap.containsKey(resourceName) && customResource.getChildrenCount() != 0)
                     resourceMap.put(resourceName, customResource);
             });
         }

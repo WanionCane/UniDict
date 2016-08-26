@@ -25,7 +25,7 @@ import static wanion.unidict.Config.*;
 public final class UniResourceContainer
 {
     public final String name;
-    public final long kind;
+    public final int kind;
     private final int id;
     private final List<ItemStack> entries;
     private final int initialSize;
@@ -35,7 +35,7 @@ public final class UniResourceContainer
     private int mainEntryMeta;
     private int[] hashes;
 
-    public UniResourceContainer(@Nonnull final String name, final long kind)
+    public UniResourceContainer(@Nonnull final String name, final int kind)
     {
         if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
             throw new RuntimeException("Something may have broken the Ore Dictionary!");
@@ -43,7 +43,7 @@ public final class UniResourceContainer
         initialSize = entries.size();
     }
 
-    public UniResourceContainer(@Nonnull final String name, final long kind, final boolean sort)
+    public UniResourceContainer(@Nonnull final String name, final int kind, final boolean sort)
     {
         this(name, kind);
         setSort(sort);

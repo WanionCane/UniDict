@@ -43,12 +43,12 @@ public final class RecipeHelper
         boolean done = false;
         for (int x = 0; x < 3 && !done; x++) {
             for (int y = 0; y < 3 && !done; y++) {
-                final int value = x * 3 + y;
-                if ((done = !(value < objects.length)) || objects[value] == null)
+                final int index = y * 3 + x;
+                if ((done = !(index < objects.length)) || objects[index] == null)
                     continue;
-                final Object key = objects[value] instanceof ItemStack ? MetaItem.get((ItemStack) objects[value]) : objects[value];
+                final Object key = objects[index] instanceof ItemStack ? MetaItem.get((ItemStack) objects[index]) : objects[index];
                 if (key instanceof Integer)
-                    keyStackMap.put((Integer) key, (ItemStack) objects[value]);
+                    keyStackMap.put((Integer) key, (ItemStack) objects[index]);
                 if (thingToCharMap.containsKey(key))
                     almostTheShape[x][y] = thingToCharMap.get(key);
                 else
@@ -64,12 +64,12 @@ public final class RecipeHelper
         return shape;
     }
 
-    public static void singleWayCompressionRecipe(@Nonnull final List<Resource> smallerAndBiggerResources, final long smaller, final long bigger)
+    public static void singleWayCompressionRecipe(@Nonnull final List<Resource> smallerAndBiggerResources, final int smaller, final int bigger)
     {
         smallerAndBiggerResources.forEach(r -> recipes.add(new ShapedOreRecipe(r.getChild(bigger).getMainEntry(), "SSS", "SSS", "SSS", 'S', r.getChild(smaller).name)));
     }
 
-    public static void resourcesToCompressionRecipes(@Nonnull final Collection<Resource> resources, final long... smallerToBigger)
+    public static void resourcesToCompressionRecipes(@Nonnull final Collection<Resource> resources, final int... smallerToBigger)
     {
         UniResourceContainer smaller, bigger;
         for (Resource resource : resources)

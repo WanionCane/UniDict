@@ -8,8 +8,11 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.unidict.Config;
@@ -30,13 +33,23 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
     @Override
     public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapedOreRecipe) recipe).getInput(), resourceHandler);
+        final TIntList recipeKeys = MetaItem.getList(((ShapedOreRecipe) recipe).getInput(), resourceHandler);
+        int recipeKey = 0;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        return MetaItem.getCumulative(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
+        final TIntList recipeKeys = MetaItem.getList(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
+        int recipeKey = 0;
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @SuppressWarnings("unchecked")

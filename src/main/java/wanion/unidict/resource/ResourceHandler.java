@@ -124,12 +124,7 @@ public final class ResourceHandler implements IDependence
         return containerMap.containsKey(name);
     }
 
-    public List<Resource> getResources(final long kinds)
-    {
-        return Resource.getResources(resources, kinds);
-    }
-
-    public List<Resource> getResources(final long... kinds)
+    public List<Resource> getResources(final int... kinds)
     {
         return Resource.getResources(resources, kinds);
     }

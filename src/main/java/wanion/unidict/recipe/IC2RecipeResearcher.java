@@ -8,6 +8,9 @@ package wanion.unidict.recipe;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import ic2.api.recipe.IRecipeInput;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
@@ -30,23 +33,31 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
     @Override
     public int getShapedRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        int recipeId = 0;
+        final TIntList recipeKeys = new TIntArrayList();
+        int recipeKey = 0;
         List<ItemStack> bufferInput;
         for (final IRecipeInput input : ((AdvRecipe) recipe).input)
             if (!(bufferInput = input.getInputs()).isEmpty())
-                recipeId += MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0)));
-        return recipeId;
+                recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0))));
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override
     public int getShapelessRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
     {
-        int recipeId = 0;
+        final TIntList recipeKeys = new TIntArrayList();
+        int recipeKey = 0;
         List<ItemStack> bufferInput;
         for (final IRecipeInput input : ((AdvShapelessRecipe) recipe).input)
             if (!(bufferInput = input.getInputs()).isEmpty())
-                recipeId += MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0)));
-        return recipeId;
+                recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0))));
+        recipeKeys.sort();
+        for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
+            recipeKey += 31 * recipeKeysIterator.next();
+        return recipeKey;
     }
 
     @Override

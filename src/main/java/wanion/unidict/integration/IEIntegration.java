@@ -14,10 +14,12 @@ import com.google.common.collect.ArrayListMultimap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
+import wanion.unidict.LoadStage;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.FixedSizeList;
+import wanion.unidict.module.SpecifiedLoadStage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SpecifiedLoadStage(stage = LoadStage.LOAD_COMPLETE)
 final class IEIntegration extends AbstractIntegrationThread
 {
+    private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
+
     IEIntegration()
     {
         super("Immersive Engineering");
@@ -117,28 +122,19 @@ final class IEIntegration extends AbstractIntegrationThread
         metalPressRecipes.putAll(correctRecipes);
     }
 
-    private static Object[] ingredientStackToValidInput(final IngredientStack[] ingredientStacks)
+    private Object[] ingredientStackToValidInput(final IngredientStack[] ingredientStacks)
     {
         if (ingredientStacks == null)
             return null;
         final List<Object> inputs = new ArrayList<>();
         Object buf;
         for (IngredientStack ingredientStack : ingredientStacks)
-            if ((buf = ingredientStackToValidInput(ingredientStack)) != null) {
-                if (buf instanceof ItemStack)
-                    inputs.add(buf);
-                else if (buf instanceof List && !((List) buf).isEmpty()) {
-                    final Object object = ((List) buf).get(0);
-                    if (object instanceof ItemStack)
-                        inputs.add(Arrays.copyOf(((List) buf).toArray(), ((List) buf).size(), ItemStack[].class));
-                    else if (object instanceof String)
-                        inputs.add(Arrays.copyOf(((List) buf).toArray(), ((List) buf).size(), String[].class));
-                }
-            }
+            if ((buf = ingredientStackToValidInput(ingredientStack)) != null)
+                inputs.add(buf);
         return inputs.toArray();
     }
 
-    private static Object ingredientStackToValidInput(final IngredientStack ingredientStack)
+    private Object ingredientStackToValidInput(final IngredientStack ingredientStack)
     {
         if (ingredientStack == null)
             return null;
@@ -147,6 +143,9 @@ final class IEIntegration extends AbstractIntegrationThread
             if (buf instanceof ItemStack)
                 return buf;
             else if (buf instanceof List && !((List) buf).isEmpty()) {
+                final String oreName = uniOreDictionary.getName(buf);
+                if (oreName != null)
+                    return oreName;
                 final Object object = ((List) buf).get(0);
                 if (object instanceof ItemStack)
                     return Arrays.copyOf(((List) buf).toArray(), ((List) buf).size(), ItemStack[].class);

@@ -46,12 +46,7 @@ public class UniDictAPI implements UniDict.IDependence
         return Resource.getResources(resources, kinds);
     }
 
-    public List<Resource> getResources(final long kinds)
-    {
-        return Resource.getResources(resources, kinds);
-    }
-
-    public List<Resource> getResources(@Nonnull final long... kinds)
+    public List<Resource> getResources(@Nonnull final int... kinds)
     {
         return Resource.getResources(resources, kinds);
     }

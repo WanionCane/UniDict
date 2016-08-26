@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
 
@@ -37,7 +38,7 @@ public final class MetaItem
         if (itemStack == null || (item = itemStack.getItem()) == null)
             return 0;
         final int id = itemRegistry.getId(item);
-        return (id > 0) ? id | item.getDamage(itemStack) + 1 << 16 : 0;
+        return id > 0 ? item.getDamage(itemStack) == OreDictionary.WILDCARD_VALUE ? id : id | item.getDamage(itemStack) + 1 << 16 : 0;
     }
 
     public static int get(final Item item)
@@ -45,12 +46,12 @@ public final class MetaItem
         if (item == null)
             return 0;
         final int id = itemRegistry.getIDForObject(item);
-        return (id > 0) ? id | 65536 : 0;
+        return id > 0 ? id | 65536 : 0;
     }
 
     public static ItemStack toItemStack(final int metaItemKey)
     {
-        return metaItemKey > 0 ?  new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65536)), 0, metaItemKey >> 16) : null;
+        return metaItemKey > 0 ? new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65535)), 0, metaItemKey >> 16) : null;
     }
 
     public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
@@ -87,10 +88,24 @@ public final class MetaItem
         return keys;
     }
 
-    public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final long kind)
+    public static TIntList getList(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
+    {
+        final TIntList keys = new TIntArrayList();
+        int bufKey;
+        for (final Object object : objects)
+            if (object instanceof ItemStack) {
+                if ((bufKey = get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
+                    keys.add(bufKey);
+            } else if (object instanceof List && !((List) object).isEmpty())
+                if ((bufKey = get(((ItemStack) ((List) object).get(0)))) > 0)
+                    keys.add(bufKey);
+        return keys;
+    }
+
+    public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final int kind)
     {
         final TIntSet keys = new TIntHashSet();
-        resourceCollection.stream().filter(resource -> (resource.getChildren() & kind) > 0).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
+        resourceCollection.stream().filter(resource -> resource.childExists(kind)).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
         return keys;
     }
 

@@ -8,12 +8,16 @@ package wanion.unidict.resource;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import gnu.trove.impl.unmodifiable.TUnmodifiableLongObjectMap;
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.TObjectLongMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
+import gnu.trove.impl.unmodifiable.TUnmodifiableIntObjectMap;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,34 +29,34 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class Resource
 {
-    private static final TObjectLongMap<String> nameToKind = new TObjectLongHashMap<>();
-    private static final TLongObjectMap<String> kindToName = new TLongObjectHashMap<>();
+    private static final TObjectIntMap<String> nameToKind = new TObjectIntHashMap<>();
+    private static final TIntObjectMap<String> kindToName = new TIntObjectHashMap<>();
     private static int totalKindsRegistered = 0;
-    private static boolean populated;
     public final String name;
-    private final TLongObjectMap<UniResourceContainer> childrenMap = new TLongObjectHashMap<>();
+    private final TIntObjectMap<UniResourceContainer> childrenMap = new TIntObjectHashMap<>();
     private final List<Resource> copies = new ArrayList<>();
-    private long children = 0;
+    private TIntSet children = new TIntHashSet();
     private boolean updated;
-    private boolean sorted = false;
 
     public Resource(@Nonnull final String name)
     {
         this.name = name;
     }
 
-    public Resource(@Nonnull final String name, @Nonnull final TLongObjectMap<UniResourceContainer> containerMap)
+    public Resource(@Nonnull final String name, @Nonnull final TIntObjectMap<UniResourceContainer> containerMap)
     {
         this.name = name;
-        containerMap.forEachValue(container -> {
-            children |= container.kind;
-            return childrenMap.put(container.kind, container) == null;
-        });
+        containerMap.forEachValue(container -> childrenMap.put(container.kind, container) == null);
     }
 
-    public long getChildren()
+    public boolean childExists(final int kind)
     {
-        return children;
+        return childrenMap.containsKey(kind);
+    }
+
+    public boolean childrenExists(final TIntList kindList)
+    {
+        return childrenMap.keySet().containsAll(kindList);
     }
 
     public UniResourceContainer getChild(@Nonnull final String childName)
@@ -60,16 +64,21 @@ public class Resource
         return childrenMap.get(nameToKind.get(childName));
     }
 
-    public UniResourceContainer getChild(final long kind)
+    public UniResourceContainer getChild(final int kind)
     {
         return childrenMap.get(kind);
     }
 
-    public Resource filteredClone(final long kinds)
+    public int getChildrenCount()
     {
-        final TLongObjectMap<UniResourceContainer> newChildrenMap = new TLongObjectHashMap<>();
+        return childrenMap.size();
+    }
+
+    public Resource filteredClone(final TIntList kindList)
+    {
+        final TIntObjectMap<UniResourceContainer> newChildrenMap = new TIntObjectHashMap<>();
         childrenMap.forEachEntry((child, container) -> {
-            if ((child & kinds) > 0)
+            if (childrenExists(kindList))
                 newChildrenMap.put(child, container);
             return true;
         });
@@ -81,10 +90,9 @@ public class Resource
     public boolean addChild(@Nonnull final UniResourceContainer child)
     {
         final long kind = child.kind;
-        if ((children & kind) > 0 || !child.name.endsWith(name))
+        if (childrenMap.containsKey(child.kind) || !child.name.endsWith(name))
             return false;
-        children |= kind;
-        childrenMap.put(kind, child);
+        childrenMap.put(child.kind, child);
         return true;
     }
 
@@ -94,11 +102,10 @@ public class Resource
             return;
         else
             updated = true;
-        for (final TLongIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); ) {
-            long kindId = childrenIterator.next();
+        for (final TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); ) {
+            final int kindId = childrenIterator.next();
             if (childrenMap.get(kindId).updateEntries())
                 continue;
-            children &= ~kindId;
             childrenIterator.remove();
         }
         copies.forEach(Resource::updateEntries);
@@ -115,14 +122,14 @@ public class Resource
         if (childrenMap.isEmpty())
             return name + " = {}";
         final StringBuilder output = new StringBuilder(name + " = {");
-        for (TLongIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); )
+        for (final TIntIterator childrenIterator = childrenMap.keySet().iterator(); childrenIterator.hasNext(); )
             output.append(kindToName.get(childrenIterator.next())).append((childrenIterator.hasNext()) ? ", " : "}");
         return output.toString();
     }
 
-    TLongObjectMap<UniResourceContainer> getChildrenMap()
+    TIntObjectMap<UniResourceContainer> getChildrenMap()
     {
-        return new TUnmodifiableLongObjectMap<>(childrenMap);
+        return new TUnmodifiableIntObjectMap<>(childrenMap);
     }
 
     Resource setSortOfChildren(final boolean sort)
@@ -136,30 +143,30 @@ public class Resource
 
     public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final String... kinds)
     {
-        long kindsId = 0;
-        for (final String kind : kinds) {
-            long kindId;
-            if ((kindId = Resource.getKindOfName(kind)) == 0)
+        final TIntList kindList = new TIntArrayList();
+        for (final String kindName : kinds) {
+            final int kind;
+            if ((kind = Resource.getKindOfName(kindName)) == 0)
                 return Collections.emptyList();
-            kindsId |= kindId;
+            kindList.add(kind);
         }
-        return getResources(resources, kindsId);
+        return getResources(resources, kindList);
     }
 
-    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final long kinds)
+    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final TIntList kinds)
     {
-        return (kinds != 0) ? resources.stream().filter(resource -> (kinds & resource.getChildren()) == kinds).collect(Collectors.toList()) : Collections.emptyList();
+        return (kinds.size() > 0) ? resources.stream().filter(resource -> (resource.childrenExists(kinds))).collect(Collectors.toList()) : Collections.emptyList();
     }
 
-    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final long... kinds)
+    public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final int... kinds)
     {
-        long trueKinds = 0;
-        for (final long kind : kinds)
+        final TIntList kindList = new TIntArrayList();
+        for (final int kind : kinds)
             if (kind != 0)
-                trueKinds |= kind;
+                kindList.add(kind);
             else
                 return Collections.emptyList();
-        return getResources(resources, trueKinds);
+        return getResources(resources, kindList);
     }
 
     public static List<String> getKinds()
@@ -167,14 +174,24 @@ public class Resource
         return Collections.unmodifiableList(new ArrayList<>(nameToKind.keySet()));
     }
 
-    public static long getKindOfName(@Nonnull final String name)
+    public static int getKindOfName(@Nonnull final String name)
     {
         return nameToKind.get(name);
     }
 
-    public static String getNameOfKind(final long kind)
+    public static String getNameOfKind(final int kind)
     {
         return kindToName.get(kind);
+    }
+
+    public static TIntList kindNamesToKindList(@Nonnull final String[] kindNames)
+    {
+        int bufferKind;
+        final TIntList kindList = new TIntArrayList();
+        for (final String kindName : kindNames)
+            if ((bufferKind = getKindOfName(kindName)) != 0)
+                kindList.add(bufferKind);
+        return kindList;
     }
 
     public static boolean kindExists(@Nonnull final String name)
@@ -190,22 +207,22 @@ public class Resource
         return true;
     }
 
-    static void register(@Nonnull final String kindName)
-    {
-        if (nameToKind.containsKey(kindName))
-            return;
-        final int kind = 1 << totalKindsRegistered++;
-        nameToKind.put(kindName, kind);
-        kindToName.put(kind, kindName);
-    }
-
-    static long registerAndGet(@Nonnull final String kindName)
+    public static int registerAndGet(@Nonnull final String kindName)
     {
         if (nameToKind.containsKey(kindName))
             return nameToKind.get(kindName);
-        final int kind = 1 << totalKindsRegistered++;
+        final int kind = ++totalKindsRegistered;
         nameToKind.put(kindName, kind);
         kindToName.put(kind, kindName);
         return kind;
+    }
+
+    public static void register(@Nonnull final String kindName)
+    {
+        if (nameToKind.containsKey(kindName))
+            return;
+        final int kind = ++totalKindsRegistered;
+        nameToKind.put(kindName, kind);
+        kindToName.put(kind, kindName);
     }
 }
