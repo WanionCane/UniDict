@@ -77,8 +77,9 @@ public class Resource
     public Resource filteredClone(final TIntList kindList)
     {
         final TIntObjectMap<UniResourceContainer> newChildrenMap = new TIntObjectHashMap<>();
+        final TIntSet kindSet = new TIntHashSet(kindList);
         childrenMap.forEachEntry((child, container) -> {
-            if (childrenExists(kindList))
+            if (kindSet.contains(child))
                 newChildrenMap.put(child, container);
             return true;
         });

@@ -9,6 +9,7 @@ package wanion.unidict.resource;
  */
 
 import com.google.common.collect.Sets;
+import gnu.trove.list.TIntList;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TLongSet;
@@ -143,7 +144,8 @@ public final class UniResourceHandler
             });
             apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
         });
-        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(Resource.kindNamesToKindList(Config.childrenOfMetals.toArray(new String[Config.childrenOfMetals.size()]))).setSortOfChildren(true)));
+        final TIntList kindList = Resource.kindNamesToKindList(Config.childrenOfMetals.toArray(new String[Config.childrenOfMetals.size()]));
+        Config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(kindList).setSortOfChildren(true)));
         if (!Config.customUnifiedResources.isEmpty()) {
             Config.customUnifiedResources.forEach((resourceName, kinds) -> {
                 final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
