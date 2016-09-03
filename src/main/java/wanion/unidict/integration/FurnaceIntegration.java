@@ -39,7 +39,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 
     private void optimizeFurnaceRecipes()
     {
-        if (!(Config.keepOneEntry || Config.inputReplacement))
+        if (!Config.inputReplacement)
             for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
                 furnaceRecipe.setValue(resourceHandler.getMainItemStack(furnaceRecipe.getValue()));
         else {
@@ -51,11 +51,12 @@ final class FurnaceIntegration extends AbstractIntegrationThread
                 final Map.Entry<ItemStack, ItemStack> furnaceRecipe = furnaceRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(furnaceRecipe.getKey());
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(furnaceRecipe.getValue());
-                if (outputContainer != null && inputContainer == null) {
+                if (outputContainer == null)
+                    continue;
+                else if (inputContainer == null) {
                     furnaceRecipe.setValue(outputContainer.getMainEntry(furnaceRecipe.getValue().stackSize));
                     continue;
-                } else if (outputContainer == null)
-                    continue;
+                }
                 final int kind = inputContainer.kind;
                 if (!containerKindMap.containsKey(outputContainer))
                     containerKindMap.put(outputContainer, new TIntHashSet());
@@ -63,8 +64,8 @@ final class FurnaceIntegration extends AbstractIntegrationThread
                 if (!kindSet.contains(kind)) {
                     kindSet.add(kind);
                     newRecipes.put(inputContainer.getMainEntry(furnaceRecipe.getKey().stackSize), outputContainer.getMainEntry(furnaceRecipe.getValue().stackSize));
-                } else
-                    furnaceRecipeIterator.remove();
+                }
+                furnaceRecipeIterator.remove();
             }
             furnaceRecipes.putAll(newRecipes);
         }

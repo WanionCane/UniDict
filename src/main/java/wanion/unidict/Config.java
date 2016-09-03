@@ -32,7 +32,7 @@ public final class Config
     private static final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
     // general configs
     private static final String general = Configuration.CATEGORY_GENERAL;
-    public static final boolean keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?\nNote: enabling this also enables inputReplacement.");
+    public static final boolean keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
     public static final boolean inputReplacement = config.getBoolean("inputReplacement", general, false, "Enabling this will remove all non-standard items as input.\nNote: this will only affect machines that doesn't use OreDictionary.");
     public static final Set<String> keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
     public static boolean autoHideInJEI;

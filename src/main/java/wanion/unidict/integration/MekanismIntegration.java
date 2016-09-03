@@ -104,7 +104,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
     {
         final int initialSize = recipes.size();
         final Map<InfusionInput, MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
-        if (!(Config.keepOneEntry || Config.inputReplacement)) {
+        if (!Config.inputReplacement) {
             final TIntSet uniques = new TIntHashSet(initialSize, 1);
 
             for (final Iterator<MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
@@ -114,6 +114,8 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 if (correctOutput == infusionRecipe.recipeOutput.output)
                     continue;
                 final MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe> newRecipe = infusionRecipe.copy();
+                if (Config.keepOneEntry)
+                    newRecipe.recipeInput.inputStack = resourceHandler.getMainItemStack(newRecipe.recipeInput.inputStack);
                 newRecipe.recipeOutput.output = correctOutput;
                 final int recipeID = MetaItem.getCumulative(newRecipe.recipeOutput.output, newRecipe.recipeInput.inputStack);
                 if (!uniques.contains(recipeID)) {
@@ -122,7 +124,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 }
                 infusionRecipeIterator.remove();
             }
-        }else {
+        } else {
             final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
             for (final Iterator<MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
             {
