@@ -14,20 +14,14 @@ import com.google.common.collect.ArrayListMultimap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.LoadStage;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.FixedSizeList;
-import wanion.unidict.module.SpecifiedLoadStage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@SpecifiedLoadStage(stage = LoadStage.LOAD_COMPLETE)
 final class IEIntegration extends AbstractIntegrationThread
 {
     private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
@@ -45,10 +39,7 @@ final class IEIntegration extends AbstractIntegrationThread
             fixBlastFurnaceRecipes();
             fixCrusherRecipes();
             fixMetalPressRecipes();
-        } catch (Exception e) {
-            UniDict.getLogger().error(threadName + e);
-            e.printStackTrace();
-        }
+        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
         return threadName + "The world's engineer appears to be more immersive.";
     }
 
@@ -56,13 +47,15 @@ final class IEIntegration extends AbstractIntegrationThread
     {
         final List<ArcFurnaceRecipe> arcFurnaceRecipes = ArcFurnaceRecipe.recipeList;
         final List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
-        for (final Iterator arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); )
+        for (final Iterator<ArcFurnaceRecipe> arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); )
         {
-            final ArcFurnaceRecipe recipe = (ArcFurnaceRecipe) arcFurnaceRecipeIterator.next();
+            final ArcFurnaceRecipe recipe = arcFurnaceRecipeIterator.next();
             final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
             if (correctOutput == recipe.output)
                 continue;
-            correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.oreInputString, recipe.slag, recipe.getTotalProcessTime(), recipe.getMultipleProcessTicks(), ingredientStackToValidInput(recipe.additives)));
+            final int time = (int) Math.floor((double) ((float) recipe.getTotalProcessTime() / ArcFurnaceRecipe.timeModifier));
+            final int energy = (int) Math.floor((double) ((float) ((recipe.getTotalProcessEnergy() / ArcFurnaceRecipe.energyModifier) / recipe.getTotalProcessTime())));
+            correctRecipes.add(new ArcFurnaceRecipe(correctOutput, ingredientStackToValidInput(recipe.input), recipe.slag, time, energy, ingredientStackToValidInput(recipe.additives)));
             arcFurnaceRecipeIterator.remove();
         }
         arcFurnaceRecipes.addAll(correctRecipes);
@@ -90,10 +83,11 @@ final class IEIntegration extends AbstractIntegrationThread
             final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
             final int recipeId = MetaItem.getCumulative(input, correctOutput);
             if (!uniques.contains(recipeId)) {
+                final int energy = (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
                 if (crusherRecipe.secondaryOutput == null)
-                    correctRecipes.add(new CrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), crusherRecipe.getTotalProcessEnergy()));
+                    correctRecipes.add(new CrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), energy));
                 else
-                    correctRecipes.add(new UniCrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), crusherRecipe.getTotalProcessEnergy(), resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
+                    correctRecipes.add(new UniCrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), energy, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
                 uniques.add(recipeId);
             }
             crusherRecipesIterator.remove();
@@ -114,7 +108,7 @@ final class IEIntegration extends AbstractIntegrationThread
                 continue;
             final int id = MetaItem.getCumulative(output, metalPressRecipe.mold.stack);
             if (!uniques.contains(id)) {
-                correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, ingredientStackToValidInput(metalPressRecipe.input), metalPressRecipe.mold.stack, metalPressRecipe.getTotalProcessEnergy()));
+                correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, ingredientStackToValidInput(metalPressRecipe.input), metalPressRecipe.mold.stack, (int) Math.floor((double) ((float) metalPressRecipe.getTotalProcessEnergy() / MetalPressRecipe.timeModifier))));
                 uniques.add(id);
             }
             metalPressRecipesIterator.remove();
