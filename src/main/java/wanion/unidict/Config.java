@@ -39,6 +39,7 @@ public final class Config
     // general configs
     private static final String general = Configuration.CATEGORY_GENERAL;
     public static final boolean keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
+    public static final boolean inputReplacement = config.getBoolean("inputReplacement", general, false, "Enabling this will remove all non-standard items as input.\nNote: this will only affect machines that doesn't use OreDictionary.");
     public static final Set<String> keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", Configuration.CATEGORY_GENERAL, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
     public static boolean autoHideInNEI;
     public static final Set<String> hideInNEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInNEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in NEI.\nonly works if keepOneEntry is false."))));

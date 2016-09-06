@@ -99,10 +99,8 @@ public final class ResourceHandler implements IDependence
 
     public void setMainItemStacks(@Nonnull final List<ItemStack> thingList)
     {
-        final List<ItemStack> newThings = new ArrayList<>();
-        for (Iterator<ItemStack> thingListIterator = thingList.iterator(); thingListIterator.hasNext(); thingListIterator.remove())
-            newThings.add(getMainItemStack(thingListIterator.next()));
-        thingList.addAll(newThings);
+        for (int i = 0; i < thingList.size(); i++)
+            thingList.set(i, getMainItemStack(thingList.get(i)));
     }
 
     public ItemStack[] getMainItemStacks(@Nonnull final ItemStack[] things)

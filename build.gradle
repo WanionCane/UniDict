@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-2.9c"
+version = "1.7.10-2.9.1"
 group= "wanion.unidict" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "UniDict"
 
