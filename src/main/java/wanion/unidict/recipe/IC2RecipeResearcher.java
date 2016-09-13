@@ -44,6 +44,8 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
                 final Object obj = ((List) input).get(0);
                 if (obj instanceof ItemStack)
                     recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack((ItemStack) obj)));
+                else if (obj instanceof IRecipeInput)
+                    recipeKeys.add(MetaItem.get(((IRecipeInput) obj).getInputs().get(0)));
             } else if (input instanceof IRecipeInput)
                 recipeKeys.add(MetaItem.get(((IRecipeInput) input).getInputs().get(0)));
         }
@@ -70,6 +72,8 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
                 else if (obj instanceof IRecipeInput)
                     recipeKeys.add(MetaItem.get(((IRecipeInput) obj).getInputs().get(0)));
             }
+            else if (input instanceof IRecipeInput)
+                recipeKeys.add(MetaItem.get(((IRecipeInput) input).getInputs().get(0)));
         }
         recipeKeys.sort();
         for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
@@ -136,6 +140,10 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
                     String bufferOreName = uniOreDictionary.getName(input);
                     newInputs.add(bufferOreName != null ? bufferOreName : input);
                 }
+            } else if (recipeInput instanceof IRecipeInput) {
+                final List<ItemStack> inputs = ((IRecipeInput) recipeInput).getInputs();
+                String bufferOreName = uniOreDictionary.getName(inputs);
+                newInputs.add(bufferOreName != null ? bufferOreName : (bufferOreName = uniOreDictionary.getName(inputs.get(0))) != null ? bufferOreName : inputs.get(0));
             } else {
                 String bufferOreName = uniOreDictionary.getName(recipeInput);
                 if (bufferOreName != null)
@@ -143,6 +151,7 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
                 else if (recipeInput instanceof ItemStack)
                     newInputs.add(resourceHandler.getMainItemStack((ItemStack) recipeInput));
             }
+
         }
         return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newInputs.toArray()));
     }
@@ -163,6 +172,10 @@ public final class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, A
                     String bufferOreName = uniOreDictionary.getName(input);
                     newInputs.add(bufferOreName != null ? bufferOreName : input);
                 }
+            } else if (recipeInput instanceof IRecipeInput) {
+                final List<ItemStack> inputs = ((IRecipeInput) recipeInput).getInputs();
+                String bufferOreName = uniOreDictionary.getName(inputs);
+                newInputs.add(bufferOreName != null ? bufferOreName : (bufferOreName = uniOreDictionary.getName(inputs.get(0))) != null ? bufferOreName : inputs.get(0));
             } else {
                 String bufferOreName = uniOreDictionary.getName(recipeInput);
                 if (bufferOreName != null)
