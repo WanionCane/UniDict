@@ -63,8 +63,8 @@ public final class Config implements UniDict.IDependence
 	// resource related stuff
 	private final String resources = "resources";
 	// ensure mod loaded
-	public boolean forestry;
-	public boolean ic2;
+	public final boolean forestry;
+	public final boolean ic2;
 
 	private Config()
 	{
