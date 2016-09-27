@@ -19,23 +19,23 @@ import java.util.List;
 @JEIPlugin
 public class UniJEIPlugin implements IModPlugin
 {
-    private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
-    private IItemBlacklist itemBlackList;
+	private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
+	private IItemBlacklist itemBlackList;
 
-    public static void hide(final ItemStack itemStack)
-    {
-        stacksToHideList.add(itemStack);
-    }
+	public static void hide(final ItemStack itemStack)
+	{
+		stacksToHideList.add(itemStack);
+	}
 
-    @Override
-    public void register(@Nonnull final IModRegistry iModRegistry)
-    {
-        itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
-    }
+	@Override
+	public void register(@Nonnull final IModRegistry iModRegistry)
+	{
+		itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
+	}
 
-    @Override
-    public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime)
-    {
-        stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
-    }
+	@Override
+	public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime)
+	{
+		stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
+	}
 }

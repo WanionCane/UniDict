@@ -18,32 +18,32 @@ import java.util.Set;
 
 public final class ModuleHandler
 {
-    private final Set<Class<? extends AbstractModule>> moduleClasses = new HashSet<>();
-    private final Map<AbstractModule, AbstractModule.Manager> modules = new THashMap<>();
+	private final Set<Class<? extends AbstractModule>> moduleClasses = new HashSet<>();
+	private final Map<AbstractModule, AbstractModule.Manager> modules = new THashMap<>();
 
-    public void startModules(final FMLStateEvent event)
-    {
-        final LoadStage loadStage = (event != null) ? LoadStage.getStage(event.getClass()) : null;
-        if (modules.isEmpty() || loadStage == null)
-            return;
-        modules.entrySet().forEach(e -> {
-            final AbstractModule module = e.getKey();
-            if (e.getValue() == null)
-                e.setValue(module.manager);
-            final AbstractModule.Manager manager = e.getValue();
-            if (manager.isEmpty())
-                module.init();
-            if (!manager.isEmpty(loadStage))
-                module.start(loadStage, manager);
-        });
-    }
+	public void startModules(final FMLStateEvent event)
+	{
+		final LoadStage loadStage = (event != null) ? LoadStage.getStage(event.getClass()) : null;
+		if (modules.isEmpty() || loadStage == null)
+			return;
+		modules.entrySet().forEach(e -> {
+			final AbstractModule module = e.getKey();
+			if (e.getValue() == null)
+				e.setValue(module.manager);
+			final AbstractModule.Manager manager = e.getValue();
+			if (manager.isEmpty())
+				module.init();
+			if (!manager.isEmpty(loadStage))
+				module.start(loadStage, manager);
+		});
+	}
 
-    public void addModule(final AbstractModule module)
-    {
-        Class<? extends AbstractModule> moduleClass = (module != null) ? module.getClass() : null;
-        if (moduleClass == null || moduleClasses.contains(moduleClass))
-            return;
-        moduleClasses.add(moduleClass);
-        modules.put(module, null);
-    }
+	public void addModule(final AbstractModule module)
+	{
+		Class<? extends AbstractModule> moduleClass = (module != null) ? module.getClass() : null;
+		if (moduleClass == null || moduleClasses.contains(moduleClass))
+			return;
+		moduleClasses.add(moduleClass);
+		modules.put(module, null);
+	}
 }

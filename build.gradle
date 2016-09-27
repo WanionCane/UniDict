@@ -20,15 +20,17 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.10.2-1.8c"
+version = "1.10.2-1.9"
 group= "wanion.unidict" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "UniDict"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
 
 minecraft {
-    version = "1.10.2-12.18.1.2046"
+    version = "1.10.2-12.18.1.2094"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

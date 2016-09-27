@@ -17,7 +17,6 @@ import mekanism.common.recipe.machines.MachineRecipe;
 import mekanism.common.recipe.machines.MetallurgicInfuserRecipe;
 import mekanism.common.recipe.outputs.ItemStackOutput;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
@@ -51,7 +50,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 	{
 		final int initialSize = recipes.size();
 		final Map<ItemStackInput, MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
-		if (!Config.inputReplacement) {
+		if (!config.inputReplacement) {
 			final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
 			for (final Iterator<MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
 			{
@@ -66,7 +65,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 				}
 				final MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe> correctRecipe = mekanismRecipe.copy();
 				final ItemStack inputStack;
-				if (Config.keepOneEntry)
+				if (config.keepOneEntry)
 					inputStack = correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.stackSize);
 				else
 					inputStack = correctRecipe.recipeInput.ingredient = correctRecipe.recipeInput.ingredient.copy();
@@ -115,7 +114,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 	{
 		final int initialSize = recipes.size();
 		final Map<InfusionInput, MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
-		if (!Config.inputReplacement) {
+		if (!config.inputReplacement) {
 			final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
 			for (final Iterator<MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
 			{
@@ -130,7 +129,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 				}
 				final MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe> correctRecipe = infusionRecipe.copy();
 				final ItemStack inputStack;
-				if (Config.keepOneEntry)
+				if (config.keepOneEntry)
 					inputStack = correctRecipe.recipeInput.inputStack = inputContainer.getMainEntry(correctRecipe.recipeInput.inputStack.stackSize);
 				else
 					inputStack = correctRecipe.recipeInput.inputStack = correctRecipe.recipeInput.inputStack.copy();

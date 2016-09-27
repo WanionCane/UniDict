@@ -27,67 +27,67 @@ import java.util.List;
 
 final class FoundryIntegration extends AbstractIntegrationThread
 {
-    FoundryIntegration()
-    {
-        super("Foundry");
-    }
+	FoundryIntegration()
+	{
+		super("Foundry");
+	}
 
-    @Override
-    public String call()
-    {
-        try {
-            fixAlloyFurnaceRecipes();
-            fixAtomizerRecipes();
-            fixCastingRecipes();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        return threadName + "Somethings that are made in casts had to change.";
-    }
+	@Override
+	public String call()
+	{
+		try {
+			fixAlloyFurnaceRecipes();
+			fixAtomizerRecipes();
+			fixCastingRecipes();
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		return threadName + "Somethings that are made in casts had to change.";
+	}
 
-    private void fixAlloyFurnaceRecipes()
-    {
-        final List<IAlloyFurnaceRecipe> alloyFurnaceRecipes = AlloyFurnaceRecipeManager.instance.recipes;
-        final List<IAlloyFurnaceRecipe> newRecipes = new ArrayList<>();
-        for (final Iterator<IAlloyFurnaceRecipe> alloyFurnaceRecipeIterator = alloyFurnaceRecipes.iterator(); alloyFurnaceRecipeIterator.hasNext(); )
-        {
-            IAlloyFurnaceRecipe atomizerRecipe = alloyFurnaceRecipeIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
-            if (correctOutput == atomizerRecipe.getOutput())
-                continue;
-            newRecipes.add(new AlloyFurnaceRecipe(correctOutput, atomizerRecipe.getInputA(), atomizerRecipe.getInputB()));
-            alloyFurnaceRecipeIterator.remove();
-        }
-        alloyFurnaceRecipes.addAll(newRecipes);
-    }
+	private void fixAlloyFurnaceRecipes()
+	{
+		final List<IAlloyFurnaceRecipe> alloyFurnaceRecipes = AlloyFurnaceRecipeManager.instance.recipes;
+		final List<IAlloyFurnaceRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<IAlloyFurnaceRecipe> alloyFurnaceRecipeIterator = alloyFurnaceRecipes.iterator(); alloyFurnaceRecipeIterator.hasNext(); )
+		{
+			IAlloyFurnaceRecipe atomizerRecipe = alloyFurnaceRecipeIterator.next();
+			ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
+			if (correctOutput == atomizerRecipe.getOutput())
+				continue;
+			newRecipes.add(new AlloyFurnaceRecipe(correctOutput, atomizerRecipe.getInputA(), atomizerRecipe.getInputB()));
+			alloyFurnaceRecipeIterator.remove();
+		}
+		alloyFurnaceRecipes.addAll(newRecipes);
+	}
 
-    private void fixAtomizerRecipes()
-    {
-        final List<IAtomizerRecipe> atomizerRecipes = AtomizerRecipeManager.instance.recipes;
-        final List<IAtomizerRecipe> newRecipes = new ArrayList<>();
-        for (final Iterator<IAtomizerRecipe> atomizerRecipeIterator = atomizerRecipes.iterator(); atomizerRecipeIterator.hasNext(); )
-        {
-            IAtomizerRecipe atomizerRecipe = atomizerRecipeIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
-            if (correctOutput == atomizerRecipe.getOutput())
-                continue;
-            newRecipes.add(new AtomizerRecipe(new ItemStackMatcher(correctOutput), atomizerRecipe.getInput()));
-            atomizerRecipeIterator.remove();
-        }
-        atomizerRecipes.addAll(newRecipes);
-    }
+	private void fixAtomizerRecipes()
+	{
+		final List<IAtomizerRecipe> atomizerRecipes = AtomizerRecipeManager.instance.recipes;
+		final List<IAtomizerRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<IAtomizerRecipe> atomizerRecipeIterator = atomizerRecipes.iterator(); atomizerRecipeIterator.hasNext(); )
+		{
+			IAtomizerRecipe atomizerRecipe = atomizerRecipeIterator.next();
+			ItemStack correctOutput = resourceHandler.getMainItemStack(atomizerRecipe.getOutput());
+			if (correctOutput == atomizerRecipe.getOutput())
+				continue;
+			newRecipes.add(new AtomizerRecipe(new ItemStackMatcher(correctOutput), atomizerRecipe.getInput()));
+			atomizerRecipeIterator.remove();
+		}
+		atomizerRecipes.addAll(newRecipes);
+	}
 
-    private void fixCastingRecipes()
-    {
-        final List<ICastingRecipe> castingRecipes = CastingRecipeManager.instance.recipes;
-        final List<CastingRecipe> newRecipes = new ArrayList<>();
-        for (final Iterator<ICastingRecipe> castingRecipeIterator = castingRecipes.iterator(); castingRecipeIterator.hasNext(); )
-        {
-            ICastingRecipe castingRecipe = castingRecipeIterator.next();
-            ItemStack correctOutput = resourceHandler.getMainItemStack(castingRecipe.getOutput());
-            if (correctOutput == castingRecipe.getOutput())
-                continue;
-            newRecipes.add(new CastingRecipe(new ItemStackMatcher(correctOutput), castingRecipe.getInput(), castingRecipe.getMold(), castingRecipe.getInputExtra(), castingRecipe.getCastingSpeed()));
-            castingRecipeIterator.remove();
-        }
-        castingRecipes.addAll(newRecipes);
-    }
+	private void fixCastingRecipes()
+	{
+		final List<ICastingRecipe> castingRecipes = CastingRecipeManager.instance.recipes;
+		final List<CastingRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<ICastingRecipe> castingRecipeIterator = castingRecipes.iterator(); castingRecipeIterator.hasNext(); )
+		{
+			ICastingRecipe castingRecipe = castingRecipeIterator.next();
+			ItemStack correctOutput = resourceHandler.getMainItemStack(castingRecipe.getOutput());
+			if (correctOutput == castingRecipe.getOutput())
+				continue;
+			newRecipes.add(new CastingRecipe(new ItemStackMatcher(correctOutput), castingRecipe.getInput(), castingRecipe.getMold(), castingRecipe.getInputExtra(), castingRecipe.getCastingSpeed()));
+			castingRecipeIterator.remove();
+		}
+		castingRecipes.addAll(newRecipes);
+	}
 }

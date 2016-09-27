@@ -12,12 +12,12 @@ import javax.annotation.Nonnull;
 
 class UniAttributes
 {
-    final Resource resource;
-    final UniResourceContainer uniResourceContainer;
+	final Resource resource;
+	final UniResourceContainer uniResourceContainer;
 
-    UniAttributes(@Nonnull final Resource resource, @Nonnull final UniResourceContainer uniResourceContainer)
-    {
-        this.resource = resource;
-        this.uniResourceContainer = uniResourceContainer;
-    }
+	UniAttributes(@Nonnull final Resource resource, @Nonnull final UniResourceContainer uniResourceContainer)
+	{
+		this.resource = resource;
+		this.uniResourceContainer = uniResourceContainer;
+	}
 }

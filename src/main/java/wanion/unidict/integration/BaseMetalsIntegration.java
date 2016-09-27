@@ -22,40 +22,40 @@ import java.util.List;
 
 final class BaseMetalsIntegration extends AbstractIntegrationThread
 {
-    private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
+	private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
 
-    BaseMetalsIntegration()
-    {
-        super("Base Metals");
-    }
+	BaseMetalsIntegration()
+	{
+		super("Base Metals");
+	}
 
-    @Override
-    public String call()
-    {
-        try {
-            fixCrackHammerDrops();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        return threadName + "When smashing things with Crack Hammer, you will get the right things now.";
-    }
+	@Override
+	public String call()
+	{
+		try {
+			fixCrackHammerDrops();
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		return threadName + "When smashing things with Crack Hammer, you will get the right things now.";
+	}
 
-    private void fixCrackHammerDrops()
-    {
-        final List<ICrusherRecipe> crusherRecipes = Util.getField(CrusherRecipeRegistry.class, "recipes", CrusherRecipeRegistry.getInstance(), List.class);
-        if (crusherRecipes == null)
-            return;
-        final List<ICrusherRecipe> newRecipes = new ArrayList<>();
-        for (final Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext(); )
-        {
-            final ICrusherRecipe crusherRecipe = crusherRecipeIterator.next();
-            if (crusherRecipe instanceof OreDictionaryCrusherRecipe) {
-                final ItemStack output = crusherRecipe.getOutput();
-                final ItemStack correctOutput = resourceHandler.getMainItemStack(output);
-                if (correctOutput == output)
-                    continue;
-                newRecipes.add(new OreDictionaryCrusherRecipe(uniOreDictionary.getName(crusherRecipe.getValidInputs()), correctOutput));
-                crusherRecipeIterator.remove();
-            }
-        }
-        crusherRecipes.addAll(newRecipes);
-    }
+	private void fixCrackHammerDrops()
+	{
+		final List<ICrusherRecipe> crusherRecipes = Util.getField(CrusherRecipeRegistry.class, "recipes", CrusherRecipeRegistry.getInstance(), List.class);
+		if (crusherRecipes == null)
+			return;
+		final List<ICrusherRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<ICrusherRecipe> crusherRecipeIterator = crusherRecipes.iterator(); crusherRecipeIterator.hasNext(); )
+		{
+			final ICrusherRecipe crusherRecipe = crusherRecipeIterator.next();
+			if (crusherRecipe instanceof OreDictionaryCrusherRecipe) {
+				final ItemStack output = crusherRecipe.getOutput();
+				final ItemStack correctOutput = resourceHandler.getMainItemStack(output);
+				if (correctOutput == output)
+					continue;
+				newRecipes.add(new OreDictionaryCrusherRecipe(uniOreDictionary.getName(crusherRecipe.getValidInputs()), correctOutput));
+				crusherRecipeIterator.remove();
+			}
+		}
+		crusherRecipes.addAll(newRecipes);
+	}
 }

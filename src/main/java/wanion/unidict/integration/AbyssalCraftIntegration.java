@@ -16,23 +16,23 @@ import java.util.Map;
 
 final class AbyssalCraftIntegration extends AbstractIntegrationThread
 {
-    AbyssalCraftIntegration()
-    {
-        super("AbyssalCraft");
-    }
+	AbyssalCraftIntegration()
+	{
+		super("AbyssalCraft");
+	}
 
-    @Override
-    public String call()
-    {
-        try {
-            fixTransmutationRecipes();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        return threadName + "TransMules Fixes!";
-    }
+	@Override
+	public String call()
+	{
+		try {
+			fixTransmutationRecipes();
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		return threadName + "TransMules Fixes!";
+	}
 
-    private void fixTransmutationRecipes()
-    {
-        for (final Map.Entry<ItemStack, ItemStack> entry : TransmutatorRecipes.instance().getTransmutationList().entrySet())
-            entry.setValue(resourceHandler.getMainItemStack(entry.getValue()));
-    }
+	private void fixTransmutationRecipes()
+	{
+		for (final Map.Entry<ItemStack, ItemStack> entry : TransmutatorRecipes.instance().getTransmutationList().entrySet())
+			entry.setValue(resourceHandler.getMainItemStack(entry.getValue()));
+	}
 }

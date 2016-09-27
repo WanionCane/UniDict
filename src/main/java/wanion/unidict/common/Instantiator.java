@@ -8,8 +8,11 @@ package wanion.unidict.common;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import javax.annotation.Nonnull;
+
 @FunctionalInterface
 public interface Instantiator<I>
 {
-    I instantiate(Class<? extends I> moduleThreadClass) throws InstantiationException, IllegalAccessException;
+	@Nonnull
+	I instantiate(Class<? extends I> moduleThreadClass) throws InstantiationException, IllegalAccessException;
 }

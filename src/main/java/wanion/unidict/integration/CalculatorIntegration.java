@@ -14,28 +14,28 @@ import wanion.unidict.UniDict;
 
 final class CalculatorIntegration extends AbstractIntegrationThread
 {
-    CalculatorIntegration()
-    {
-        super("Calculator");
-    }
+	CalculatorIntegration()
+	{
+		super("Calculator");
+	}
 
-    @Override
-    public String call()
-    {
-        try {
-            fixStoneSeparatorRecipes();
-            fixAlgorithmSeparatorRecipes();
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        return threadName + "so much calculations were done.";
-    }
+	@Override
+	public String call()
+	{
+		try {
+			fixStoneSeparatorRecipes();
+			fixAlgorithmSeparatorRecipes();
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		return threadName + "so much calculations were done.";
+	}
 
-    private void fixStoneSeparatorRecipes()
-    {
-        StoneSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
-    }
+	private void fixStoneSeparatorRecipes()
+	{
+		StoneSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
+	}
 
-    private void fixAlgorithmSeparatorRecipes()
-    {
-        AlgorithmSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
-    }
+	private void fixAlgorithmSeparatorRecipes()
+	{
+		AlgorithmSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
+	}
 }

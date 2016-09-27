@@ -28,101 +28,103 @@ import java.util.List;
 
 public final class MetaItem
 {
-    public static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
+	public static final FMLControlledNamespacedRegistry<Item> itemRegistry = (FMLControlledNamespacedRegistry<Item>) GameRegistry.findRegistry(Item.class);
 
-    private MetaItem() {}
+	private MetaItem()
+	{
+	}
 
-    public static int get(final ItemStack itemStack)
-    {
-        Item item;
-        if (itemStack == null || (item = itemStack.getItem()) == null)
-            return 0;
-        final int id = itemRegistry.getId(item);
-        return id > 0 ? item.getDamage(itemStack) == OreDictionary.WILDCARD_VALUE ? id : id | item.getDamage(itemStack) + 1 << 16 : 0;
-    }
+	public static int get(final ItemStack itemStack)
+	{
+		Item item;
+		if (itemStack == null || (item = itemStack.getItem()) == null)
+			return 0;
+		final int id = itemRegistry.getId(item);
+		return id > 0 ? item.getDamage(itemStack) == OreDictionary.WILDCARD_VALUE ? id : id | item.getDamage(itemStack) + 1 << 16 : 0;
+	}
 
-    public static int get(final Item item)
-    {
-        if (item == null)
-            return 0;
-        final int id = itemRegistry.getIDForObject(item);
-        return id > 0 ? id | 65536 : 0;
-    }
+	public static int get(final Item item)
+	{
+		if (item == null)
+			return 0;
+		final int id = itemRegistry.getIDForObject(item);
+		return id > 0 ? id | 65536 : 0;
+	}
 
-    public static ItemStack toItemStack(final int metaItemKey)
-    {
-        return metaItemKey > 0 ? new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65535)), 0, metaItemKey >> 16) : null;
-    }
+	public static ItemStack toItemStack(final int metaItemKey)
+	{
+		return metaItemKey > 0 ? new ItemStack(itemRegistry.getRaw(metaItemKey ^ (metaItemKey & 65535)), 0, metaItemKey >> 16) : null;
+	}
 
-    public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
-    {
-        int cumulativeKey = 0;
-        for (final Object object : objects)
-            if (object instanceof ItemStack)
-                cumulativeKey += get(resourceHandler.getMainItemStack((ItemStack) object));
-            else if (object instanceof List && !((List) object).isEmpty())
-                cumulativeKey += get((ItemStack) ((List) object).get(0));
-        return cumulativeKey;
-    }
+	public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
+	{
+		int cumulativeKey = 0;
+		for (final Object object : objects)
+			if (object instanceof ItemStack)
+				cumulativeKey += get(resourceHandler.getMainItemStack((ItemStack) object));
+			else if (object instanceof List && !((List) object).isEmpty())
+				cumulativeKey += get((ItemStack) ((List) object).get(0));
+		return cumulativeKey;
+	}
 
-    public static int getCumulative(@Nonnull final ItemStack... itemStacks)
-    {
-        int cumulativeKey = 0;
-        for (final ItemStack itemStack : itemStacks)
-            cumulativeKey += get(itemStack);
-        return cumulativeKey;
-    }
+	public static int getCumulative(@Nonnull final ItemStack... itemStacks)
+	{
+		int cumulativeKey = 0;
+		for (final ItemStack itemStack : itemStacks)
+			cumulativeKey += get(itemStack);
+		return cumulativeKey;
+	}
 
-    public static int[] getArray(@Nonnull final Collection<ItemStack> itemStackCollection)
-    {
-        return getList(itemStackCollection).toArray();
-    }
+	public static int[] getArray(@Nonnull final Collection<ItemStack> itemStackCollection)
+	{
+		return getList(itemStackCollection).toArray();
+	}
 
-    public static TIntList getList(@Nonnull final Collection<ItemStack> itemStackCollection)
-    {
-        final TIntList keys = new TIntArrayList();
-        int hash;
-        for (final ItemStack itemStack : itemStackCollection)
-            if ((hash = get(itemStack)) != 0)
-                keys.add(hash);
-        return keys;
-    }
+	public static TIntList getList(@Nonnull final Collection<ItemStack> itemStackCollection)
+	{
+		final TIntList keys = new TIntArrayList();
+		int hash;
+		for (final ItemStack itemStack : itemStackCollection)
+			if ((hash = get(itemStack)) != 0)
+				keys.add(hash);
+		return keys;
+	}
 
-    public static TIntList getList(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
-    {
-        final TIntList keys = new TIntArrayList();
-        int bufKey;
-        for (final Object object : objects)
-            if (object instanceof ItemStack) {
-                if ((bufKey = get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
-                    keys.add(bufKey);
-            } else if (object instanceof List && !((List) object).isEmpty())
-                if ((bufKey = get(((ItemStack) ((List) object).get(0)))) > 0)
-                    keys.add(bufKey);
-        return keys;
-    }
+	public static TIntList getList(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
+	{
+		final TIntList keys = new TIntArrayList();
+		int bufKey;
+		for (final Object object : objects)
+			if (object instanceof ItemStack) {
+				if ((bufKey = get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
+					keys.add(bufKey);
+			} else if (object instanceof List && !((List) object).isEmpty())
+				if ((bufKey = get(((ItemStack) ((List) object).get(0)))) > 0)
+					keys.add(bufKey);
+		return keys;
+	}
 
-    public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final int kind)
-    {
-        final TIntSet keys = new TIntHashSet();
-        resourceCollection.stream().filter(resource -> resource.childExists(kind)).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
-        return keys;
-    }
+	public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final int kind)
+	{
+		final TIntSet keys = new TIntHashSet();
+		resourceCollection.stream().filter(resource -> resource.childExists(kind)).forEach(resource -> keys.addAll(getList(resource.getChild(kind).getEntries())));
+		return keys;
+	}
 
-    public static TIntSet getSet(@Nonnull final Collection<ItemStack> itemStackCollection)
-    {
-        return new TIntHashSet(getList(itemStackCollection));
-    }
+	public static TIntSet getSet(@Nonnull final Collection<ItemStack> itemStackCollection)
+	{
+		return new TIntHashSet(getList(itemStackCollection));
+	}
 
-    public static <E> void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntObjectMap<E> map, final E defaultValue)
-    {
-        for (final int id : getArray(itemStackCollection))
-            map.put(id, defaultValue);
-    }
+	public static <E> void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntObjectMap<E> map, final E defaultValue)
+	{
+		for (final int id : getArray(itemStackCollection))
+			map.put(id, defaultValue);
+	}
 
-    public static void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntLongMap map, final long defaultValue)
-    {
-        for (final int id : getArray(itemStackCollection))
-            map.put(id, defaultValue);
-    }
+	public static void populateMap(@Nonnull final Collection<ItemStack> itemStackCollection, @Nonnull final TIntLongMap map, final long defaultValue)
+	{
+		for (final int id : getArray(itemStackCollection))
+			map.put(id, defaultValue);
+	}
 }

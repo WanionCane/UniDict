@@ -21,35 +21,35 @@ import java.util.Map;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
-    private final List<Map<IRecipeInput, RecipeOutput>> ic2MachinesRecipeList = new FixedSizeList<>(5);
+	private final List<Map<IRecipeInput, RecipeOutput>> ic2MachinesRecipeList = new FixedSizeList<>(5);
 
-    @SuppressWarnings("unchecked")
-    IC2Integration()
-    {
-        super("Industrial Craft 2");
-        try {
-            ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.centrifuge, Map.class));
-            ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.compressor, Map.class));
-            ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.blastfurnace, Map.class));
-            ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.macerator, Map.class));
-            ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerRolling, Map.class));
-        } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-    }
+	@SuppressWarnings("unchecked")
+	IC2Integration()
+	{
+		super("Industrial Craft 2");
+		try {
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.centrifuge, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.compressor, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.blastfurnace, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.macerator, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerRolling, Map.class));
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+	}
 
-    @Override
-    public String call()
-    {
-        ic2MachinesRecipeList.forEach(map -> {
-            try {
-                fixMachinesOutputs(map);
-            } catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-        });
-        return threadName + "The world appears to be entirely industrialized.";
-    }
+	@Override
+	public String call()
+	{
+		ic2MachinesRecipeList.forEach(map -> {
+			try {
+				fixMachinesOutputs(map);
+			} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		});
+		return threadName + "The world appears to be entirely industrialized.";
+	}
 
-    private void fixMachinesOutputs(Map<IRecipeInput, RecipeOutput> recipes)
-    {
-        for (Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
-            recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStackList(recipe.getValue().items)));
-    }
+	private void fixMachinesOutputs(final Map<IRecipeInput, RecipeOutput> recipes)
+	{
+		for (final Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
+			recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStackList(recipe.getValue().items)));
+	}
 }

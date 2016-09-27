@@ -14,23 +14,23 @@ import javax.annotation.Nonnull;
 
 public enum LoadStage
 {
-    PRE_INIT(FMLPreInitializationEvent.class),
-    INIT(FMLInitializationEvent.class),
-    POST_INIT(FMLPostInitializationEvent.class),
-    LOAD_COMPLETE(FMLLoadCompleteEvent.class);
+	PRE_INIT(FMLPreInitializationEvent.class),
+	INIT(FMLInitializationEvent.class),
+	POST_INIT(FMLPostInitializationEvent.class),
+	LOAD_COMPLETE(FMLLoadCompleteEvent.class);
 
-    public final Class<? extends FMLStateEvent> stage;
+	public final Class<? extends FMLStateEvent> stage;
 
-    LoadStage(Class<? extends FMLStateEvent> stage)
-    {
-        this.stage = stage;
-    }
+	LoadStage(Class<? extends FMLStateEvent> stage)
+	{
+		this.stage = stage;
+	}
 
-    public static LoadStage getStage(@Nonnull final Class<? extends FMLStateEvent> stage)
-    {
-        for (final LoadStage loadStage : values())
-            if (loadStage.stage == stage)
-                return loadStage;
-        return null;
-    }
+	public static LoadStage getStage(@Nonnull final Class<? extends FMLStateEvent> stage)
+	{
+		for (final LoadStage loadStage : values())
+			if (loadStage.stage == stage)
+				return loadStage;
+		return null;
+	}
 }

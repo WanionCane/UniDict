@@ -13,6 +13,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
+import wanion.unidict.UniDict;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
@@ -22,43 +23,44 @@ import static wanion.unidict.common.Util.getModName;
 
 public final class SpecificKindItemStackComparator implements Comparator<ItemStack>
 {
-    private static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
-    private final TObjectIntMap<String> ownerOfKind;
+	private static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
+	private final TObjectIntMap<String> ownerOfKind;
 
-    private SpecificKindItemStackComparator(final int kind)
-    {
-        if ((ownerOfKind = Config.getOwnerOfEveryKindMap(kind)) == null)
-            throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
-    }
+	private SpecificKindItemStackComparator(final int kind)
+	{
+		if ((ownerOfKind = UniDict.getConfig().getOwnerOfEveryKindMap(kind)) == null)
+			throw new RuntimeException("this exception should be called: ThisShouldNeverHappenException.");
+	}
 
-    public static synchronized SpecificKindItemStackComparator getComparatorFor(final int kind)
-    {
-        if (!kindSpecificComparators.containsKey(kind))
-            kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));
-        return kindSpecificComparators.get(kind);
-    }
+	public static synchronized SpecificKindItemStackComparator getComparatorFor(final int kind)
+	{
+		if (!kindSpecificComparators.containsKey(kind))
+			kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));
+		return kindSpecificComparators.get(kind);
+	}
 
-    public static void nullify()
-    {
-        kindSpecificComparators = null;
-    }
+	public static void nullify()
+	{
+		kindSpecificComparators = null;
+	}
 
-    @Override
-    public int compare(@Nonnull final ItemStack itemStack1, @Nonnull final ItemStack itemStack2)
-    {
-        final String stack1ModName = getModName(itemStack1);
-        if (Config.keepOneEntry && Config.keepOneEntryModBlackSet.contains(stack1ModName))
-            ResourceHandler.addToKeepOneEntryModBlackSet(itemStack1);
-        return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
-    }
+	@Override
+	public int compare(@Nonnull final ItemStack itemStack1, @Nonnull final ItemStack itemStack2)
+	{
+		final String stack1ModName = getModName(itemStack1);
+		final Config config = UniDict.getConfig();
+		if (config.keepOneEntry && config.keepOneEntryModBlackSet.contains(stack1ModName))
+			ResourceHandler.addToKeepOneEntryModBlackSet(itemStack1);
+		return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
+	}
 
-    private long getIndex(ItemStack itemStack)
-    {
-        return ownerOfKind.get(getModName(itemStack));
-    }
+	private long getIndex(ItemStack itemStack)
+	{
+		return ownerOfKind.get(getModName(itemStack));
+	}
 
-    private long getIndex(String modName)
-    {
-        return ownerOfKind.get(modName);
-    }
+	private long getIndex(String modName)
+	{
+		return ownerOfKind.get(modName);
+	}
 }

@@ -12,10 +12,10 @@ import java.util.concurrent.Callable;
 
 public abstract class AbstractModuleThread implements Callable<String>
 {
-    protected final String threadName;
+	protected final String threadName;
 
-    public AbstractModuleThread(String threadName, String moduleName)
-    {
-        this.threadName = threadName + " " + moduleName + ": ";
-    }
+	public AbstractModuleThread(String threadName, String moduleName)
+	{
+		this.threadName = threadName + " " + moduleName + ": ";
+	}
 }

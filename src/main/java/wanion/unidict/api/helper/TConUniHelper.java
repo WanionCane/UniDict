@@ -12,8 +12,8 @@ import net.minecraft.item.ItemStack;
 import slimeknights.mantle.util.RecipeMatch;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.smeltery.CastingRecipe;
-import wanion.unidict.Config;
 import wanion.unidict.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.UniJEIPlugin;
 
 import javax.annotation.Nonnull;
@@ -21,17 +21,17 @@ import java.util.Iterator;
 
 public final class TConUniHelper
 {
-    private TConUniHelper() {}
+	private TConUniHelper() {}
 
-    public static void removeCast(@Nonnull final ItemStack removeTarget)
-    {
-        final int targetHash = MetaItem.get(removeTarget);
-        CastingRecipe castingRecipe;
-        RecipeMatch recipeMatch;
-        for (final Iterator<CastingRecipe> castingRecipeIterator = TinkerRegistry.getAllTableCastingRecipes().iterator(); castingRecipeIterator.hasNext(); )
-            if ((castingRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(castingRecipe.getResult()) == targetHash || ((recipeMatch = castingRecipe.cast) != null && MetaItem.getSet(recipeMatch.getInputs()).contains(targetHash))))
-                castingRecipeIterator.remove();
-        if (Config.autoHideInJEI)
-            UniJEIPlugin.hide(removeTarget);
-    }
+	public static void removeCast(@Nonnull final ItemStack removeTarget)
+	{
+		final int targetHash = MetaItem.get(removeTarget);
+		CastingRecipe castingRecipe;
+		RecipeMatch recipeMatch;
+		for (final Iterator<CastingRecipe> castingRecipeIterator = TinkerRegistry.getAllTableCastingRecipes().iterator(); castingRecipeIterator.hasNext(); )
+			if ((castingRecipe = castingRecipeIterator.next()) != null && (MetaItem.get(castingRecipe.getResult()) == targetHash || ((recipeMatch = castingRecipe.cast) != null && MetaItem.getSet(recipeMatch.getInputs()).contains(targetHash))))
+				castingRecipeIterator.remove();
+		if (UniDict.getConfig().autoHideInJEI)
+			UniJEIPlugin.hide(removeTarget);
+	}
 }
