@@ -57,6 +57,7 @@ public final class Config implements UniDict.IDependence
 	public final boolean ic2Integration;
 	public final boolean ieIntegration;
 	public final boolean mekanismIntegration;
+	public final boolean modularMachinesIntegration;
 	public final boolean techRebornIntegration;
 	// config
 	private final Configuration config;
@@ -113,6 +114,7 @@ public final class Config implements UniDict.IDependence
 			ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
 			ieIntegration = config.getBoolean("immersiveEngineering", integrations, true, "Immersive Engineering Integration.") && isModLoaded("immersiveengineering");
 			mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
+			modularMachinesIntegration = config.getBoolean("modularMachines", integrations, true, "Modular-Machines Integration.") && isModLoaded("modularmachines");
 			techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);

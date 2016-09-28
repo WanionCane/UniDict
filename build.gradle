@@ -20,13 +20,13 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.10.2-1.9"
+version = "1.10.2-2.0"
 group= "wanion.unidict" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "UniDict"
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
+     sourceCompatibility = targetCompatibility = "1.8"
 }
 
 minecraft {

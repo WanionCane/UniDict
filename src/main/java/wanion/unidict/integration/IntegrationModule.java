@@ -47,6 +47,8 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(IEIntegration.class);
 		if (config.mekanismIntegration)
 			manager.add(MekanismIntegration.class);
+		if (config.modularMachinesIntegration)
+			manager.add(ModularMachinesIntegration.class);
 		if (config.techRebornIntegration)
 			manager.add(TechRebornIntegration.class);
 	}
