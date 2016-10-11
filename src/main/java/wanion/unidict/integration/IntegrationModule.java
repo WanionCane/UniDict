@@ -29,6 +29,8 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(FurnaceIntegration.class);
 		if (config.abyssalCraft)
 			manager.add(AbyssalCraftIntegration.class);
+		if (config.ae2Integration)
+			manager.add(AE2Integration.class);
 		if (config.baseMetalsIntegration)
 			manager.add(BaseMetalsIntegration.class);
 		if (config.bloodMagicIntegration)
@@ -49,6 +51,8 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(MekanismIntegration.class);
 		if (config.modularMachinesIntegration)
 			manager.add(ModularMachinesIntegration.class);
+		if (config.railCraftIntegration)
+			manager.add(RailcraftIntegration.class);
 		if (config.techRebornIntegration)
 			manager.add(TechRebornIntegration.class);
 	}

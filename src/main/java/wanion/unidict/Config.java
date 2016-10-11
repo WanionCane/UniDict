@@ -48,6 +48,7 @@ public final class Config implements UniDict.IDependence
 	public final boolean furnaceIntegration;
 	// integration
 	public final boolean abyssalCraft;
+	public final boolean ae2Integration;
 	public final boolean baseMetalsIntegration;
 	public final boolean calculatorIntegration;
 	public final boolean bloodMagicIntegration;
@@ -58,6 +59,7 @@ public final class Config implements UniDict.IDependence
 	public final boolean ieIntegration;
 	public final boolean mekanismIntegration;
 	public final boolean modularMachinesIntegration;
+	public final boolean railCraftIntegration;
 	public final boolean techRebornIntegration;
 	// config
 	private final Configuration config;
@@ -105,6 +107,7 @@ public final class Config implements UniDict.IDependence
 			// integration
 			final String integrations = "integrations";
 			abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
+			ae2Integration = config.getBoolean("appliedEnergistics2", integrations, true, "Applied Energistics 2 Integration.") && isModLoaded("appliedenergistics2");
 			baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
 			bloodMagicIntegration = config.getBoolean("bloodMagic", integrations, true, "Blood Magic Integration.") && isModLoaded("BloodMagic");
 			calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
@@ -115,6 +118,7 @@ public final class Config implements UniDict.IDependence
 			ieIntegration = config.getBoolean("immersiveEngineering", integrations, true, "Immersive Engineering Integration.") && isModLoaded("immersiveengineering");
 			mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
 			modularMachinesIntegration = config.getBoolean("modularMachines", integrations, true, "Modular-Machines Integration.") && isModLoaded("modularmachines");
+			railCraftIntegration = config.getBoolean("railcraft", integrations, true, "Railcraft Integration.") && isModLoaded("Railcraft");
 			techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
