@@ -58,7 +58,7 @@ public abstract class AbstractModule
 		private final Map<LoadStage, Set<Class<? extends AbstractModuleThread>>> loadStageMap;
 		private final Instantiator<AbstractModuleThread> instantiator;
 
-		Manager(@Nonnull final Instantiator<AbstractModuleThread> instantiator)
+		public Manager(@Nonnull final Instantiator<AbstractModuleThread> instantiator)
 		{
 			this.instantiator = instantiator;
 			loadStageMap = new EnumMap<>(LoadStage.class);
@@ -73,17 +73,17 @@ public abstract class AbstractModule
 			return !classSet.contains(moduleThreadClass) && classSet.add(moduleThreadClass);
 		}
 
-		boolean isEmpty()
+		public boolean isEmpty()
 		{
 			return loadStageMap.values().stream().allMatch(Set::isEmpty);
 		}
 
-		boolean isEmpty(final LoadStage loadStage)
+		public boolean isEmpty(final LoadStage loadStage)
 		{
 			return loadStageMap.get(loadStage).isEmpty();
 		}
 
-		List<AbstractModuleThread> getInstances(final LoadStage loadStage)
+		public List<AbstractModuleThread> getInstances(final LoadStage loadStage)
 		{
 			final List<AbstractModuleThread> abstractModuleThreads = new ArrayList<>();
 			loadStageMap.get(loadStage).forEach(t -> {

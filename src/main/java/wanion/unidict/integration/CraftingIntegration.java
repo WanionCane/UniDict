@@ -84,12 +84,14 @@ final class CraftingIntegration extends AbstractIntegrationThread
 		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipe -> {
 					final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
 					final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
+					final IRecipe newRecipe;
 					if (recipe.getRecipeSize() == 9)
-						recipes.add(isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
+						newRecipe = isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary);
 					else if (recipe.getRecipeSize() == 1)
-						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
+						newRecipe = isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary);
 					else
-						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
+						newRecipe = isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary);
+					recipes.add(newRecipe != null ? newRecipe : recipe);
 					return true;
 				})
 		);

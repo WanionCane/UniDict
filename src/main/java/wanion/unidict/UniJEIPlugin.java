@@ -9,6 +9,7 @@ package wanion.unidict;
  */
 
 import mezz.jei.api.*;
+import mezz.jei.api.ingredients.IModIngredientRegistration;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -20,7 +21,6 @@ import java.util.List;
 public class UniJEIPlugin implements IModPlugin
 {
 	private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
-	private IItemBlacklist itemBlackList;
 
 	public static void hide(final ItemStack itemStack)
 	{
@@ -28,14 +28,18 @@ public class UniJEIPlugin implements IModPlugin
 	}
 
 	@Override
+	public void registerItemSubtypes(@Nonnull final ISubtypeRegistry iSubtypeRegistry) {}
+
+	@Override
+	public void registerIngredients(@Nonnull final IModIngredientRegistration iModIngredientRegistration) {}
+
+	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)
 	{
-		itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
+		final IItemBlacklist itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
+		stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
 	}
 
 	@Override
-	public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime)
-	{
-		stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
-	}
+	public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime) {}
 }

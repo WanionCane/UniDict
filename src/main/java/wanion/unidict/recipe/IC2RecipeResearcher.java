@@ -75,7 +75,6 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	@Nonnull
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final Object[] newRecipeInputs = new Object[9];
@@ -90,7 +89,6 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	@Nonnull
 	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final Object[] newRecipeInputs = new Object[9];
@@ -105,7 +103,6 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	@Nonnull
 	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final List<Object> inputs = new ArrayList<>();
@@ -122,7 +119,6 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	@Nonnull
 	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final List<Object> inputs = new ArrayList<>();

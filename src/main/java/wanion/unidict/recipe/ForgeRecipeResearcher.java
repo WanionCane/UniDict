@@ -72,7 +72,6 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nonnull
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final Object[] recipeInputs = ((ShapedOreRecipe) recipe).getInput();
@@ -87,7 +86,6 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nonnull
 	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final Object[] recipeInputs = ((ShapelessOreRecipe) recipe).getInput().toArray();
@@ -102,7 +100,6 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nonnull
 	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final List<Object> inputs = new ArrayList<>();
@@ -120,7 +117,6 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Nonnull
 	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
 	{
 		final List<Object> inputs = new ArrayList<>();

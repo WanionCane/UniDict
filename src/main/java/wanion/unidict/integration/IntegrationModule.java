@@ -37,6 +37,8 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(BloodMagicIntegration.class);
 		if (config.calculatorIntegration)
 			manager.add(CalculatorIntegration.class);
+		if (config.embersIntegration)
+			manager.add(EmbersIntegration.class);
 		if (config.enderIOIntegration)
 			manager.add(EnderIOIntegration.class);
 		if (config.forestryIntegration)

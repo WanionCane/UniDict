@@ -53,6 +53,7 @@ public final class Config implements UniDict.IDependence
 	public final boolean calculatorIntegration;
 	public final boolean bloodMagicIntegration;
 	public final boolean enderIOIntegration;
+	public final boolean embersIntegration;
 	public final boolean forestryIntegration;
 	public final boolean foundryIntegration;
 	public final boolean ic2Integration;
@@ -111,6 +112,7 @@ public final class Config implements UniDict.IDependence
 			baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
 			bloodMagicIntegration = config.getBoolean("bloodMagic", integrations, true, "Blood Magic Integration.") && isModLoaded("BloodMagic");
 			calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
+			embersIntegration = config.getBoolean("embers", integrations, true, "Embers Integration") && isModLoaded("embers");
 			enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
 			forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
 			foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
