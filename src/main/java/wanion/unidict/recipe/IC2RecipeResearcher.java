@@ -12,6 +12,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ic2.api.recipe.IRecipeInput;
+import ic2.api.recipe.RecipeInputOreDict;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
 import net.minecraft.item.ItemStack;
@@ -79,11 +80,18 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	{
 		final Object[] newRecipeInputs = new Object[9];
 		final IRecipeInput[] recipeInputs = ((AdvRecipe) recipe).input;
-		for (int i = 0; i < 9; i++) {
-			final List<ItemStack> input = i < recipeInputs.length && !recipeInputs[i].getInputs().isEmpty() ? recipeInputs[i].getInputs() : null;
-			final String bufferOreName = input != null ? uniOreDictionary.getName(input) : null;
-			String secondaryBufferOreName;
-			newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : (secondaryBufferOreName = uniOreDictionary.getName(input.get(0))) != null ? secondaryBufferOreName : null : null;
+		for (int i = 0; i < recipeInputs.length; i++) {
+			final IRecipeInput input = recipeInputs[i];
+			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
+			if (oreName == null) {
+				final boolean notEmpty = !input.getInputs().isEmpty();
+				oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
+				if (oreName != null)
+					newRecipeInputs[i] = oreName;
+				else if (notEmpty)
+					newRecipeInputs[i] = input.getInputs().get(0);
+			} else
+				newRecipeInputs[i] = oreName;
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
