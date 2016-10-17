@@ -38,7 +38,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 
 	private void optimizeFurnaceRecipes()
 	{
-		if (!config.inputReplacement)
+		if (!config.inputReplacementFurnace)
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
 				furnaceRecipe.setValue(resourceHandler.getMainItemStack(furnaceRecipe.getValue()));
 		else {

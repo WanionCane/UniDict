@@ -28,7 +28,9 @@ public final class Config implements UniDict.IDependence
 {
 	// general configs
 	public final boolean keepOneEntry;
-	public final boolean inputReplacement;
+	public final boolean inputReplacementFurnace;
+	public final boolean inputReplacementIC2;
+	public final boolean inputReplacementMekanism;
 	public final Set<String> keepOneEntryModBlackSet;
 	public final boolean autoHideInJEI;
 	public final Set<String> hideInJEIBlackSet;
@@ -82,11 +84,14 @@ public final class Config implements UniDict.IDependence
 			// general configs
 			final String general = Configuration.CATEGORY_GENERAL;
 			keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
-			inputReplacement = config.getBoolean("inputReplacement", general, false, "Enabling this will remove all non-standard items as input.\nNote: this will only affect machines that doesn't use OreDictionary.");
 			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("JEI");
 			hideInJEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
 			kindDebugMode = config.getBoolean("kindDebugMode", general, false, "Enable this to keep track of all the kinds.\nthe output will be in logs folder.");
+			// input replacement
+			inputReplacementFurnace = config.getBoolean("furnace", "inputReplacement", false, "Enabling this will remove all non-standard items as input of the Furnace.");
+			inputReplacementIC2 = config.getBoolean("ic2", "inputReplacement", false, "Enabling this will remove all non-standard items as input of IC2 Machine Recipes.\nNote: this will only affect recipes that doesn't uses OreDictionary.");
+			inputReplacementMekanism = config.getBoolean("mekanism", "inputReplacement", false, "Enabling this will remove all non-standard items as input of Mekanism Machine Recipes.");
 			// resource related stuff
 			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nalso will make \"S:ownerOfEveryThing\" be ignored.");
 			ownerOfEveryThing = new TObjectIntHashMap<>((!enableSpecificKindSort) ? getOwnerOfEveryThingMap() : new TObjectIntHashMap<>());

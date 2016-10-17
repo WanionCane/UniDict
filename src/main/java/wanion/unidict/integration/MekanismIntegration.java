@@ -50,7 +50,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 	{
 		final int initialSize = recipes.size();
 		final Map<ItemStackInput, MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
-		if (!config.inputReplacement) {
+		if (!config.inputReplacementMekanism) {
 			final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
 			for (final Iterator<MachineRecipe<ItemStackInput, ItemStackOutput, ? extends MachineRecipe>> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
 			{
@@ -114,7 +114,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 	{
 		final int initialSize = recipes.size();
 		final Map<InfusionInput, MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> correctRecipes = new HashMap<>(initialSize, 1);
-		if (!config.inputReplacement) {
+		if (!config.inputReplacementMekanism) {
 			final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
 			for (final Iterator<MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe>> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
 			{
