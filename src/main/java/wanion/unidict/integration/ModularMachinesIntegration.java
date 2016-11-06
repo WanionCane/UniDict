@@ -8,9 +8,9 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import de.nedelosk.modularmachines.api.recipes.Recipe;
-import de.nedelosk.modularmachines.api.recipes.RecipeItem;
-import de.nedelosk.modularmachines.api.recipes.RecipeRegistry;
+import modularmachines.api.recipes.Recipe;
+import modularmachines.api.recipes.RecipeItem;
+import modularmachines.api.recipes.RecipeRegistry;
 import wanion.unidict.UniDict;
 
 final class ModularMachinesIntegration extends AbstractIntegrationThread
