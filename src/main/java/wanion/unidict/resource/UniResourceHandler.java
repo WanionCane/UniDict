@@ -19,12 +19,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
+import wanion.lib.common.Dependencies;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
-import wanion.unidict.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.common.Dependencies;
 import wanion.unidict.common.Reference;
 
 import javax.annotation.Nonnull;
@@ -41,7 +41,7 @@ public final class UniResourceHandler
 	private static boolean hasInit;
 	private final Map<String, Resource> apiResourceMap = new THashMap<>();
 	private final Map<String, Resource> resourceMap = new THashMap<>();
-	private final Dependencies<UniDict.IDependence> dependencies = UniDict.getDependencies();
+	private final Dependencies<UniDict.IDependency> dependencies = UniDict.getDependencies();
 	private final Config config = UniDict.getConfig();
 
 	private UniResourceHandler()

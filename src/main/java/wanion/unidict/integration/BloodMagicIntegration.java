@@ -11,9 +11,9 @@ package wanion.unidict.integration;
 import WayofTime.bloodmagic.api.recipe.AlchemyTableCustomRecipe;
 import WayofTime.bloodmagic.api.recipe.AlchemyTableRecipe;
 import WayofTime.bloodmagic.api.registry.AlchemyTableRecipeRegistry;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
-import wanion.unidict.common.Util;
 
 import java.util.ArrayList;
 import java.util.Iterator;

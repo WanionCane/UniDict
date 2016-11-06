@@ -16,9 +16,9 @@ import crazypants.enderio.machine.recipe.RecipeOutput;
 import crazypants.enderio.machine.sagmill.SagMillRecipeManager;
 import crazypants.enderio.material.OreDictionaryPreferences;
 import net.minecraft.item.ItemStack;
+import wanion.lib.common.FixedSizeList;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
-import wanion.unidict.common.FixedSizeList;
-import wanion.unidict.common.Util;
 
 import java.util.Iterator;
 import java.util.List;

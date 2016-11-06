@@ -13,9 +13,9 @@ import ic2.api.recipe.RecipeInputItemStack;
 import ic2.api.recipe.RecipeOutput;
 import ic2.api.recipe.Recipes;
 import ic2.core.recipe.BasicMachineRecipeManager;
+import wanion.lib.common.FixedSizeList;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
-import wanion.unidict.common.FixedSizeList;
-import wanion.unidict.common.Util;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,7 +54,7 @@ final class IC2Integration extends AbstractIntegrationThread
 	{
 		if (!config.inputReplacementIC2) {
 			for (final Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
-				recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStackList(recipe.getValue().items)));
+				recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStacks(recipe.getValue().items)));
 		} else {
 			final Map<IRecipeInput, RecipeOutput> newRecipes = new HashMap<>();
 			for (final Iterator<Map.Entry<IRecipeInput, RecipeOutput>> recipesIterator = recipes.entrySet().iterator(); recipesIterator.hasNext(); )
@@ -63,10 +63,10 @@ final class IC2Integration extends AbstractIntegrationThread
 				final IRecipeInput recipeInput = recipe.getKey();
 				final RecipeOutput recipeOutput = recipe.getValue();
 				if (recipeInput instanceof RecipeInputItemStack) {
-					newRecipes.put(new RecipeInputItemStack(resourceHandler.getMainItemStack(((RecipeInputItemStack) recipeInput).input), ((RecipeInputItemStack) recipeInput).amount), new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStackList(recipeOutput.items)));
+					newRecipes.put(new RecipeInputItemStack(resourceHandler.getMainItemStack(((RecipeInputItemStack) recipeInput).input), ((RecipeInputItemStack) recipeInput).amount), new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStacks(recipeOutput.items)));
 					recipesIterator.remove();
 				} else {
-					recipe.setValue(new RecipeOutput(recipeOutput.metadata, resourceHandler.getMainItemStackList(recipeOutput.items)));
+					recipe.setValue(new RecipeOutput(recipeOutput.metadata, resourceHandler.getMainItemStacks(recipeOutput.items)));
 				}
 			}
 			recipes.putAll(newRecipes);

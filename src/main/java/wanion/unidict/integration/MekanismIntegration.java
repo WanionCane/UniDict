@@ -17,7 +17,7 @@ import mekanism.common.recipe.machines.MachineRecipe;
 import mekanism.common.recipe.machines.MetallurgicInfuserRecipe;
 import mekanism.common.recipe.outputs.ItemStackOutput;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
 

@@ -16,9 +16,9 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import wanion.unidict.MetaItem;
+import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniOreDictionary;
-import wanion.unidict.helper.RecipeHelper;
+import wanion.unidict.common.Util;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
@@ -31,7 +31,7 @@ public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes,
 	@Override
 	public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
 	{
-		final TIntList recipeKeys = MetaItem.getList(((ShapedRecipes) recipe).recipeItems, resourceHandler);
+		final TIntList recipeKeys = Util.getList(((ShapedRecipes) recipe).recipeItems, resourceHandler);
 		int recipeKey = 0;
 		recipeKeys.sort();
 		for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
@@ -42,7 +42,7 @@ public class VanillaRecipeResearcher implements IRecipeResearcher<ShapedRecipes,
 	@Override
 	public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
 	{
-		final TIntList recipeKeys = MetaItem.getList(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
+		final TIntList recipeKeys = Util.getList(((ShapelessRecipes) recipe).recipeItems.toArray(), resourceHandler);
 		int recipeKey = 0;
 		recipeKeys.sort();
 		for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )

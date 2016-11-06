@@ -13,7 +13,7 @@ import exter.foundry.api.recipe.IMoldRecipe;
 import exter.foundry.recipes.manager.CastingRecipeManager;
 import exter.foundry.recipes.manager.MoldRecipeManager;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniJEIPlugin;
 

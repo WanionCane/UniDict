@@ -12,15 +12,15 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.MetaItem;
-import wanion.unidict.UniDict.IDependence;
+import wanion.lib.common.MetaItem;
+import wanion.unidict.UniDict.IDependency;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public final class ResourceHandler implements IDependence
+public final class ResourceHandler implements IDependency
 {
 	static final Set<ItemStack> keepOneEntryBlackSet = new HashSet<>();
 	public final Collection<Resource> resources;
@@ -92,7 +92,7 @@ public final class ResourceHandler implements IDependence
 		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.stackSize) : thing;
 	}
 
-	public List<ItemStack> getMainItemStackList(@Nonnull final Collection<ItemStack> things)
+	public List<ItemStack> getMainItemStacks(@Nonnull final Collection<ItemStack> things)
 	{
 		return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
 	}

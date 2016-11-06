@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import static net.minecraftforge.fml.common.Loader.isModLoaded;
 import static wanion.unidict.common.Reference.SLASH;
 
-public final class Config implements UniDict.IDependence
+public final class Config implements UniDict.IDependency
 {
 	// general configs
 	public final boolean keepOneEntry;
@@ -51,6 +51,7 @@ public final class Config implements UniDict.IDependence
 	// integration
 	public final boolean abyssalCraft;
 	public final boolean ae2Integration;
+	public final boolean advancedRocketryIntegration;
 	public final boolean baseMetalsIntegration;
 	public final boolean calculatorIntegration;
 	public final boolean bloodMagicIntegration;
@@ -64,6 +65,7 @@ public final class Config implements UniDict.IDependence
 	public final boolean modularMachinesIntegration;
 	public final boolean railCraftIntegration;
 	public final boolean techRebornIntegration;
+	public final boolean waterPowerIntegration;
 	// config
 	private final Configuration config;
 	// resource related stuff
@@ -114,6 +116,7 @@ public final class Config implements UniDict.IDependence
 			final String integrations = "integrations";
 			abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
 			ae2Integration = config.getBoolean("appliedEnergistics2", integrations, true, "Applied Energistics 2 Integration.") && isModLoaded("appliedenergistics2");
+			advancedRocketryIntegration = config.getBoolean("advancedRocketry", integrations, true, "Advanced Rocketry Integration.") && isModLoaded("advancedRocketry");
 			baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
 			bloodMagicIntegration = config.getBoolean("bloodMagic", integrations, true, "Blood Magic Integration.") && isModLoaded("BloodMagic");
 			calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
@@ -127,6 +130,7 @@ public final class Config implements UniDict.IDependence
 			modularMachinesIntegration = config.getBoolean("modularMachines", integrations, true, "Modular-Machines Integration.") && isModLoaded("modularmachines");
 			railCraftIntegration = config.getBoolean("railcraft", integrations, true, "Railcraft Integration.") && isModLoaded("Railcraft");
 			techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
+			waterPowerIntegration = config.getBoolean("waterPower", integrations, true, "Water Power Integration.") && isModLoaded("waterpower");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}

@@ -12,8 +12,9 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
-import wanion.unidict.UniDict.IDependence;
-import wanion.unidict.common.Util;
+import wanion.lib.common.MetaItem;
+import wanion.lib.common.Util;
+import wanion.unidict.UniDict.IDependency;
 
 import javax.annotation.Nonnull;
 import javax.annotation.RegEx;
@@ -22,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
-public final class UniOreDictionary implements IDependence
+public final class UniOreDictionary implements IDependency
 {
 	private static Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);
 	private static List<String> idToName = Util.getField(OreDictionary.class, "idToName", null, List.class);

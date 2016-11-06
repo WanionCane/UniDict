@@ -13,7 +13,7 @@ import appeng.api.features.IGrinderEntry;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 
 import java.util.Iterator;

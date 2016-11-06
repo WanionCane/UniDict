@@ -12,9 +12,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
-import wanion.unidict.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;

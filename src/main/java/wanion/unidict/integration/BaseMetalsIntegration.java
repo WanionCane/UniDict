@@ -12,9 +12,9 @@ import cyano.basemetals.registry.CrusherRecipeRegistry;
 import cyano.basemetals.registry.recipe.ICrusherRecipe;
 import cyano.basemetals.registry.recipe.OreDictionaryCrusherRecipe;
 import net.minecraft.item.ItemStack;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
-import wanion.unidict.common.Util;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -17,12 +17,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
+import wanion.lib.common.Dependencies;
+import wanion.lib.module.AbstractModule;
+import wanion.lib.module.ModuleHandler;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.common.Dependencies;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
-import wanion.unidict.module.AbstractModule;
-import wanion.unidict.module.ModuleHandler;
 import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniResourceHandler;
 
@@ -36,18 +36,18 @@ import java.util.Set;
 import static wanion.unidict.common.Reference.*;
 
 @SuppressWarnings("unused")
-@Mod(modid = MOD_ID, name = MOD_NAME, version = MOD_VERSION, acceptedMinecraftVersions = MC_VERSION, dependencies = "after:*")
+@Mod(modid = MOD_ID, name = MOD_NAME, version = MOD_VERSION, acceptedMinecraftVersions = MC_VERSION, dependencies = DEPENDENCIES)
 public final class UniDict
 {
 	@Mod.Instance(MOD_ID)
 	public static UniDict instance;
 
-	private static Dependencies<IDependence> dependencies = new Dependencies<>();
+	private static Dependencies<IDependency> dependencies = new Dependencies<>();
 	private static Logger logger;
 	private UniResourceHandler uniResourceHandler = UniResourceHandler.create();
 	private ModuleHandler moduleHandler;
 
-	public static Dependencies<IDependence> getDependencies()
+	public static Dependencies<IDependency> getDependencies()
 	{
 		return dependencies;
 	}
@@ -125,18 +125,14 @@ public final class UniDict
 	}
 
 	@NetworkCheckHandler
-	public boolean matchModVersions(Map<String, String> remoteVersions, Side side)
+	public boolean matchModVersions(final Map<String, String> remoteVersions, final Side side)
 	{
-		return remoteVersions.containsKey(MOD_ID) && remoteVersions.get(MOD_ID).equals(MOD_VERSION);
+		return side == Side.CLIENT ? remoteVersions.containsKey(MOD_ID) : !remoteVersions.containsKey(MOD_ID) || remoteVersions.get(MOD_ID).equals(MOD_VERSION);
 	}
 
-	public interface IDependence
-	{
-	}
+	public interface IDependency {}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
-	public @interface Module
-	{
-	}
+	public @interface Module {}
 }

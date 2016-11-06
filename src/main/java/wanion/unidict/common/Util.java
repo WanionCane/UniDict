@@ -8,14 +8,23 @@ package wanion.unidict.common;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import net.minecraft.item.Item;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
+import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
 
-import java.lang.reflect.Field;
+import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
+
+import static wanion.lib.common.Util.getModName;
 
 public final class Util
 {
@@ -44,31 +53,35 @@ public final class Util
 
 	private Util() {}
 
-	@SuppressWarnings("unchecked")
-	public static <T, E extends T> E getField(Class clas, String name, Object instance, Class<T> expectedClass)
+	public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
 	{
-		try {
-			final Field field = clas.getDeclaredField(name);
-			field.setAccessible(true);
-			return (E) expectedClass.cast(field.get(instance));
-		} catch (Exception e) { e.printStackTrace(); }
-		return null;
+		int cumulativeKey = 0;
+		for (final Object object : objects)
+			if (object instanceof ItemStack)
+				cumulativeKey += MetaItem.get(resourceHandler.getMainItemStack((ItemStack) object));
+			else if (object instanceof List && !((List) object).isEmpty())
+				cumulativeKey += MetaItem.get((ItemStack) ((List) object).get(0));
+		return cumulativeKey;
 	}
 
-	public static <E> void setField(Class clas, String name, Object instance, E newInstance)
+	public static TIntList getList(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
 	{
-		try {
-			final Field field = clas.getDeclaredField(name);
-			field.setAccessible(true);
-			field.set(instance, newInstance);
-		} catch (Exception e) { e.printStackTrace(); }
+		final TIntList keys = new TIntArrayList();
+		int bufKey;
+		for (final Object object : objects)
+			if (object instanceof ItemStack) {
+				if ((bufKey = MetaItem.get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
+					keys.add(bufKey);
+			} else if (object instanceof List && !((List) object).isEmpty())
+				if ((bufKey = MetaItem.get(((ItemStack) ((List) object).get(0)))) > 0)
+					keys.add(bufKey);
+		return keys;
 	}
 
-	public static String getModName(final ItemStack itemStack)
+	public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final int kind)
 	{
-		Item item;
-		if (itemStack == null || (item = itemStack.getItem()) == null)
-			return "";
-		return item.delegate.name().getResourceDomain();
+		final TIntSet keys = new TIntHashSet();
+		resourceCollection.stream().filter(resource -> resource.childExists(kind)).forEach(resource -> keys.addAll(MetaItem.getList(resource.getChild(kind).getEntries())));
+		return keys;
 	}
 }

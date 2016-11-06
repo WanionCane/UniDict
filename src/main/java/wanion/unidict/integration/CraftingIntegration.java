@@ -8,27 +8,33 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import com.google.common.collect.Lists;
 import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
-import wanion.unidict.helper.RecipeHelper;
+import wanion.unidict.common.Util;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
 import wanion.unidict.recipe.IC2RecipeResearcher;
 import wanion.unidict.recipe.IRecipeResearcher;
 import wanion.unidict.recipe.VanillaRecipeResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
 	private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
-	private final List<IRecipe> recipes = RecipeHelper.recipes;
+	private final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
-	private final Map<UniResourceContainer, TIntObjectMap<IRecipe>> smartRecipeMap = new IdentityHashMap<>();
+	private final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
 
 	CraftingIntegration()
 	{
@@ -65,32 +71,58 @@ final class CraftingIntegration extends AbstractIntegrationThread
 			final int recipeKey = !isShapeless ? shapedResearcherMap.get(bufferRecipe.getClass()).getShapedRecipeKey(bufferRecipe, resourceHandler) : shapelessResearcherMap.get(bufferRecipe.getClass()).getShapelessRecipeKey(bufferRecipe, resourceHandler);
 			if (recipeKey == 0)
 				continue;
-			final TIntObjectMap<IRecipe> evenSmarterRecipeMap;
+			final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
 			if (!smartRecipeMap.containsKey(bufferContainer))
 				smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
-			else
-				evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
+			else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
 			if (!evenSmarterRecipeMap.containsKey(recipeKey))
-				evenSmarterRecipeMap.put(recipeKey, bufferRecipe);
+				evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
+			else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
 			recipeIterator.remove();
 		}
 	}
 
 	private void reCreateTheRecipes()
 	{
-		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipe -> {
+		final TLongObjectMap<RecipeComparator> kindSpecificRecipeComparatorMap = config.enableSpecificKindSort ? new TLongObjectHashMap<>() : null;
+		final RecipeComparator normalRecipeComparator = !config.enableSpecificKindSort ? new RecipeComparator(Util.itemStackComparatorByModName) : null;
+		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {
+					final RecipeComparator recipeComparator;
+					if (kindSpecificRecipeComparatorMap != null) {
+						if (kindSpecificRecipeComparatorMap.containsKey(container.kind))
+							recipeComparator = kindSpecificRecipeComparatorMap.get(container.kind);
+						else
+							kindSpecificRecipeComparatorMap.put(container.kind, (recipeComparator = new RecipeComparator(container.getComparator())));
+					} else
+						recipeComparator = normalRecipeComparator;
+					recipeList.sort(recipeComparator);
+					final IRecipe recipe = recipeList.get(0);
 					final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
 					final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
-					final IRecipe newRecipe;
 					if (recipe.getRecipeSize() == 9)
-						newRecipe = isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary);
+						recipes.add(isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
 					else if (recipe.getRecipeSize() == 1)
-						newRecipe = isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary);
+						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
 					else
-						newRecipe = isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary);
-					recipes.add(newRecipe != null ? newRecipe : recipe);
+						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
 					return true;
 				})
 		);
+	}
+
+	private static class RecipeComparator implements Comparator<IRecipe>
+	{
+		private final Comparator<ItemStack> itemStackComparator;
+
+		private RecipeComparator(@Nonnull final Comparator<ItemStack> itemStackComparator)
+		{
+			this.itemStackComparator = itemStackComparator;
+		}
+
+		@Override
+		public int compare(IRecipe o1, IRecipe o2)
+		{
+			return itemStackComparator.compare(o1.getRecipeOutput(), o2.getRecipeOutput());
+		}
 	}
 }

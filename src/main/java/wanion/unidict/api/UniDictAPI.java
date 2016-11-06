@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class UniDictAPI implements UniDict.IDependence
+public class UniDictAPI implements UniDict.IDependency
 {
 	public final Collection<Resource> resources;
 	private final Map<String, Resource> resourceMap;

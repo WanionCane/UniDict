@@ -19,7 +19,7 @@ import wanion.unidict.resource.ResourceHandler;
 import javax.annotation.Nonnull;
 import java.util.Comparator;
 
-import static wanion.unidict.common.Util.getModName;
+import static wanion.lib.common.Util.getModName;
 
 public final class SpecificKindItemStackComparator implements Comparator<ItemStack>
 {

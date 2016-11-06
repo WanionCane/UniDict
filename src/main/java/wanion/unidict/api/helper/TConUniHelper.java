@@ -13,7 +13,7 @@ import slimeknights.mantle.util.RecipeMatch;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.smeltery.CastingRecipe;
 import slimeknights.tconstruct.library.smeltery.ICastingRecipe;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniJEIPlugin;
 

@@ -8,9 +8,9 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import wanion.lib.module.AbstractModule;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
-import wanion.unidict.module.AbstractModule;
 
 public final class IntegrationModule extends AbstractModule
 {
@@ -29,6 +29,8 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(FurnaceIntegration.class);
 		if (config.abyssalCraft)
 			manager.add(AbyssalCraftIntegration.class);
+		if (config.advancedRocketryIntegration)
+			manager.add(AdvancedRocketryIntegration.class);
 		if (config.ae2Integration)
 			manager.add(AE2Integration.class);
 		if (config.baseMetalsIntegration)

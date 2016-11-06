@@ -19,9 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
+import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniOreDictionary;
-import wanion.unidict.helper.RecipeHelper;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
@@ -102,10 +102,17 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 		final Object[] newRecipeInputs = new Object[9];
 		final IRecipeInput[] recipeInputs = ((AdvShapelessRecipe) recipe).input;
 		for (int i = 0; i < recipeInputs.length; i++) {
-			final List<ItemStack> input = i < recipeInputs.length && !recipeInputs[i].getInputs().isEmpty() ? recipeInputs[i].getInputs() : null;
-			final String bufferOreName = input != null ? uniOreDictionary.getName(input) : null;
-			String secondaryBufferOreName;
-			newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : (secondaryBufferOreName = uniOreDictionary.getName(input.get(0))) != null ? secondaryBufferOreName : null : null;
+			final IRecipeInput input = recipeInputs[i];
+			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
+			if (oreName == null) {
+				final boolean notEmpty = !input.getInputs().isEmpty();
+				oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
+				if (oreName != null)
+					newRecipeInputs[i] = oreName;
+				else if (notEmpty)
+					newRecipeInputs[i] = input.getInputs().get(0);
+			} else
+				newRecipeInputs[i] = oreName;
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
@@ -115,13 +122,16 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	{
 		final List<Object> inputs = new ArrayList<>();
 		for (final IRecipeInput recipeInput : ((AdvShapelessRecipe) recipe).input) {
-			String bufferOreName = uniOreDictionary.getName(recipeInput.getInputs());
-			if (bufferOreName != null)
-				inputs.add(bufferOreName);
-			else if (!recipeInput.getInputs().isEmpty())
-				if ((bufferOreName = uniOreDictionary.getName(recipeInput.getInputs().get(0))) != null)
-					inputs.add(bufferOreName);
-				else inputs.add(recipeInput.getInputs().get(0));
+			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
+			if (oreName == null) {
+				final boolean notEmpty = !recipeInput.getInputs().isEmpty();
+				oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
+				if (oreName != null)
+					inputs.add(oreName);
+				else if (notEmpty)
+					inputs.add(recipeInput.getInputs().get(0));
+			} else
+				inputs.add(oreName);
 		}
 		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
 	}
@@ -131,13 +141,16 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	{
 		final List<Object> inputs = new ArrayList<>();
 		for (final IRecipeInput recipeInput : ((AdvRecipe) recipe).input) {
-			String bufferOreName = uniOreDictionary.getName(recipeInput.getInputs());
-			if (bufferOreName != null)
-				inputs.add(bufferOreName);
-			else if (!recipeInput.getInputs().isEmpty())
-				if ((bufferOreName = uniOreDictionary.getName(recipeInput.getInputs().get(0))) != null)
-					inputs.add(bufferOreName);
-				else inputs.add(recipeInput.getInputs().get(0));
+			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
+			if (oreName == null) {
+				final boolean notEmpty = !recipeInput.getInputs().isEmpty();
+				oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
+				if (oreName != null)
+					inputs.add(oreName);
+				else if (notEmpty)
+					inputs.add(recipeInput.getInputs().get(0));
+			} else
+				inputs.add(oreName);
 		}
 		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
 	}

@@ -10,7 +10,7 @@ package wanion.unidict.resource;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import wanion.unidict.MetaItem;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniJEIPlugin;
 import wanion.unidict.UniOreDictionary;
