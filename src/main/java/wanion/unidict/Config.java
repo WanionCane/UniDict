@@ -65,7 +65,7 @@ public final class Config implements UniDict.IDependency
 	public final boolean modularMachinesIntegration;
 	public final boolean railCraftIntegration;
 	public final boolean techRebornIntegration;
-	public final boolean waterPowerIntegration;
+	//public final boolean waterPowerIntegration;
 	// config
 	private final Configuration config;
 	// resource related stuff
@@ -130,7 +130,7 @@ public final class Config implements UniDict.IDependency
 			modularMachinesIntegration = config.getBoolean("modularMachines", integrations, true, "Modular-Machines Integration.") && isModLoaded("modularmachines");
 			railCraftIntegration = config.getBoolean("railcraft", integrations, true, "Railcraft Integration.") && isModLoaded("Railcraft");
 			techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
-			waterPowerIntegration = config.getBoolean("waterPower", integrations, true, "Water Power Integration.") && isModLoaded("waterpower");
+			//waterPowerIntegration = config.getBoolean("waterPower", integrations, true, "Water Power Integration.") && isModLoaded("waterpower");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}

@@ -8,14 +8,24 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 import zmaster587.libVulpes.recipe.RecipesMachine;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 {
+	private final Field outputField;
 	AdvancedRocketryIntegration()
 	{
 		super("Advanced Rocketry");
+		try {
+			(outputField = RecipesMachine.Recipe.class.getDeclaredField("output")).setAccessible(true);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException("Couldn't find the fields!");
+		}
 	}
 
 	@Override
@@ -29,11 +39,16 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 		return threadName + "10. 9...3 2 1... BOOOOM!!";
 	}
 
+	@SuppressWarnings("unchecked")
 	private void fixRecipes()
 	{
 		RecipesMachine.getInstance().recipeList.values().forEach(iRecipes -> iRecipes.forEach(iRecipe -> {
 			if (iRecipe instanceof RecipesMachine.Recipe)
-				resourceHandler.setMainItemStacks(iRecipe.getOutput());
+				try {
+					resourceHandler.setMainItemStacks((List<ItemStack>) outputField.get(iRecipe));
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 		}));
 	}
 }

@@ -59,5 +59,7 @@ public final class IntegrationModule extends AbstractModule
 			manager.add(RailcraftIntegration.class);
 		if (config.techRebornIntegration)
 			manager.add(TechRebornIntegration.class);
+		//if (config.waterPowerIntegration)
+		//	manager.add(WaterPowerIntegration.class);
 	}
 }
