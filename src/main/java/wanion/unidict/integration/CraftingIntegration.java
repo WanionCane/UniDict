@@ -16,6 +16,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.Loader;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.Util;
@@ -42,7 +43,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
 		final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
 		researcherList.add(new VanillaRecipeResearcher());
 		researcherList.add(new ForgeRecipeResearcher());
-		if (config.ic2)
+		if (Loader.isModLoaded("IC2"))
 			researcherList.add(new IC2RecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));

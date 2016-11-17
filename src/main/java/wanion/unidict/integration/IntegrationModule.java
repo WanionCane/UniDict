@@ -8,9 +8,16 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import net.minecraftforge.common.config.Configuration;
 import wanion.lib.module.AbstractModule;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
+import wanion.unidict.common.Reference;
+
+import java.io.File;
+
+import static net.minecraftforge.fml.common.Loader.isModLoaded;
+import static wanion.unidict.common.Reference.SLASH;
 
 public final class IntegrationModule extends AbstractModule
 {
@@ -22,44 +29,11 @@ public final class IntegrationModule extends AbstractModule
 	@Override
 	protected void init()
 	{
-		final Config config = UniDict.getConfig();
-		if (config.craftingIntegration)
-			manager.add(CraftingIntegration.class);
-		if (config.furnaceIntegration)
-			manager.add(FurnaceIntegration.class);
-		if (config.abyssalCraft)
-			manager.add(AbyssalCraftIntegration.class);
-		if (config.advancedRocketryIntegration)
-			manager.add(AdvancedRocketryIntegration.class);
-		if (config.ae2Integration)
-			manager.add(AE2Integration.class);
-		if (config.baseMetalsIntegration)
-			manager.add(BaseMetalsIntegration.class);
-		if (config.bloodMagicIntegration)
-			manager.add(BloodMagicIntegration.class);
-		if (config.calculatorIntegration)
-			manager.add(CalculatorIntegration.class);
-		if (config.embersIntegration)
-			manager.add(EmbersIntegration.class);
-		if (config.enderIOIntegration)
-			manager.add(EnderIOIntegration.class);
-		if (config.forestryIntegration)
-			manager.add(ForestryIntegration.class);
-		if (config.foundryIntegration)
-			manager.add(FoundryIntegration.class);
-		if (config.ic2Integration)
-			manager.add(IC2Integration.class);
-		if (config.ieIntegration)
-			manager.add(IEIntegration.class);
-		if (config.mekanismIntegration)
-			manager.add(MekanismIntegration.class);
-		if (config.modularMachinesIntegration)
-			manager.add(ModularMachinesIntegration.class);
-		if (config.railCraftIntegration)
-			manager.add(RailcraftIntegration.class);
-		if (config.techRebornIntegration)
-			manager.add(TechRebornIntegration.class);
-		//if (config.waterPowerIntegration)
-		//	manager.add(WaterPowerIntegration.class);
+		final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_ID + SLASH + "IntegrationModule.cfg"));
+		for (final IntegrationEnum integrationEnum : IntegrationEnum.values())
+			if (config.get("enabledIntegrations", integrationEnum.name(), integrationEnum.enabledByDefault).getBoolean() && isModLoaded(integrationEnum.modId))
+				manager.add(integrationEnum.integrationClass);
+		if (config.hasChanged())
+			config.save();
 	}
 }

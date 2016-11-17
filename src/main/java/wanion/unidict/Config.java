@@ -45,39 +45,15 @@ public final class Config implements UniDict.IDependency
 	public final List<String> userRegisteredOreDictEntries;
 	// modules
 	public final boolean integrationModule;
-	// vanilla integrations
-	public final boolean craftingIntegration;
-	public final boolean furnaceIntegration;
-	// integration
-	public final boolean abyssalCraft;
-	public final boolean ae2Integration;
-	public final boolean advancedRocketryIntegration;
-	public final boolean baseMetalsIntegration;
-	public final boolean calculatorIntegration;
-	public final boolean bloodMagicIntegration;
-	public final boolean enderIOIntegration;
-	public final boolean embersIntegration;
-	public final boolean forestryIntegration;
-	public final boolean foundryIntegration;
-	public final boolean ic2Integration;
-	public final boolean ieIntegration;
-	public final boolean mekanismIntegration;
-	public final boolean modularMachinesIntegration;
-	public final boolean railCraftIntegration;
-	public final boolean techRebornIntegration;
-	//public final boolean waterPowerIntegration;
 	// config
 	private final Configuration config;
 	// resource related stuff
 	private final String resources = "resources";
-	// ensure mod loaded
-	public final boolean forestry;
-	public final boolean ic2;
 
 	private Config()
 	{
 		boolean deleted = false;
-		config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
+		config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_ID + SLASH + Reference.MOD_NAME + ".cfg"), Reference.MOD_VERSION);
 		try {
 			if (!config.getDefinedConfigVersion().equals(config.getLoadedConfigVersion()))
 				deleted = config.getConfigFile().delete();
@@ -104,33 +80,7 @@ public final class Config implements UniDict.IDependency
 			// userRegisteredOreDictEntries
 			userRegisteredOreDictEntries = Arrays.asList(config.getStringList("userRegisteredOreDictEntries", general, new String[]{}, "This allows to the user register their own ore entries before the Unification happen.\nthis is mainly useful when the user is trying to unify things that aren't registered previously in the Ore Dictionary.\n\nFormat:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone."));
 			// modules
-			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module enabled?\nif false all the Integrations will be disabled.\n");
-			// vanilla integrations
-			craftingIntegration = config.getBoolean("craftingIntegration", "vanillaIntegrations", true, "Crafting Integration");
-			furnaceIntegration = config.getBoolean("furnaceIntegration", "vanillaIntegrations", true, "Furnace Integration");
-
-			forestry = isModLoaded("forestry");
-			ic2 = isModLoaded("IC2");
-
-			// integration
-			final String integrations = "integrations";
-			abyssalCraft = config.getBoolean("abyssalCraft", integrations, true, "AbyssalCraft Integration.") && isModLoaded("abyssalcraft");
-			ae2Integration = config.getBoolean("appliedEnergistics2", integrations, true, "Applied Energistics 2 Integration.") && isModLoaded("appliedenergistics2");
-			advancedRocketryIntegration = config.getBoolean("advancedRocketry", integrations, true, "Advanced Rocketry Integration.") && isModLoaded("advancedRocketry");
-			baseMetalsIntegration = config.getBoolean("baseMetals", integrations, true, "Base Metals Integration.") && isModLoaded("basemetals");
-			bloodMagicIntegration = config.getBoolean("bloodMagic", integrations, true, "Blood Magic Integration.") && isModLoaded("BloodMagic");
-			calculatorIntegration = config.getBoolean("calculator", integrations, false, "Calculator Integration.") && isModLoaded("Calculator");
-			embersIntegration = config.getBoolean("embers", integrations, true, "Embers Integration") && isModLoaded("embers");
-			enderIOIntegration = config.getBoolean("enderIO", integrations, true, "Ender IO Integration.") && isModLoaded("EnderIO");
-			forestryIntegration = config.getBoolean("forestry", integrations, true, "Forestry Integration.") && forestry;
-			foundryIntegration = config.getBoolean("foundry", integrations, true, "Foundry Integration.") && isModLoaded("foundry");
-			ic2Integration = config.getBoolean("industrialCraft2", integrations, true, "Industrial Craft 2 Integration.") && ic2;
-			ieIntegration = config.getBoolean("immersiveEngineering", integrations, true, "Immersive Engineering Integration.") && isModLoaded("immersiveengineering");
-			mekanismIntegration = config.getBoolean("mekanism", integrations, true, "Mekanism Integration.") && isModLoaded("Mekanism");
-			modularMachinesIntegration = config.getBoolean("modularMachines", integrations, true, "Modular-Machines Integration.") && isModLoaded("modularmachines");
-			railCraftIntegration = config.getBoolean("railcraft", integrations, true, "Railcraft Integration.") && isModLoaded("Railcraft");
-			techRebornIntegration = config.getBoolean("techReborn", integrations, true, "TechReborn Integration.") && isModLoaded("techreborn");
-			//waterPowerIntegration = config.getBoolean("waterPower", integrations, true, "Water Power Integration.") && isModLoaded("waterpower");
+			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module enabledByDefault?\nif false all the Integrations will be disabled.\n");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}

@@ -96,10 +96,10 @@ public final class UniDict
 	public void loadComplete(final FMLLoadCompleteEvent event)
 	{
 		moduleHandler.startModules(event);
-		SpecificKindItemStackComparator.nullify();
 		uniResourceHandler = null;
 		moduleHandler = null;
 		dependencies = null;
+		SpecificKindItemStackComparator.kindSpecificComparators = null;
 	}
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)

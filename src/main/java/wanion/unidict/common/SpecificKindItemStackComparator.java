@@ -23,7 +23,7 @@ import static wanion.lib.common.Util.getModName;
 
 public final class SpecificKindItemStackComparator implements Comparator<ItemStack>
 {
-	private static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
+	public static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
 	private final TObjectIntMap<String> ownerOfKind;
 
 	private SpecificKindItemStackComparator(final int kind)
@@ -37,11 +37,6 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
 		if (!kindSpecificComparators.containsKey(kind))
 			kindSpecificComparators.put(kind, new SpecificKindItemStackComparator(kind));
 		return kindSpecificComparators.get(kind);
-	}
-
-	public static void nullify()
-	{
-		kindSpecificComparators = null;
 	}
 
 	@Override

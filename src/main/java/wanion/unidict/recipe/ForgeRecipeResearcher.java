@@ -12,12 +12,14 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.Util;
+import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
@@ -57,7 +59,7 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 	{
 		Class<? extends ShapedOreRecipe> shapedCustomRecipe = null;
 		try {
-			if (UniDict.getConfig().forestry)
+			if (Loader.isModLoaded("forestry"))
 				shapedCustomRecipe = (Class<? extends ShapedOreRecipe>) Class.forName("forestry.core.recipes.ShapedRecipeCustom");
 		} catch (ClassNotFoundException e) { UniDict.getLogger().error(e); }
 		return shapedCustomRecipe == null ? Collections.singletonList(ShapedOreRecipe.class) : Arrays.asList(ShapedOreRecipe.class, shapedCustomRecipe);
