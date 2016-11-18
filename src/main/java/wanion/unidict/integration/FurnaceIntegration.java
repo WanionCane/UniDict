@@ -12,6 +12,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
 
@@ -38,9 +39,15 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 
 	private void optimizeFurnaceRecipes()
 	{
+		final Map<ItemStack, Float> experienceMap = Util.getField(FurnaceRecipes.class, "experienceList", FurnaceRecipes.instance(), Map.class);
 		if (!config.inputReplacementFurnace)
-			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet())
-				furnaceRecipe.setValue(resourceHandler.getMainItemStack(furnaceRecipe.getValue()));
+			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
+				final ItemStack oldEntry = furnaceRecipe.getValue();
+				final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
+				furnaceRecipe.setValue(newEntry);
+				if (experienceMap.containsKey(oldEntry))
+					experienceMap.put(newEntry, experienceMap.remove(oldEntry));
+			}
 		else {
 			final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
 			final Map<ItemStack, ItemStack> furnaceRecipes = FurnaceRecipes.instance().getSmeltingList();
@@ -57,14 +64,19 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 					continue;
 				}
 				final int kind = inputContainer.kind;
+				final ItemStack oldEntry = furnaceRecipe.getValue();
 				if (!containerKindMap.containsKey(outputContainer))
 					containerKindMap.put(outputContainer, new TIntHashSet());
 				final TIntSet kindSet = containerKindMap.get(outputContainer);
 				if (!kindSet.contains(kind)) {
 					kindSet.add(kind);
-					newRecipes.put(inputContainer.getMainEntry(furnaceRecipe.getKey().stackSize), outputContainer.getMainEntry(furnaceRecipe.getValue().stackSize));
+					final ItemStack newEntry = outputContainer.getMainEntry(oldEntry.stackSize);
+					newRecipes.put(inputContainer.getMainEntry(furnaceRecipe.getKey().stackSize), newEntry);
+					if (experienceMap.containsKey(oldEntry))
+						experienceMap.put(newEntry, experienceMap.remove(oldEntry));
 				}
 				furnaceRecipeIterator.remove();
+				experienceMap.remove(oldEntry);
 			}
 			furnaceRecipes.putAll(newRecipes);
 		}

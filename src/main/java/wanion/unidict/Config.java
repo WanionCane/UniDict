@@ -27,6 +27,7 @@ import static wanion.unidict.common.Reference.SLASH;
 public final class Config implements UniDict.IDependency
 {
 	// general configs
+	public final boolean libraryMode;
 	public final boolean keepOneEntry;
 	public final boolean inputReplacementFurnace;
 	public final boolean inputReplacementIC2;
@@ -61,6 +62,7 @@ public final class Config implements UniDict.IDependency
 			// config
 			// general configs
 			final String general = Configuration.CATEGORY_GENERAL;
+			libraryMode = config.getBoolean("libraryMode", general, false, "Enable this if you have mods that depends on UniDict but you don't like the unification.");
 			keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
 			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("JEI");

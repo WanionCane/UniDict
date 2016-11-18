@@ -36,7 +36,7 @@ public final class UniResourceContainer
 	public UniResourceContainer(@Nonnull final String name, final int kind)
 	{
 		if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
-			throw new RuntimeException("Something may have broken the Ore Dictionary!");
+			throw new RuntimeException("Something may have broke the Ore Dictionary!");
 		this.kind = kind;
 		initialSize = entries.size();
 	}
@@ -68,12 +68,12 @@ public final class UniResourceContainer
 			return false;
 		if (updated)
 			return true;
-		if (sort && initialSize != entries.size())
-			sort();
 		final ItemStack mainEntry = entries.get(0);
 		mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
+		hashes = MetaItem.getArray(entries);
 		if (sort) {
-			hashes = MetaItem.getArray(entries);
+			if (initialSize != entries.size())
+				sort();
 			if (UniDict.getConfig().autoHideInJEI)
 				removeBadEntriesFromJEI();
 			if (UniDict.getConfig().keepOneEntry)
@@ -82,9 +82,10 @@ public final class UniResourceContainer
 		return updated = true;
 	}
 
-	int[] getHashes()
+	@Nonnull
+	public int[] getHashes()
 	{
-		return hashes;
+		return hashes != null ? Arrays.copyOf(hashes, hashes.length) : new int[0];
 	}
 
 	private void keepOneEntry()

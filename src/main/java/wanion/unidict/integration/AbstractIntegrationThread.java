@@ -15,13 +15,15 @@ import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.ResourceHandler;
 
+import javax.annotation.Nonnull;
+
 @SpecifiedLoadStage(stage = LoadStage.POST_INIT)
 abstract class AbstractIntegrationThread extends AbstractModuleThread
 {
 	protected final ResourceHandler resourceHandler = UniDict.getResourceHandler();
 	protected final Config config = UniDict.getConfig();
 
-	AbstractIntegrationThread(String integrationName)
+	AbstractIntegrationThread(@Nonnull final String integrationName)
 	{
 		super(integrationName, "Integration");
 	}

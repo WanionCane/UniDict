@@ -8,7 +8,6 @@ package wanion.unidict.api;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import gnu.trove.map.hash.THashMap;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.Resource;
 
@@ -16,6 +15,8 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class UniDictAPI implements UniDict.IDependency
@@ -31,9 +32,7 @@ public class UniDictAPI implements UniDict.IDependency
 	@Nonnull
 	public static Map<String, Resource> toResourceMap(@Nonnull final List<Resource> resources)
 	{
-		final Map<String, Resource> resourceMap = new THashMap<>();
-		resources.forEach(resource -> resourceMap.put(resource.name, resource));
-		return resourceMap;
+		return resources.stream().collect(Collectors.toMap(Resource::getName, Function.identity()));
 	}
 
 	public Resource getResource(@Nonnull final String resourceName)

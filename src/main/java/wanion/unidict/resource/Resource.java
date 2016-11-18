@@ -49,6 +49,12 @@ public class Resource
 		containerMap.forEachValue(container -> childrenMap.put(container.kind, container) == null);
 	}
 
+	@Nonnull
+	public String getName()
+	{
+		return this.name;
+	}
+
 	public static List<Resource> getResources(@Nonnull final Collection<Resource> resources, final String... kinds)
 	{
 		final TIntList kindList = new TIntArrayList();

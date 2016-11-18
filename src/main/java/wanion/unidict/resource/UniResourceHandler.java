@@ -152,19 +152,21 @@ public final class UniResourceHandler
 			});
 			apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
 		});
-		final TIntList kindList = Resource.kindNamesToKindList(config.childrenOfMetals.toArray(new String[config.childrenOfMetals.size()]));
-		config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(kindList).setSortOfChildren(true)));
-		if (!config.customUnifiedResources.isEmpty()) {
-			config.customUnifiedResources.forEach((resourceName, kinds) -> {
-				final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
-				kinds.forEach(kindName -> {
-					final String oreDictName = kindName + resourceName;
-					if (OreDictionary.doesOreNameExist(oreDictName))
-						customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName), true));
+		if (!config.libraryMode) {
+			final TIntList kindList = Resource.kindNamesToKindList(config.childrenOfMetals.toArray(new String[config.childrenOfMetals.size()]));
+			config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(kindList).setSortOfChildren(true)));
+			if (!config.customUnifiedResources.isEmpty()) {
+				config.customUnifiedResources.forEach((resourceName, kinds) -> {
+					final Resource customResource = resourceMap.containsKey(resourceName) ? resourceMap.get(resourceName) : new Resource(resourceName);
+					kinds.forEach(kindName -> {
+						final String oreDictName = kindName + resourceName;
+						if (OreDictionary.doesOreNameExist(oreDictName))
+							customResource.addChild(new UniResourceContainer(oreDictName, Resource.registerAndGet(kindName), true));
+					});
+					if (!resourceMap.containsKey(resourceName) && customResource.getChildrenCount() != 0)
+						resourceMap.put(resourceName, customResource);
 				});
-				if (!resourceMap.containsKey(resourceName) && customResource.getChildrenCount() != 0)
-					resourceMap.put(resourceName, customResource);
-			});
+			}
 		}
 		config.saveIfHasChanged();
 	}
@@ -172,6 +174,8 @@ public final class UniResourceHandler
 	public void postInit()
 	{
 		apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
+		if (config.libraryMode)
+			return;
 		Resource customResource;
 		for (String customEntry : config.customUnifiedResources.keySet())
 			if ((customResource = resourceMap.get(customEntry)) != null)

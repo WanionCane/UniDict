@@ -19,16 +19,17 @@ import java.lang.reflect.Field;
 class RefinedStorageIntegration extends AbstractIntegrationThread
 {
 	private final Field soldererRecipeFluidStorageRows;
-	private final Field soldererRecipePrintedProcessorRequeriment;
+	private final Field soldererRecipePrintedProcessorRequirement;
 	private final Field soldererRecipeProcessorRows;
 	private final Field soldererRecipeStorageRows;
 	private final Field soldererRecipeUpgradeRows;
+
 	RefinedStorageIntegration()
 	{
 		super("Refined Storage");
 		try {
 			(soldererRecipeFluidStorageRows = SoldererRecipeFluidStorage.class.getDeclaredField("rows")).setAccessible(true);
-			(soldererRecipePrintedProcessorRequeriment = SoldererRecipePrintedProcessor.class.getDeclaredField("requirement")).setAccessible(true);
+			(soldererRecipePrintedProcessorRequirement = SoldererRecipePrintedProcessor.class.getDeclaredField("requirement")).setAccessible(true);
 			(soldererRecipeProcessorRows = SoldererRecipeProcessor.class.getDeclaredField("rows")).setAccessible(true);
 			(soldererRecipeStorageRows = SoldererRecipeStorage.class.getDeclaredField("rows")).setAccessible(true);
 			(soldererRecipeUpgradeRows = SoldererRecipeUpgrade.class.getDeclaredField("rows")).setAccessible(true);
@@ -54,7 +55,7 @@ class RefinedStorageIntegration extends AbstractIntegrationThread
 			if (soldererRecipe instanceof SoldererRecipeFluidStorage)
 				resourceHandler.setMainItemStacks((Object[]) soldererRecipeFluidStorageRows.get(soldererRecipe));
 			else if (soldererRecipe instanceof SoldererRecipePrintedProcessor)
-				soldererRecipePrintedProcessorRequeriment.set(soldererRecipe, resourceHandler.getMainItemStack((ItemStack) soldererRecipePrintedProcessorRequeriment.get(soldererRecipe)));
+				soldererRecipePrintedProcessorRequirement.set(soldererRecipe, resourceHandler.getMainItemStack((ItemStack) soldererRecipePrintedProcessorRequirement.get(soldererRecipe)));
 			else if (soldererRecipe instanceof SoldererRecipeProcessor)
 				resourceHandler.setMainItemStacks((Object[]) soldererRecipeProcessorRows.get(soldererRecipe));
 			else if (soldererRecipe instanceof SoldererRecipeStorage)

@@ -9,11 +9,11 @@ package wanion.unidict.integration;
  */
 
 import net.minecraftforge.common.config.Configuration;
+import org.apache.commons.lang3.text.WordUtils;
 import wanion.lib.module.AbstractModule;
-import wanion.unidict.Config;
-import wanion.unidict.UniDict;
 import wanion.unidict.common.Reference;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 
 import static net.minecraftforge.fml.common.Loader.isModLoaded;
@@ -30,10 +30,52 @@ public final class IntegrationModule extends AbstractModule
 	protected void init()
 	{
 		final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_ID + SLASH + "IntegrationModule.cfg"));
-		for (final IntegrationEnum integrationEnum : IntegrationEnum.values())
-			if (config.get("enabledIntegrations", integrationEnum.name(), integrationEnum.enabledByDefault).getBoolean() && isModLoaded(integrationEnum.modId))
-				manager.add(integrationEnum.integrationClass);
+		for (final Integration integration : Integration.values())
+			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && isModLoaded(integration.modId))
+				manager.add(integration.integrationClass);
 		if (config.hasChanged())
 			config.save();
+	}
+
+	private enum Integration
+	{
+		CRAFTING("Forge", CraftingIntegration.class),
+		FURNACE("Forge", FurnaceIntegration.class),
+		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
+		ADVANCED_ROCKETRY("advancedRocketry", AdvancedRocketryIntegration.class),
+		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
+		BASE_METALS("basemetals", BaseMetalsIntegration.class),
+		BLOOD_MAGIC("BloodMagic", BloodMagicIntegration.class),
+		CALCULATOR("Calculator", CalculatorIntegration.class, false),
+		EMBERS("embers", EmbersIntegration.class),
+		ENDER_IO("EnderIO", EnderIOIntegration.class),
+		FORESTRY("forestry", ForestryIntegration.class),
+		FOUNDRY("foundry", FoundryIntegration.class),
+		INDUSTRIAL_CRAFT_2("IC2", IC2Integration.class),
+		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
+		MEKANISM("Mekanism", MekanismIntegration.class),
+		MODULAR_MACHINES("modularmachines", ModularMachinesIntegration.class),
+		RAIL_CRAFT("Railcraft", RailcraftIntegration.class),
+		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
+		TECH_REBORN("techreborn", TechRebornIntegration.class),
+		WATER_POWER("waterpower", WaterPowerIntegration.class, false);
+
+		private final String modId;
+		private final Class<? extends AbstractIntegrationThread> integrationClass;
+		private final boolean enabledByDefault;
+
+		Integration(@Nonnull final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass)
+		{
+			this.modId = modId;
+			this.integrationClass = integrationClass;
+			this.enabledByDefault = true;
+		}
+
+		Integration(@Nonnull final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass, final boolean enabledByDefault)
+		{
+			this.modId = modId;
+			this.integrationClass = integrationClass;
+			this.enabledByDefault = enabledByDefault;
+		}
 	}
 }
