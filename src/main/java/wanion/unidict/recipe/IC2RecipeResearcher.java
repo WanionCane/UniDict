@@ -16,28 +16,25 @@ import ic2.api.recipe.RecipeInputOreDict;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.common.MetaItem;
 import wanion.lib.recipe.RecipeHelper;
-import wanion.unidict.UniOreDictionary;
-import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
+public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
 {
 	@Override
-	public int getShapedRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+	public int getShapedRecipeKey(@Nonnull AdvRecipe recipe)
 	{
 		final TIntList recipeKeys = new TIntArrayList();
 		int recipeKey = 0;
 		List<ItemStack> bufferInput;
-		for (final IRecipeInput input : ((AdvRecipe) recipe).input)
+		for (final IRecipeInput input : recipe.input)
 			if (!(bufferInput = input.getInputs()).isEmpty())
 				recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0))));
 		recipeKeys.sort();
@@ -47,12 +44,12 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	public int getShapelessRecipeKey(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+	public int getShapelessRecipeKey(@Nonnull AdvShapelessRecipe recipe)
 	{
 		final TIntList recipeKeys = new TIntArrayList();
 		int recipeKey = 0;
 		List<ItemStack> bufferInput;
-		for (final IRecipeInput input : ((AdvShapelessRecipe) recipe).input)
+		for (final IRecipeInput input : recipe.input)
 			if (!(bufferInput = input.getInputs()).isEmpty())
 				recipeKeys.add(MetaItem.get(resourceHandler.getMainItemStack(bufferInput.get(0))));
 		recipeKeys.sort();
@@ -76,10 +73,10 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	public ShapedOreRecipe getNewShapedRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final AdvRecipe recipe)
 	{
 		final Object[] newRecipeInputs = new Object[9];
-		final IRecipeInput[] recipeInputs = ((AdvRecipe) recipe).input;
+		final IRecipeInput[] recipeInputs = recipe.input;
 		for (int i = 0; i < recipeInputs.length; i++) {
 			final IRecipeInput input = recipeInputs[i];
 			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
@@ -97,10 +94,10 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final AdvShapelessRecipe recipe)
 	{
 		final Object[] newRecipeInputs = new Object[9];
-		final IRecipeInput[] recipeInputs = ((AdvShapelessRecipe) recipe).input;
+		final IRecipeInput[] recipeInputs = recipe.input;
 		for (int i = 0; i < recipeInputs.length; i++) {
 			final IRecipeInput input = recipeInputs[i];
 			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
@@ -118,10 +115,10 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final AdvShapelessRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		for (final IRecipeInput recipeInput : ((AdvShapelessRecipe) recipe).input) {
+		for (final IRecipeInput recipeInput : recipe.input) {
 			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
 			if (oreName == null) {
 				final boolean notEmpty = !recipeInput.getInputs().isEmpty();
@@ -137,10 +134,10 @@ public class IC2RecipeResearcher implements IRecipeResearcher<AdvRecipe, AdvShap
 	}
 
 	@Override
-	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final AdvRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		for (final IRecipeInput recipeInput : ((AdvRecipe) recipe).input) {
+		for (final IRecipeInput recipeInput : recipe.input) {
 			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
 			if (oreName == null) {
 				final boolean notEmpty = !recipeInput.getInputs().isEmpty();

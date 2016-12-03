@@ -130,8 +130,9 @@ public final class UniResourceHandler
 			}
 		});
 		allTheKinds.forEach(Resource::register);
-		if (config.kindDebugMode) {
-			try (final BufferedWriter bw = new BufferedWriter(new FileWriter(new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt")))) {
+		final File kindDebugFile = config.kindDebugMode ? new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt") : null;
+		if (kindDebugFile != null && !kindDebugFile.exists()) {
+			try (final BufferedWriter bw = new BufferedWriter(new FileWriter(kindDebugFile))) {
 				allTheKinds.forEach(kind -> {
 					try {
 						bw.write(kind);
@@ -174,16 +175,16 @@ public final class UniResourceHandler
 	public void postInit()
 	{
 		apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
-		if (config.libraryMode)
-			return;
-		Resource customResource;
-		for (String customEntry : config.customUnifiedResources.keySet())
-			if ((customResource = resourceMap.get(customEntry)) != null)
-				customResource.updateEntries();
-		if (config.keepOneEntry)
-			OreDictionary.rebakeMap();
-		final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
-		resourceHandler.populateIndividualStackAttributes();
+		if (!config.libraryMode) {
+			Resource customResource;
+			for (String customEntry : config.customUnifiedResources.keySet())
+				if ((customResource = resourceMap.get(customEntry)) != null)
+					customResource.updateEntries();
+			if (config.keepOneEntry)
+				OreDictionary.rebakeMap();
+			final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
+			resourceHandler.populateIndividualStackAttributes();
+		}
 		for (final String blackListedResource : config.resourceBlackList) {
 			resourceMap.remove(blackListedResource);
 			apiResourceMap.remove(blackListedResource);

@@ -29,6 +29,7 @@ public final class Config implements UniDict.IDependency
 	// general configs
 	public final boolean libraryMode;
 	public final boolean keepOneEntry;
+	public final boolean registerTheIngredientsOfTheNewRecipesAsItemStacks;
 	public final boolean inputReplacementFurnace;
 	public final boolean inputReplacementIC2;
 	public final boolean inputReplacementMekanism;
@@ -65,6 +66,7 @@ public final class Config implements UniDict.IDependency
 			libraryMode = config.getBoolean("libraryMode", general, false, "Enable this if you have mods that depends on UniDict but you don't like the unification.");
 			keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
 			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
+			registerTheIngredientsOfTheNewRecipesAsItemStacks = config.getBoolean("registerTheIngredientsOfTheNewRecipesAsItemStacks", general, false, "If Enabled, the inputs of the new recipes created by Crafting Integration will be registered as ItemStacks. Enable this if you don't like the cycling through the possibilities of JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("JEI");
 			hideInJEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
 			kindDebugMode = config.getBoolean("kindDebugMode", general, false, "Enable this to keep track of all the kinds.\nthe output will be in logs folder.");

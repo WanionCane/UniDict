@@ -26,7 +26,6 @@ final class IC2Integration extends AbstractIntegrationThread
 {
 	private final List<Map<IRecipeInput, RecipeOutput>> ic2MachinesRecipeList = new FixedSizeList<>(5);
 
-	@SuppressWarnings("unchecked")
 	IC2Integration()
 	{
 		super("Industrial Craft 2");
@@ -35,6 +34,8 @@ final class IC2Integration extends AbstractIntegrationThread
 			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.compressor, Map.class));
 			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.blastfurnace, Map.class));
 			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.macerator, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerCutting, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerExtruding, Map.class));
 			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerRolling, Map.class));
 		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 	}

@@ -11,16 +11,12 @@ package wanion.unidict.recipe;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniDict;
-import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.Util;
-import wanion.unidict.integration.IntegrationModule;
-import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,12 +24,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
+public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
 {
 	@Override
-	public int getShapedRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+	public int getShapedRecipeKey(@Nonnull final ShapedOreRecipe recipe)
 	{
-		final TIntList recipeKeys = Util.getList(((ShapedOreRecipe) recipe).getInput(), resourceHandler);
+		final TIntList recipeKeys = Util.getList(recipe.getInput(), resourceHandler);
 		int recipeKey = 0;
 		recipeKeys.sort();
 		for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
@@ -42,9 +38,9 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 	}
 
 	@Override
-	public int getShapelessRecipeKey(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler)
+	public int getShapelessRecipeKey(@Nonnull final ShapelessOreRecipe recipe)
 	{
-		final TIntList recipeKeys = Util.getList(((ShapelessOreRecipe) recipe).getInput().toArray(), resourceHandler);
+		final TIntList recipeKeys = Util.getList(recipe.getInput().toArray(), resourceHandler);
 		int recipeKey = 0;
 		recipeKeys.sort();
 		for (final TIntIterator recipeKeysIterator = recipeKeys.iterator(); recipeKeysIterator.hasNext(); )
@@ -72,11 +68,10 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 		return Collections.singletonList(ShapelessOreRecipe.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final ShapedOreRecipe recipe)
 	{
-		final Object[] recipeInputs = ((ShapedOreRecipe) recipe).getInput();
+		final Object[] recipeInputs = recipe.getInput();
 		final Object[] newRecipeInputs = new Object[9];
 		for (int i = 0; i < 9; i++) {
 			final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
@@ -86,11 +81,10 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final ShapelessOreRecipe recipe)
 	{
-		final Object[] recipeInputs = ((ShapelessOreRecipe) recipe).getInput().toArray();
+		final Object[] recipeInputs = recipe.getInput().toArray();
 		final Object[] newRecipeInputs = new Object[recipeInputs.length];
 		for (int i = 0; i < recipeInputs.length; i++) {
 			final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
@@ -102,10 +96,10 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final ShapelessOreRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		((ShapelessOreRecipe) recipe).getInput().forEach(object -> {
+		recipe.getInput().forEach(object -> {
 			if (object != null) {
 				final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
 				if (bufferOreName != null)
@@ -117,12 +111,11 @@ public class ForgeRecipeResearcher implements IRecipeResearcher<ShapedOreRecipe,
 		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final IRecipe recipe, @Nonnull final ResourceHandler resourceHandler, @Nonnull final UniOreDictionary uniOreDictionary)
+	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final ShapedOreRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		for (Object object : ((ShapedOreRecipe) recipe).getInput()) {
+		for (Object object : recipe.getInput()) {
 			if (object != null) {
 				final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
 				if (bufferOreName != null)

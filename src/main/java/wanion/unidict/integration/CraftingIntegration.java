@@ -17,25 +17,31 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.Loader;
+import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.UniDict;
-import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.Util;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
 import wanion.unidict.recipe.IC2RecipeResearcher;
-import wanion.unidict.recipe.IRecipeResearcher;
 import wanion.unidict.recipe.VanillaRecipeResearcher;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
-	private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
 	private final List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
 	private final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
+	private final Method getShapedRecipeKeyMethod;
+	private final Method getShapelessRecipeKeyMethod;
+	private final Method getNewShapedRecipeMethod;
+	private final Method getNewShapedFromShapelessRecipeMethod;
+	private final Method getNewShapelessRecipeMethod;
+	private final Method getNewShapelessFromShapedRecipeMethod;
 
 	CraftingIntegration()
 	{
@@ -49,6 +55,16 @@ final class CraftingIntegration extends AbstractIntegrationThread
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
 			researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
 		});
+		try {
+			getShapedRecipeKeyMethod = IRecipeResearcher.class.getMethod("getShapedRecipeKey", IRecipe.class);
+			getShapelessRecipeKeyMethod = IRecipeResearcher.class.getMethod("getShapelessRecipeKey", IRecipe.class);
+			getNewShapedRecipeMethod = IRecipeResearcher.class.getMethod("getNewShapedRecipe", IRecipe.class);
+			getNewShapedFromShapelessRecipeMethod = IRecipeResearcher.class.getMethod("getNewShapedFromShapelessRecipe", IRecipe.class);
+			getNewShapelessRecipeMethod = IRecipeResearcher.class.getMethod("getNewShapelessRecipe", IRecipe.class);
+			getNewShapelessFromShapedRecipeMethod = IRecipeResearcher.class.getMethod("getNewShapelessFromShapedRecipe", IRecipe.class);
+		} catch (NoSuchMethodException e){
+			throw new RuntimeException("Couldn't find the Methods!");
+		}
 	}
 
 	@Override
@@ -69,17 +85,22 @@ final class CraftingIntegration extends AbstractIntegrationThread
 			boolean isShapeless = false;
 			if ((bufferRecipe = recipeIterator.next()) == null || (bufferContainer = resourceHandler.getContainer(bufferRecipe.getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(bufferRecipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(bufferRecipe.getClass()))))
 				continue;
-			final int recipeKey = !isShapeless ? shapedResearcherMap.get(bufferRecipe.getClass()).getShapedRecipeKey(bufferRecipe, resourceHandler) : shapelessResearcherMap.get(bufferRecipe.getClass()).getShapelessRecipeKey(bufferRecipe, resourceHandler);
-			if (recipeKey == 0)
-				continue;
-			final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
-			if (!smartRecipeMap.containsKey(bufferContainer))
-				smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
-			else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
-			if (!evenSmarterRecipeMap.containsKey(recipeKey))
-				evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
-			else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
-			recipeIterator.remove();
+			try {
+				final int recipeKey;
+				recipeKey = !isShapeless ? (int) getShapedRecipeKeyMethod.invoke(shapedResearcherMap.get(bufferRecipe.getClass()), bufferRecipe) : (int) getShapelessRecipeKeyMethod.invoke(shapelessResearcherMap.get(bufferRecipe.getClass()), bufferRecipe);
+				if (recipeKey == 0)
+					continue;
+				final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
+				if (!smartRecipeMap.containsKey(bufferContainer))
+					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
+				else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
+				if (!evenSmarterRecipeMap.containsKey(recipeKey))
+					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
+				else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
+				recipeIterator.remove();
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -100,13 +121,21 @@ final class CraftingIntegration extends AbstractIntegrationThread
 					final IRecipe recipe = recipeList.get(0);
 					final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
 					final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
-					if (recipe.getRecipeSize() == 9)
-						recipes.add(isShapeless ? recipeResearcher.getNewShapedFromShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
-					else if (recipe.getRecipeSize() == 1)
-						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapelessFromShapedRecipe(recipe, resourceHandler, uniOreDictionary));
-					else
-						recipes.add(isShapeless ? recipeResearcher.getNewShapelessRecipe(recipe, resourceHandler, uniOreDictionary) : recipeResearcher.getNewShapedRecipe(recipe, resourceHandler, uniOreDictionary));
-					return true;
+					try {
+						if (recipe.getRecipeSize() == 9)
+							recipes.add(isShapeless ? (IRecipe) getNewShapedFromShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe));
+						else if (recipe.getRecipeSize() == 1)
+							recipes.add(isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapelessFromShapedRecipeMethod.invoke(recipeResearcher, recipe));
+						else
+							recipes.add(isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe));
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						final ItemStack outputStack = recipe.getRecipeOutput();
+						if (outputStack != null) {
+							UniDict.getLogger().warn("Couldn't create the right recipe for " + outputStack.getDisplayName() + "\nre-adding the original recipe.");
+							recipes.add(recipe);
+						}
+					}
+			return true;
 				})
 		);
 	}

@@ -62,6 +62,11 @@ public final class UniDict
 		return dependencies.get(ResourceHandler.class);
 	}
 
+	public static UniOreDictionary getUniOreDictionary()
+	{
+		return dependencies.get(UniOreDictionary.class);
+	}
+
 	public static Config getConfig()
 	{
 		return dependencies.get(Config.class);
