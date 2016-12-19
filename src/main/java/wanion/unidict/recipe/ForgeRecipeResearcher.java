@@ -94,7 +94,6 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final ShapelessOreRecipe recipe)
 	{

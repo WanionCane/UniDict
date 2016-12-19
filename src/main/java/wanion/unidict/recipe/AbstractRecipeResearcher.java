@@ -16,7 +16,7 @@ import wanion.unidict.resource.ResourceHandler;
 
 abstract class AbstractRecipeResearcher<S extends IRecipe, L extends IRecipe> implements IRecipeResearcher<S, L>
 {
+	protected static final boolean itemStacksOnly = UniDict.getConfig().registerTheIngredientsOfTheNewRecipesAsItemStacks;
 	protected final ResourceHandler resourceHandler = UniDict.getResourceHandler();
 	protected final UniOreDictionary uniOreDictionary = UniDict.getUniOreDictionary();
-	protected final boolean itemStacksOnly = UniDict.getConfig().registerTheIngredientsOfTheNewRecipesAsItemStacks;
 }

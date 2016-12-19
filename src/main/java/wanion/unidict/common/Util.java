@@ -31,21 +31,21 @@ public final class Util
 	public static final Comparator<ItemStack> itemStackComparatorByModName = (!UniDict.getDependencies().get(Config.class).enableSpecificKindSort) ? new Comparator<ItemStack>()
 	{
 		@Override
-		public int compare(ItemStack itemStack1, ItemStack itemStack2)
+		public int compare(final ItemStack itemStack1, final ItemStack itemStack2)
 		{
-			String stack1ModName = getModName(itemStack1);
+			final String stack1ModName = getModName(itemStack1);
 			final Config config = UniDict.getConfig();
 			if (config.keepOneEntry && config.keepOneEntryModBlackSet.contains(stack1ModName))
 				ResourceHandler.addToKeepOneEntryModBlackSet(itemStack1);
 			return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
 		}
 
-		private long getIndex(ItemStack itemStack)
+		private long getIndex(final ItemStack itemStack)
 		{
 			return UniDict.getConfig().ownerOfEveryThing.get(getModName(itemStack));
 		}
 
-		private long getIndex(String modName)
+		private long getIndex(final String modName)
 		{
 			return UniDict.getConfig().ownerOfEveryThing.get(modName);
 		}

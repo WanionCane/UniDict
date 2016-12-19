@@ -42,6 +42,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
 	private final Method getNewShapedFromShapelessRecipeMethod;
 	private final Method getNewShapelessRecipeMethod;
 	private final Method getNewShapelessFromShapedRecipeMethod;
+	private int totalRecipesReCreated = 0;
 
 	CraftingIntegration()
 	{
@@ -73,8 +74,10 @@ final class CraftingIntegration extends AbstractIntegrationThread
 		try {
 			doTheResearch();
 			reCreateTheRecipes();
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
-		return threadName + "Why so many recipes? I had to deal with a lot of recipes.";
+		} catch (Exception e) {
+			UniDict.getLogger().error(threadName + e);
+		}
+		return threadName + "Why so many recipes? I had to deal with " + totalRecipesReCreated + " recipes.";
 	}
 
 	private void doTheResearch()
@@ -131,11 +134,12 @@ final class CraftingIntegration extends AbstractIntegrationThread
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						final ItemStack outputStack = recipe.getRecipeOutput();
 						if (outputStack != null) {
-							UniDict.getLogger().warn("Couldn't create the right recipe for " + outputStack.getDisplayName() + "\nre-adding the original recipe.");
+							UniDict.getLogger().warn("Crafting Integration: Couldn't create the recipe for " + outputStack.getDisplayName() + ".\nre-adding the original recipe.");
 							recipes.add(recipe);
 						}
 					}
-			return true;
+					totalRecipesReCreated++;
+					return true;
 				})
 		);
 	}

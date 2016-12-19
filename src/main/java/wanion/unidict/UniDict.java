@@ -109,8 +109,10 @@ public final class UniDict
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
 	{
-		final Config config = dependencies.get(Config.class);
+		final Config config = getConfig();
 		if (!config.libraryMode && config.integrationModule)
+			moduleHandler.addModule(new IntegrationModule());
+		if (config.processingModule)
 			moduleHandler.addModule(new IntegrationModule());
 		return moduleHandler;
 	}

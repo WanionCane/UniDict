@@ -47,6 +47,7 @@ public final class Config implements UniDict.IDependency
 	public final List<String> userRegisteredOreDictEntries;
 	// modules
 	public final boolean integrationModule;
+	//public final boolean processingModule;
 	// config
 	private final Configuration config;
 	// resource related stuff
@@ -84,7 +85,8 @@ public final class Config implements UniDict.IDependency
 			// userRegisteredOreDictEntries
 			userRegisteredOreDictEntries = Arrays.asList(config.getStringList("userRegisteredOreDictEntries", general, new String[]{}, "This allows to the user register their own ore entries before the Unification happen.\nthis is mainly useful when the user is trying to unify things that aren't registered previously in the Ore Dictionary.\n\nFormat:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone."));
 			// modules
-			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module enabledByDefault?\nif false all the Integrations will be disabled.\n");
+			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module.\nif false all the Integrations will be disabled.\n");
+			//processingModule = config.getBoolean("processing", "modules", false, "Processing Module.\nif false all the Processing Addons will be disabled.\n");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}

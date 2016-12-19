@@ -49,12 +49,12 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
 		return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
 	}
 
-	private long getIndex(ItemStack itemStack)
+	private long getIndex(final ItemStack itemStack)
 	{
 		return ownerOfKind.get(getModName(itemStack));
 	}
 
-	private long getIndex(String modName)
+	private long getIndex(final String modName)
 	{
 		return ownerOfKind.get(modName);
 	}
