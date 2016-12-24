@@ -57,7 +57,9 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		try {
 			if (Loader.isModLoaded("forestry"))
 				shapedCustomRecipe = (Class<? extends ShapedOreRecipe>) Class.forName("forestry.core.recipes.ShapedRecipeCustom");
-		} catch (ClassNotFoundException e) { UniDict.getLogger().error(e); }
+		} catch (ClassNotFoundException e) {
+			UniDict.getLogger().error(e);
+		}
 		return shapedCustomRecipe == null ? Collections.singletonList(ShapedOreRecipe.class) : Arrays.asList(ShapedOreRecipe.class, shapedCustomRecipe);
 	}
 
@@ -73,10 +75,17 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 	{
 		final Object[] recipeInputs = recipe.getInput();
 		final Object[] newRecipeInputs = new Object[9];
-		for (int i = 0; i < 9; i++) {
-			final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
-			final String bufferOreName = input != null ? input instanceof List ? uniOreDictionary.getName(input) : input instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) input) : null : null;
-			newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : input : null;
+		if (itemStacksOnly) {
+			for (int i = 0; i < 9; i++) {
+				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
+				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? input : null;
+			}
+		} else {
+			for (int i = 0; i < 9; i++) {
+				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
+				final String bufferOreName = input != null ? input instanceof List ? uniOreDictionary.getName(input) : input instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) input) : null : null;
+				newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : input : null;
+			}
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
@@ -86,10 +95,17 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 	{
 		final Object[] recipeInputs = recipe.getInput().toArray();
 		final Object[] newRecipeInputs = new Object[recipeInputs.length];
-		for (int i = 0; i < recipeInputs.length; i++) {
-			final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
-			final String bufferOreName = input != null ? input instanceof List ? uniOreDictionary.getName(input) : input instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) input) : null : null;
-			newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : input : null;
+		if (itemStacksOnly) {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
+				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? input : null;
+			}
+		} else {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
+				final String bufferOreName = input != null ? input instanceof List ? uniOreDictionary.getName(input) : input instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) input) : null : null;
+				newRecipeInputs[i] = input != null ? bufferOreName != null ? bufferOreName : input : null;
+			}
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
@@ -98,15 +114,26 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final ShapelessOreRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		recipe.getInput().forEach(object -> {
-			if (object != null) {
-				final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
-				if (bufferOreName != null)
-					inputs.add(bufferOreName);
-				else if (object instanceof ItemStack)
-					inputs.add(object);
-			}
-		});
+		if (itemStacksOnly) {
+			recipe.getInput().forEach(object -> {
+				if (object != null) {
+					if (object instanceof List && !((List) object).isEmpty())
+						inputs.add(((List) object).get(0));
+					else if (object instanceof ItemStack)
+						inputs.add(object);
+				}
+			});
+		} else {
+			recipe.getInput().forEach(object -> {
+				if (object != null) {
+					final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
+					if (bufferOreName != null)
+						inputs.add(bufferOreName);
+					else if (object instanceof ItemStack)
+						inputs.add(object);
+				}
+			});
+		}
 		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
 	}
 
@@ -114,13 +141,24 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final ShapedOreRecipe recipe)
 	{
 		final List<Object> inputs = new ArrayList<>();
-		for (Object object : recipe.getInput()) {
-			if (object != null) {
-				final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
-				if (bufferOreName != null)
-					inputs.add(bufferOreName);
-				else if (object instanceof ItemStack)
-					inputs.add(object);
+		if (itemStacksOnly) {
+			for (Object object : recipe.getInput()) {
+				if (object != null) {
+					if (object instanceof List && !((List) object).isEmpty())
+						inputs.add(((List) object).get(0));
+					else if (object instanceof ItemStack)
+						inputs.add(object);
+				}
+			}
+		} else {
+			for (Object object : recipe.getInput()) {
+				if (object != null) {
+					final String bufferOreName = object instanceof List ? uniOreDictionary.getName(object) : object instanceof ItemStack ? resourceHandler.getContainerName((ItemStack) object) : null;
+					if (bufferOreName != null)
+						inputs.add(bufferOreName);
+					else if (object instanceof ItemStack)
+						inputs.add(object);
+				}
 			}
 		}
 		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());

@@ -112,8 +112,8 @@ public final class UniDict
 		final Config config = getConfig();
 		if (!config.libraryMode && config.integrationModule)
 			moduleHandler.addModule(new IntegrationModule());
-		if (config.processingModule)
-			moduleHandler.addModule(new IntegrationModule());
+		//if (config.processingModule)
+		//	moduleHandler.addModule(new ProcessingModule());
 		return moduleHandler;
 	}
 

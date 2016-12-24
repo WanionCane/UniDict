@@ -35,6 +35,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static wanion.unidict.common.Reference.MOD_ID;
+import static wanion.unidict.common.Reference.SLASH;
+
 public final class UniResourceHandler
 {
 	private static final TLongSet kindBlackSet = new TLongHashSet();
@@ -111,14 +114,14 @@ public final class UniResourceHandler
 	private void createResources()
 	{
 		final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
-		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small|ore).*");
-		UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).parallel().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
+		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore).*");
+		UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).sequential().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
 		final StringBuilder patternBuilder = new StringBuilder("(");
 		for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
 			patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
 		final Map<String, Set<String>> basicResourceMap = new HashMap<>();
 		final Set<String> allTheKinds = new LinkedHashSet<>();
-		final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "stick", "orePoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "crop", "bottleLiquid", "quartz", "log", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "door", "bells", "arrow", "itemCompressed", "enlightenedFused", "darkFused", "crystalShard", "food", "hardened");
+		final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "bottleLiquid", "quartz", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "door", "bells", "arrow", "itemCompressed", "enlightenedFused", "darkFused", "crystalShard", "food", "hardened", "blockPsi", "blockStainedHardened", "rubber", "scaffoldingTreated", "fenceGate", "drill", "bowl", "powder", "oc:stone", "calculatorReinforced");
 		UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
 			final String kindName = matcher.replaceFirst("");
 			if (!allTheKindsBlackSet.contains(kindName)) {
@@ -130,7 +133,7 @@ public final class UniResourceHandler
 			}
 		});
 		allTheKinds.forEach(Resource::register);
-		final File kindDebugFile = config.kindDebugMode ? new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt") : null;
+		final File kindDebugFile = config.kindsDump ? new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt") : null;
 		if (kindDebugFile != null && !kindDebugFile.exists()) {
 			try (final BufferedWriter bw = new BufferedWriter(new FileWriter(kindDebugFile))) {
 				allTheKinds.forEach(kind -> {
@@ -184,6 +187,98 @@ public final class UniResourceHandler
 				OreDictionary.rebakeMap();
 			final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
 			resourceHandler.populateIndividualStackAttributes();
+		}
+		if (config.kindsDump || config.entriesDump || config.unifiedEntriesDump) {
+			final File dumpFolder = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump");
+			if (!dumpFolder.exists())
+				if (dumpFolder.mkdirs())
+					UniDict.getLogger().error("UniDict wasn't able to create the dump folder.");
+			if (dumpFolder.exists()) {
+
+				if (config.kindsDump) {
+					final File kindDumpFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump" + SLASH + "kindsDump.txt");
+					try {
+						if (kindDumpFile.createNewFile()) {
+							try (final BufferedWriter bw = new BufferedWriter(new FileWriter(kindDumpFile))) {
+								Resource.getKinds().forEach(kind -> {
+									try {
+										bw.write(kind);
+										bw.newLine();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								});
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if (config.entriesDump) {
+					final File entriesDumpFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump" + SLASH + "entriesDump.txt");
+					try {
+						if (entriesDumpFile.createNewFile()) {
+							try (final BufferedWriter bw = new BufferedWriter(new FileWriter(entriesDumpFile))) {
+								apiResourceMap.values().forEach(resource -> {
+									try {
+										bw.write(resource.name);
+										bw.newLine();
+										resource.getChildrenCollection().forEach(children -> {
+											try {
+												bw.write("\t" + children.name);
+												bw.newLine();
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
+										});
+										bw.newLine();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								});
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if (config.unifiedEntriesDump) {
+					final File unifiedEntriesDumpFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump" + SLASH + "unifiedEntriesDump.txt");
+					try {
+						if (unifiedEntriesDumpFile.createNewFile()) {
+							try (final BufferedWriter bw = new BufferedWriter(new FileWriter(unifiedEntriesDumpFile))) {
+								resourceMap.values().forEach(resource -> {
+									try {
+										bw.write(resource.name);
+										bw.newLine();
+										resource.getChildrenCollection().forEach(children -> {
+											if (children.isSorted()) {
+												try {
+													bw.write("\t" + children.name);
+													bw.newLine();
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+											}
+										});
+										bw.newLine();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								});
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 		for (final String blackListedResource : config.resourceBlackList) {
 			resourceMap.remove(blackListedResource);

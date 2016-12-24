@@ -114,6 +114,11 @@ public final class UniResourceContainer
 		return UniDict.getConfig().enableSpecificKindSort ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
 	}
 
+	public boolean isSorted()
+	{
+		return sort;
+	}
+
 	void setSort(final boolean sort)
 	{
 		if (this.sort = sort)
@@ -124,7 +129,7 @@ public final class UniResourceContainer
 	{
 		final Comparator<ItemStack> itemStackComparator = getComparator();
 		if (itemStackComparator != null)
-			Collections.sort(entries, itemStackComparator);
+			entries.sort(itemStackComparator);
 	}
 
 	@Override

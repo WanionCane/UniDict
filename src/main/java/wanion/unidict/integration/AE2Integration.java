@@ -9,13 +9,14 @@ package wanion.unidict.integration;
  */
 
 import appeng.api.AEApi;
-import appeng.api.features.IGrinderEntry;
+import appeng.api.features.IGrinderRecipe;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,11 +38,12 @@ final class AE2Integration extends AbstractIntegrationThread
 
 	private void fixGrindStoneRecipes()
 	{
-		final List<IGrinderEntry> grindStoneRecipeList = AEApi.instance().registries().grinder().getRecipes();
+		/*
+		final Collection<IGrinderRecipe> grindStoneRecipeList = AEApi.instance().registries().grinder().getRecipes();
 		final TIntSet uniques = new TIntHashSet(grindStoneRecipeList.size(), 1);
-		for (final Iterator<IGrinderEntry> grindStoneRecipeIterator = grindStoneRecipeList.iterator(); grindStoneRecipeIterator.hasNext(); )
+		for (final Iterator<IGrinderRecipe> grindStoneRecipeIterator = grindStoneRecipeList.iterator(); grindStoneRecipeIterator.hasNext(); )
 		{
-			final IGrinderEntry grindStoneRecipe = grindStoneRecipeIterator.next();
+			final IGrinderRecipe grindStoneRecipe = grindStoneRecipeIterator.next();
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(grindStoneRecipe.getOutput());
 			if (correctOutput == grindStoneRecipe.getOutput())
 				continue;
@@ -57,5 +59,6 @@ final class AE2Integration extends AbstractIntegrationThread
 					grindStoneRecipe.setSecondOptionalOutput(resourceHandler.getMainItemStack(grindStoneRecipe.getSecondOptionalOutput()), grindStoneRecipe.getSecondOptionalChance());
 			} else grindStoneRecipeIterator.remove();
 		}
+	*/
 	}
 }
