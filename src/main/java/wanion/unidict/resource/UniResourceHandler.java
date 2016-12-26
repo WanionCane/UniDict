@@ -188,13 +188,16 @@ public final class UniResourceHandler
 			final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
 			resourceHandler.populateIndividualStackAttributes();
 		}
+		for (final String blackListedResource : config.resourceBlackList) {
+			resourceMap.remove(blackListedResource);
+			apiResourceMap.remove(blackListedResource);
+		}
 		if (config.kindsDump || config.entriesDump || config.unifiedEntriesDump) {
 			final File dumpFolder = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump");
 			if (!dumpFolder.exists())
 				if (dumpFolder.mkdirs())
 					UniDict.getLogger().error("UniDict wasn't able to create the dump folder.");
 			if (dumpFolder.exists()) {
-
 				if (config.kindsDump) {
 					final File kindDumpFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump" + SLASH + "kindsDump.txt");
 					try {
@@ -279,10 +282,6 @@ public final class UniResourceHandler
 					}
 				}
 			}
-		}
-		for (final String blackListedResource : config.resourceBlackList) {
-			resourceMap.remove(blackListedResource);
-			apiResourceMap.remove(blackListedResource);
 		}
 	}
 }

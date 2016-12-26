@@ -77,18 +77,26 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 	{
 		final Object[] newRecipeInputs = new Object[9];
 		final IRecipeInput[] recipeInputs = recipe.input;
-		for (int i = 0; i < recipeInputs.length; i++) {
-			final IRecipeInput input = recipeInputs[i];
-			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
-			if (oreName == null) {
-				final boolean notEmpty = !input.getInputs().isEmpty();
-				oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
-				if (oreName != null)
+		if (itemStacksOnly) {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final List<ItemStack> inputs = recipeInputs[i].getInputs();
+				if (!inputs.isEmpty())
+					newRecipeInputs[i] = resourceHandler.getMainItemStack(inputs.get(0));
+			}
+		} else {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final IRecipeInput input = recipeInputs[i];
+				String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
+				if (oreName == null) {
+					final boolean notEmpty = !input.getInputs().isEmpty();
+					oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
+					if (oreName != null)
+						newRecipeInputs[i] = oreName;
+					else if (notEmpty)
+						newRecipeInputs[i] = input.getInputs().get(0);
+				} else
 					newRecipeInputs[i] = oreName;
-				else if (notEmpty)
-					newRecipeInputs[i] = input.getInputs().get(0);
-			} else
-				newRecipeInputs[i] = oreName;
+			}
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
@@ -98,18 +106,26 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 	{
 		final Object[] newRecipeInputs = new Object[9];
 		final IRecipeInput[] recipeInputs = recipe.input;
-		for (int i = 0; i < recipeInputs.length; i++) {
-			final IRecipeInput input = recipeInputs[i];
-			String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
-			if (oreName == null) {
-				final boolean notEmpty = !input.getInputs().isEmpty();
-				oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
-				if (oreName != null)
+		if (itemStacksOnly) {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final List<ItemStack> inputs = recipeInputs[i].getInputs();
+				if (!inputs.isEmpty())
+					newRecipeInputs[i] = resourceHandler.getMainItemStack(inputs.get(0));
+			}
+		} else {
+			for (int i = 0; i < recipeInputs.length; i++) {
+				final IRecipeInput input = recipeInputs[i];
+				String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
+				if (oreName == null) {
+					final boolean notEmpty = !input.getInputs().isEmpty();
+					oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
+					if (oreName != null)
+						newRecipeInputs[i] = oreName;
+					else if (notEmpty)
+						newRecipeInputs[i] = input.getInputs().get(0);
+				} else
 					newRecipeInputs[i] = oreName;
-				else if (notEmpty)
-					newRecipeInputs[i] = input.getInputs().get(0);
-			} else
-				newRecipeInputs[i] = oreName;
+			}
 		}
 		return new ShapedOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), RecipeHelper.rawShapeToShape(newRecipeInputs));
 	}
@@ -117,38 +133,54 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 	@Override
 	public ShapelessOreRecipe getNewShapelessRecipe(@Nonnull final AdvShapelessRecipe recipe)
 	{
-		final List<Object> inputs = new ArrayList<>();
-		for (final IRecipeInput recipeInput : recipe.input) {
-			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
-			if (oreName == null) {
-				final boolean notEmpty = !recipeInput.getInputs().isEmpty();
-				oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
-				if (oreName != null)
-					inputs.add(oreName);
-				else if (notEmpty)
-					inputs.add(recipeInput.getInputs().get(0));
-			} else
-				inputs.add(oreName);
+		final List<Object> newInputs = new ArrayList<>();
+		if (itemStacksOnly){
+			for (final IRecipeInput recipeInput : recipe.input) {
+				final List<ItemStack> inputs = recipeInput.getInputs();
+				if (!inputs.isEmpty())
+					inputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
+			}
+		} else {
+			for (final IRecipeInput recipeInput : recipe.input) {
+				String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
+				if (oreName == null) {
+					final boolean notEmpty = !recipeInput.getInputs().isEmpty();
+					oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
+					if (oreName != null)
+						newInputs.add(oreName);
+					else if (notEmpty)
+						newInputs.add(recipeInput.getInputs().get(0));
+				} else
+					newInputs.add(oreName);
+			}
 		}
-		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
+		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), newInputs.toArray());
 	}
 
 	@Override
 	public ShapelessOreRecipe getNewShapelessFromShapedRecipe(@Nonnull final AdvRecipe recipe)
 	{
-		final List<Object> inputs = new ArrayList<>();
-		for (final IRecipeInput recipeInput : recipe.input) {
-			String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
-			if (oreName == null) {
-				final boolean notEmpty = !recipeInput.getInputs().isEmpty();
-				oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
-				if (oreName != null)
-					inputs.add(oreName);
-				else if (notEmpty)
-					inputs.add(recipeInput.getInputs().get(0));
-			} else
-				inputs.add(oreName);
+		final List<Object> newInputs = new ArrayList<>();
+		if (itemStacksOnly){
+			for (final IRecipeInput recipeInput : recipe.input) {
+				final List<ItemStack> inputs = recipeInput.getInputs();
+				if (!inputs.isEmpty())
+					inputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
+			}
+		} else {
+			for (final IRecipeInput recipeInput : recipe.input) {
+				String oreName = recipeInput instanceof RecipeInputOreDict ? ((RecipeInputOreDict) recipeInput).input : null;
+				if (oreName == null) {
+					final boolean notEmpty = !recipeInput.getInputs().isEmpty();
+					oreName = notEmpty ? uniOreDictionary.getName(recipeInput.getInputs().get(0)) : null;
+					if (oreName != null)
+						newInputs.add(oreName);
+					else if (notEmpty)
+						newInputs.add(recipeInput.getInputs().get(0));
+				} else
+					newInputs.add(oreName);
+			}
 		}
-		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), inputs.toArray());
+		return new ShapelessOreRecipe(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), newInputs.toArray());
 	}
 }

@@ -78,7 +78,7 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		if (itemStacksOnly) {
 			for (int i = 0; i < 9; i++) {
 				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
-				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? input : null;
+				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? resourceHandler.getMainItemStack((ItemStack) input) : null;
 			}
 		} else {
 			for (int i = 0; i < 9; i++) {
@@ -98,7 +98,7 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		if (itemStacksOnly) {
 			for (int i = 0; i < recipeInputs.length; i++) {
 				final Object input = i < recipeInputs.length ? recipeInputs[i] : null;
-				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? input : null;
+				newRecipeInputs[i] = input instanceof List && !((List) input).isEmpty() ? ((List) input).get(0) : input instanceof ItemStack ? resourceHandler.getMainItemStack((ItemStack) input) : null;
 			}
 		} else {
 			for (int i = 0; i < recipeInputs.length; i++) {
@@ -120,7 +120,7 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 					if (object instanceof List && !((List) object).isEmpty())
 						inputs.add(((List) object).get(0));
 					else if (object instanceof ItemStack)
-						inputs.add(object);
+						inputs.add(resourceHandler.getMainItemStack((ItemStack) object));
 				}
 			});
 		} else {
@@ -147,7 +147,7 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 					if (object instanceof List && !((List) object).isEmpty())
 						inputs.add(((List) object).get(0));
 					else if (object instanceof ItemStack)
-						inputs.add(object);
+						inputs.add(resourceHandler.getMainItemStack((ItemStack) object));
 				}
 			}
 		} else {
