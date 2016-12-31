@@ -43,6 +43,7 @@ public final class Config implements UniDict.IDependency
 	public final boolean inputReplacementMekanism;
 	// resource related stuff
 	public final boolean enableSpecificKindSort;
+	public final boolean enableSpecificEntrySort;
 	public final TObjectIntMap<String> ownerOfEveryThing;
 	public final Set<String> metalsToUnify;
 	public final Set<String> childrenOfMetals;
@@ -84,8 +85,9 @@ public final class Config implements UniDict.IDependency
 			inputReplacementIC2 = config.getBoolean("ic2", "inputReplacement", false, "Enabling this will remove all non-standard items as input of IC2 Machine Recipes.\nNote: this will only affect recipes that doesn't uses OreDictionary.");
 			inputReplacementMekanism = config.getBoolean("mekanism", "inputReplacement", false, "Enabling this will remove all non-standard items as input of Mekanism Machine Recipes.");
 			// resource related stuff
-			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nalso will make \"S:ownerOfEveryThing\" be ignored.");
-			ownerOfEveryThing = new TObjectIntHashMap<>((!enableSpecificKindSort) ? getOwnerOfEveryThingMap() : new TObjectIntHashMap<>());
+			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nit also will make \"S:ownerOfEveryThing\" be ignored for this kind.");
+			enableSpecificEntrySort = config.getBoolean("enableSpecificEntrySort", resources, false, "enabling this allow you to specify the \"owner\" of each entry.\nit also will make \"S:ownerOfEveryThing\" be ignored for this entry.");
+			ownerOfEveryThing = new TObjectIntHashMap<>(getOwnerOfEveryThingMap());
 			metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminum", "Alumina", "Chrome", "Constantan"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
@@ -106,16 +108,6 @@ public final class Config implements UniDict.IDependency
 	{
 		if (config.hasChanged())
 			config.save();
-	}
-
-	public TObjectIntMap<String> getOwnerOfEveryKindMap(final int kind)
-	{
-		final String kindName = WordUtils.capitalize(Resource.getNameOfKind(kind));
-		final String[] ownerOfEveryKind = config.getStringList("ownerOfEvery" + kindName, resources, new String[]{"minecraft", "substratum", "ic2", "mekanism", "immersiveengineering", "techreborn"}, "entries of kind \"" + kindName + "\" will be sorted according to the modID list below\nmust be the exact modID.\n");
-		final TObjectIntMap<String> ownerOfEveryThingMap = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
-		for (int i = 0; i < ownerOfEveryKind.length; i++)
-			ownerOfEveryThingMap.put(ownerOfEveryKind[i], i);
-		return ownerOfEveryThingMap;
 	}
 
 	private TObjectIntMap<String> getOwnerOfEveryThingMap()

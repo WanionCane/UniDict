@@ -9,14 +9,12 @@ package wanion.unidict.common;
  */
 
 import com.google.gson.stream.JsonReader;
-import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
-import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
@@ -28,50 +26,50 @@ import static wanion.lib.common.Util.getModName;
 import static wanion.unidict.common.Reference.MOD_ID;
 import static wanion.unidict.common.Reference.SLASH;
 
-public final class SpecificKindItemStackComparator implements Comparator<ItemStack>
+public final class SpecificEntryItemStackComparator implements Comparator<ItemStack>
 {
-	public static TIntObjectMap<SpecificKindItemStackComparator> kindSpecificComparators = new TIntObjectHashMap<>();
-	private static boolean initialized;
-	private final TObjectIntMap<String> ownerOfKind;
+	public static THashMap<String, SpecificEntryItemStackComparator> entrySpecificComparators = new THashMap<>();
+	private static boolean initialized = false;
+	private final TObjectIntMap<String> ownerOfEntry;
 
-	private SpecificKindItemStackComparator(@Nonnull final TObjectIntMap<String> ownerOfKind)
+	private SpecificEntryItemStackComparator(@Nonnull final TObjectIntMap<String> ownerOfEntry)
 	{
-		this.ownerOfKind = ownerOfKind;
+		this.ownerOfEntry = ownerOfEntry;
 	}
 
-	public static synchronized SpecificKindItemStackComparator getComparatorFor(final int kind)
+	public static synchronized SpecificEntryItemStackComparator getComparatorFor(@Nonnull final String entryName)
 	{
 		if (!initialized)
 			init();
-		return kindSpecificComparators.get(kind);
+		return entrySpecificComparators.get(entryName);
 	}
 
-	public static synchronized boolean hasComparatorForKind(final int kind)
+	public static synchronized boolean hasComparatorForEntry(@Nonnull final String entryName)
 	{
 		if (!initialized)
 			init();
-		return kindSpecificComparators.containsKey(kind);
+		return entrySpecificComparators.containsKey(entryName);
 	}
 
 	private static void init()
 	{
-		final File jsonFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "specificKindSorting.json");
+		final File jsonFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "specificEntrySorting.json");
 		try {
 			if (!jsonFile.exists() && !jsonFile.createNewFile()) {
-				UniDict.getLogger().error("UniDict couldn't create the specificKindSorting.json file.");
+				UniDict.getLogger().error("UniDict couldn't create the specificEntrySorting.json file.");
 				return;
 			}
 			try (final JsonReader jsonReader = new JsonReader(new FileReader(jsonFile))) {
 				jsonReader.beginArray();
 				while (jsonReader.hasNext()) {
 					jsonReader.beginObject();
-					if (!jsonReader.nextName().equals("kindName")) {
+					if (!jsonReader.nextName().equals("entryName")) {
 						jsonReader.skipValue();
 						jsonReader.endObject();
 						jsonReader.endArray();
 						continue;
 					}
-					final String kindName = jsonReader.nextString();
+					final String entryName = jsonReader.nextString();
 					if (!jsonReader.nextName().equals("modIdPriorityList")) {
 						jsonReader.skipValue();
 						jsonReader.endObject();
@@ -79,18 +77,17 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
 						continue;
 					}
 					jsonReader.beginArray();
-					final TObjectIntMap<String> ownerOfKind = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
+					final TObjectIntMap<String> ownerOfEntry = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
 					int i = 0;
 					while (jsonReader.hasNext())
-						ownerOfKind.put(jsonReader.nextString(), i++);
-					if (Resource.kindExists(kindName))
-						kindSpecificComparators.put(Resource.getKindOfName(kindName), new SpecificKindItemStackComparator(ownerOfKind));
+						ownerOfEntry.put(jsonReader.nextString(), i++);
+					entrySpecificComparators.put(entryName, new SpecificEntryItemStackComparator(ownerOfEntry));
 					jsonReader.endArray();
 					jsonReader.endObject();
 				}
 			}
 		} catch (Throwable e) {
-			UniDict.getLogger().error("UniDict couldn't read the specificKindSorting.json file.");
+			UniDict.getLogger().error("UniDict couldn't read the specificEntrySorting.json file.");
 			e.printStackTrace();
 		}
 		initialized = true;
@@ -108,11 +105,11 @@ public final class SpecificKindItemStackComparator implements Comparator<ItemSta
 
 	private long getIndex(final ItemStack itemStack)
 	{
-		return ownerOfKind.get(getModName(itemStack));
+		return ownerOfEntry.get(getModName(itemStack));
 	}
 
 	private long getIndex(final String modName)
 	{
-		return ownerOfKind.get(modName);
+		return ownerOfEntry.get(modName);
 	}
 }

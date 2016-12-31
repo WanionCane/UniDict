@@ -21,6 +21,7 @@ import wanion.lib.common.Dependencies;
 import wanion.lib.module.AbstractModule;
 import wanion.lib.module.ModuleHandler;
 import wanion.unidict.api.UniDictAPI;
+import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.resource.ResourceHandler;
@@ -105,6 +106,7 @@ public final class UniDict
 		moduleHandler = null;
 		dependencies = null;
 		SpecificKindItemStackComparator.kindSpecificComparators = null;
+		SpecificEntryItemStackComparator.entrySpecificComparators = null;
 	}
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)

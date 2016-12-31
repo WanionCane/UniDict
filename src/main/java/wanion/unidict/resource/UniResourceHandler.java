@@ -88,7 +88,8 @@ public final class UniResourceHandler
 	public void init()
 	{
 		registerCustomEntries();
-		createResources();
+		gatherResources();
+		createAdditionalFiles();
 	}
 
 	private void registerCustomEntries()
@@ -111,7 +112,8 @@ public final class UniResourceHandler
 		});
 	}
 
-	private void createResources()
+
+	private void gatherResources()
 	{
 		final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
 		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore).*");
@@ -133,21 +135,6 @@ public final class UniResourceHandler
 			}
 		});
 		allTheKinds.forEach(Resource::register);
-		final File kindDebugFile = config.kindsDump ? new File("." + Reference.SLASH + "logs" + Reference.SLASH + "kindDebugLog.txt") : null;
-		if (kindDebugFile != null && !kindDebugFile.exists()) {
-			try (final BufferedWriter bw = new BufferedWriter(new FileWriter(kindDebugFile))) {
-				allTheKinds.forEach(kind -> {
-					try {
-						bw.write(kind);
-						bw.newLine();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		basicResourceMap.forEach((resourceName, kinds) -> {
 			final TIntObjectHashMap<UniResourceContainer> kindMap = new TIntObjectHashMap<>();
 			kinds.forEach(kindName -> {
@@ -173,6 +160,141 @@ public final class UniResourceHandler
 			}
 		}
 		config.saveIfHasChanged();
+	}
+
+	private void createAdditionalFiles()
+	{
+		if (!config.enableSpecificEntrySort && !config.enableSpecificKindSort)
+			return;
+		final File jsonFormatGuideFile = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "jsonFormatGuide.txt");
+		if (jsonFormatGuideFile.exists())
+			return;
+		try {
+			if (!jsonFormatGuideFile.createNewFile()) {
+				UniDict.getLogger().error("UniDict couldn't create the jsonFormatGuide.txt file.");
+				return;
+			}
+			try (final BufferedWriter bw = new BufferedWriter(new FileWriter(jsonFormatGuideFile))) {
+				bw.write("In order to use specificEntrySorting.json you must use the following format:");
+				bw.newLine();
+				bw.newLine();
+				bw.write("[");
+				bw.newLine();
+				bw.write("\t{");
+				bw.newLine();
+				bw.write("\t\t\"entryName\" : \"oreCopper\",");
+				bw.newLine();
+				bw.write("\t\t\"modIdPriorityList\" :");
+				bw.newLine();
+				bw.write("\t\t[");
+				bw.newLine();
+				bw.write("\t\t\t\"minecraft\",");
+				bw.newLine();
+				bw.write("\t\t\t\"substratum\",");
+				bw.newLine();
+				bw.write("\t\t\t\"ic2\",");
+				bw.newLine();
+				bw.write("\t\t\t\"mekanism\",");
+				bw.newLine();
+				bw.write("\t\t\t\"immersiveengineering\",");
+				bw.newLine();
+				bw.write("\t\t\t\"techreborn\"");
+				bw.newLine();
+				bw.write("\t\t]");
+				bw.newLine();
+				bw.write("\t},");
+				bw.newLine();
+				bw.write("\t{");
+				bw.newLine();
+				bw.write("\t\t\"entryName\" : \"oreIron\",");
+				bw.newLine();
+				bw.write("\t\t\"modIdPriorityList\" :");
+				bw.newLine();
+				bw.write("\t\t[");
+				bw.newLine();
+				bw.write("\t\t\t\"minecraft\",");
+				bw.newLine();
+				bw.write("\t\t\t\"substratum\",");
+				bw.newLine();
+				bw.write("\t\t\t\"ic2\",");
+				bw.newLine();
+				bw.write("\t\t\t\"mekanism\",");
+				bw.newLine();
+				bw.write("\t\t\t\"immersiveengineering\",");
+				bw.newLine();
+				bw.write("\t\t\t\"techreborn\"");
+				bw.newLine();
+				bw.write("\t\t]");
+				bw.newLine();
+				bw.write("\t}");
+				bw.newLine();
+				bw.write("]");
+				bw.newLine();
+				bw.newLine();
+				bw.write("In order to use specificKindSorting.json you must use the following format:");
+				bw.newLine();
+				bw.newLine();
+				bw.write("[");
+				bw.newLine();
+				bw.write("\t{");
+				bw.newLine();
+				bw.write("\t\t\"kindName\" : \"ore\",");
+				bw.newLine();
+				bw.write("\t\t\"modIdPriorityList\" :");
+				bw.newLine();
+				bw.write("\t\t[");
+				bw.newLine();
+				bw.write("\t\t\t\"minecraft\",");
+				bw.newLine();
+				bw.write("\t\t\t\"substratum\",");
+				bw.newLine();
+				bw.write("\t\t\t\"ic2\",");
+				bw.newLine();
+				bw.write("\t\t\t\"mekanism\",");
+				bw.newLine();
+				bw.write("\t\t\t\"immersiveengineering\",");
+				bw.newLine();
+				bw.write("\t\t\t\"techreborn\"");
+				bw.newLine();
+				bw.write("\t\t]");
+				bw.newLine();
+				bw.write("\t},");
+				bw.newLine();
+				bw.write("\t{");
+				bw.newLine();
+				bw.write("\t\t\"kindName\" : \"ingot\",");
+				bw.newLine();
+				bw.write("\t\t\"modIdPriorityList\" :");
+				bw.newLine();
+				bw.write("\t\t[");
+				bw.newLine();
+				bw.write("\t\t\t\"minecraft\",");
+				bw.newLine();
+				bw.write("\t\t\t\"substratum\",");
+				bw.newLine();
+				bw.write("\t\t\t\"ic2\",");
+				bw.newLine();
+				bw.write("\t\t\t\"mekanism\",");
+				bw.newLine();
+				bw.write("\t\t\t\"immersiveengineering\",");
+				bw.newLine();
+				bw.write("\t\t\t\"techreborn\"");
+				bw.newLine();
+				bw.write("\t\t]");
+				bw.newLine();
+				bw.write("\t}");
+				bw.newLine();
+				bw.write("]");
+				bw.newLine();
+				bw.newLine();
+				bw.write("note: specific Entry Sorting always will have priority over specific Kind Sorting.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void postInit()

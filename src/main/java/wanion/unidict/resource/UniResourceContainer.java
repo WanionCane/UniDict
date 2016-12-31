@@ -11,9 +11,11 @@ package wanion.unidict.resource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
+import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniJEIPlugin;
 import wanion.unidict.UniOreDictionary;
+import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.common.Util;
 
@@ -111,7 +113,8 @@ public final class UniResourceContainer
 
 	public Comparator<ItemStack> getComparator()
 	{
-		return UniDict.getConfig().enableSpecificKindSort ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+		final Config config = UniDict.getConfig();
+		return config.enableSpecificEntrySort ? SpecificEntryItemStackComparator.hasComparatorForEntry(name) ? SpecificEntryItemStackComparator.getComparatorFor(name) : Util.itemStackComparatorByModName : config.enableSpecificKindSort ? SpecificKindItemStackComparator.hasComparatorForKind(kind) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName : Util.itemStackComparatorByModName;
 	}
 
 	public boolean isSorted()
