@@ -28,7 +28,7 @@ import static wanion.lib.common.Util.getModName;
 
 public final class Util
 {
-	public static final Comparator<ItemStack> itemStackComparatorByModName = (!UniDict.getDependencies().get(Config.class).enableSpecificKindSort) ? new Comparator<ItemStack>()
+	public static final Comparator<ItemStack> itemStackComparatorByModName = new Comparator<ItemStack>()
 	{
 		@Override
 		public int compare(final ItemStack itemStack1, final ItemStack itemStack2)
@@ -49,7 +49,7 @@ public final class Util
 		{
 			return UniDict.getConfig().ownerOfEveryThing.get(modName);
 		}
-	} : null;
+	};
 
 	private Util() {}
 

@@ -114,7 +114,7 @@ public final class UniResourceContainer
 	public Comparator<ItemStack> getComparator()
 	{
 		final Config config = UniDict.getConfig();
-		return config.enableSpecificEntrySort ? SpecificEntryItemStackComparator.hasComparatorForEntry(name) ? SpecificEntryItemStackComparator.getComparatorFor(name) : config.enableSpecificKindSort ? SpecificKindItemStackComparator.hasComparatorForKind(kind) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName : Util.itemStackComparatorByModName : config.enableSpecificKindSort ? SpecificKindItemStackComparator.hasComparatorForKind(kind) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName : Util.itemStackComparatorByModName;
+		return config.enableSpecificEntrySort && SpecificEntryItemStackComparator.hasComparatorForEntry(name) ? SpecificEntryItemStackComparator.getComparatorFor(name) : config.enableSpecificKindSort && SpecificKindItemStackComparator.hasComparatorForKind(kind) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
 	}
 
 	public boolean isSorted()
