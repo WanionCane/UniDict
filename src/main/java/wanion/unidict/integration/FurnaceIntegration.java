@@ -35,7 +35,6 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 		Field obfuscatedField = null;
 		try {
 			obfuscatedField = FurnaceRecipes.class.getDeclaredField("field_77605_c");
-			obfuscatedField.setAccessible(true);
 		} catch (NoSuchFieldException e) {
 			UniDict.getLogger().debug("Dev-Environment, right?");
 		}
@@ -43,12 +42,12 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 		if (obfuscatedField == null) {
 			try {
 				deobfuscatedField = FurnaceRecipes.class.getDeclaredField("experienceList");
-				deobfuscatedField.setAccessible(true);
 			} catch (NoSuchFieldException e) {
-				UniDict.getLogger().error("UniDict couldn't find the experienceList Field, even you being in an Dev-Environment, please report this.");
+				throw new RuntimeException("UniDict couldn't find the experienceList Field, even you being in an Dev-Environment, please report this.");
 			}
 		}
-		experienceListField = obfuscatedField != null ? obfuscatedField : deobfuscatedField;
+		if ((experienceListField = obfuscatedField != null ? obfuscatedField : deobfuscatedField) != null)
+			experienceListField.setAccessible(true);
 	}
 
 	@Override
@@ -69,9 +68,9 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 		try {
 			experienceMap = (Map<ItemStack, Float>) experienceListField.get(FurnaceRecipes.instance());
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Furnace Integration Couldn't find the required field.");
+			throw new RuntimeException("Furnace Integration Couldn't find a required field.");
 		}
-		if (!config.inputReplacementFurnace)
+		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
 				final ItemStack oldEntry = furnaceRecipe.getValue();
 				final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
@@ -79,7 +78,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 				if (experienceMap.containsKey(oldEntry))
 					experienceMap.put(newEntry, experienceMap.remove(oldEntry));
 			}
-		else {
+		} else {
 			final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
 			final Map<ItemStack, ItemStack> furnaceRecipes = FurnaceRecipes.instance().getSmeltingList();
 			final Map<ItemStack, ItemStack> newRecipes = new HashMap<>();

@@ -14,6 +14,7 @@ import wanion.lib.module.AbstractModule;
 import wanion.unidict.common.Reference;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 
 import static net.minecraftforge.fml.common.Loader.isModLoaded;
@@ -31,7 +32,7 @@ public final class IntegrationModule extends AbstractModule
 	{
 		final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_ID + SLASH + "IntegrationModule.cfg"));
 		for (final Integration integration : Integration.values())
-			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && isModLoaded(integration.modId))
+			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && (integration.modId == null || isModLoaded(integration.modId)))
 				manager.add(integration.integrationClass);
 		if (config.hasChanged())
 			config.save();
@@ -39,12 +40,12 @@ public final class IntegrationModule extends AbstractModule
 
 	private enum Integration
 	{
-		CRAFTING("Forge", CraftingIntegration.class),
-		FURNACE("Forge", FurnaceIntegration.class),
+		CRAFTING(CraftingIntegration.class),
+		FURNACE(FurnaceIntegration.class),
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
 		ADVANCED_ROCKETRY("advancedRocketry", AdvancedRocketryIntegration.class),
 		ADVANCED_SOLAR_PANELS("advanced_solar_panels", AdvancedSolarPanelsIntegration.class, false),
-		//APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
+		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
 		BASE_METALS("basemetals", BaseMetalsIntegration.class),
 		BLOOD_MAGIC("BloodMagic", BloodMagicIntegration.class),
 		CALCULATOR("Calculator", CalculatorIntegration.class, false),
@@ -65,14 +66,19 @@ public final class IntegrationModule extends AbstractModule
 		private final Class<? extends AbstractIntegrationThread> integrationClass;
 		private final boolean enabledByDefault;
 
-		Integration(@Nonnull final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass)
+		Integration(@Nonnull final Class<? extends AbstractIntegrationThread> integrationClass)
+		{
+			this(null, integrationClass);
+		}
+
+		Integration(@Nullable final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass)
 		{
 			this.modId = modId;
 			this.integrationClass = integrationClass;
 			this.enabledByDefault = true;
 		}
 
-		Integration(@Nonnull final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass, final boolean enabledByDefault)
+		Integration(@Nullable final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass, final boolean enabledByDefault)
 		{
 			this.modId = modId;
 			this.integrationClass = integrationClass;

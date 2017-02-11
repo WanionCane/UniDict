@@ -10,16 +10,13 @@ package wanion.unidict.integration;
 
 import com.google.common.collect.Lists;
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.Loader;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.UniDict;
-import wanion.unidict.common.Util;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
 import wanion.unidict.recipe.IC2RecipeResearcher;
 import wanion.unidict.recipe.VanillaRecipeResearcher;
@@ -109,18 +106,15 @@ final class CraftingIntegration extends AbstractIntegrationThread
 
 	private void reCreateTheRecipes()
 	{
-		final TLongObjectMap<RecipeComparator> kindSpecificRecipeComparatorMap = config.enableSpecificKindSort ? new TLongObjectHashMap<>() : null;
-		final RecipeComparator normalRecipeComparator = !config.enableSpecificKindSort ? new RecipeComparator(Util.itemStackComparatorByModName) : null;
+		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new HashMap<>();
 		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {
-					final RecipeComparator recipeComparator;
-					if (kindSpecificRecipeComparatorMap != null) {
-						if (kindSpecificRecipeComparatorMap.containsKey(container.kind))
-							recipeComparator = kindSpecificRecipeComparatorMap.get(container.kind);
-						else
-							kindSpecificRecipeComparatorMap.put(container.kind, (recipeComparator = new RecipeComparator(container.getComparator())));
-					} else
-						recipeComparator = normalRecipeComparator;
-					recipeList.sort(recipeComparator);
+					if (recipeList.size() > 1) {
+						final boolean hasComparator = comparatorCache.containsKey(container);
+						final Comparator<IRecipe> recipeComparator = hasComparator ? comparatorCache.get(container) : new RecipeComparator(container.getComparator());
+						if (!hasComparator)
+							comparatorCache.put(container, recipeComparator);
+						recipeList.sort(recipeComparator);
+					}
 					final IRecipe recipe = recipeList.get(0);
 					final boolean isShapeless = shapelessResearcherMap.containsKey(recipe.getClass());
 					final IRecipeResearcher<? extends IRecipe, ? extends IRecipe> recipeResearcher = !isShapeless ? shapedResearcherMap.get(recipe.getClass()) : shapelessResearcherMap.get(recipe.getClass());
@@ -131,6 +125,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
 							recipes.add(isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapelessFromShapedRecipeMethod.invoke(recipeResearcher, recipe));
 						else
 							recipes.add(isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe));
+						totalRecipesReCreated++;
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						final ItemStack outputStack = recipe.getRecipeOutput();
 						if (outputStack != null) {
@@ -138,7 +133,6 @@ final class CraftingIntegration extends AbstractIntegrationThread
 							recipes.add(recipe);
 						}
 					}
-					totalRecipesReCreated++;
 					return true;
 				})
 		);
