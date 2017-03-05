@@ -60,6 +60,7 @@ public final class IntegrationModule extends AbstractModule
 		RAIL_CRAFT("Railcraft", RailcraftIntegration.class),
 		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
+		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
 		WATER_POWER("waterpower", WaterPowerIntegration.class, false);
 
 		private final String modId;

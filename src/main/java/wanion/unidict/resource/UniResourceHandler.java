@@ -188,7 +188,9 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t[");
 				bw.newLine();
-				bw.write("\t\t\t\"minecraft\",");
+				bw.write("\t\t\t\"minecraft\",");;
+				bw.newLine();
+				bw.write("\t\t\t\"thermalfoundation\",");
 				bw.newLine();
 				bw.write("\t\t\t\"substratum\",");
 				bw.newLine();
@@ -212,7 +214,9 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t[");
 				bw.newLine();
-				bw.write("\t\t\t\"minecraft\",");
+				bw.write("\t\t\t\"minecraft\",");;
+				bw.newLine();
+				bw.write("\t\t\t\"thermalfoundation\",");
 				bw.newLine();
 				bw.write("\t\t\t\"substratum\",");
 				bw.newLine();
@@ -246,6 +250,8 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t\t\"minecraft\",");
 				bw.newLine();
+				bw.write("\t\t\t\"thermalfoundation\",");
+				bw.newLine();
 				bw.write("\t\t\t\"substratum\",");
 				bw.newLine();
 				bw.write("\t\t\t\"ic2\",");
@@ -270,6 +276,8 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t\t\"minecraft\",");
 				bw.newLine();
+				bw.write("\t\t\t\"thermalfoundation\",");
+				bw.newLine();
 				bw.write("\t\t\t\"substratum\",");
 				bw.newLine();
 				bw.write("\t\t\t\"ic2\",");
@@ -287,7 +295,7 @@ public final class UniResourceHandler
 				bw.write("]");
 				bw.newLine();
 				bw.newLine();
-				bw.write("note: specific Entry Sorting always will have priority over specific Kind Sorting.");
+				bw.write("NOTE: specific Entry Sorting always will have a higher priority over specific Kind Sorting.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

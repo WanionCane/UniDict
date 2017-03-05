@@ -112,7 +112,7 @@ public final class Config implements UniDict.IDependency
 
 	private TObjectIntMap<String> getOwnerOfEveryThingMap()
 	{
-		final String[] ownerOfEveryThing = config.getStringList("ownerOfEveryThing", resources, new String[]{"minecraft", "substratum", "ic2", "mekanism", "immersiveengineering", "techreborn"}, "all the entries will be sorted according to the modID list below\nmust be the exact modID.\n");
+		final String[] ownerOfEveryThing = config.getStringList("ownerOfEveryThing", resources, new String[]{"minecraft", "thermalfoundation", "substratum", "ic2", "mekanism", "immersiveengineering", "techreborn"}, "all the entries will be sorted according to the modID list below\nmust be the exact modID.\n");
 		final TObjectIntMap<String> ownerOfEveryThingMap = new TObjectIntHashMap<>(10, 1, Integer.MAX_VALUE);
 		for (int i = 0; i < ownerOfEveryThing.length; i++)
 			ownerOfEveryThingMap.put(ownerOfEveryThing[i], i);
