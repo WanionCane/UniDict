@@ -34,9 +34,7 @@ final class AE2Integration extends AbstractIntegrationThread
 	{
 		try {
 			fixGrindStoneRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 		return threadName + "The world of energistics has never been so powerful.";
 	}
 

@@ -96,12 +96,6 @@ public final class UniDict
 	{
 		uniResourceHandler.postInit();
 		moduleHandler.startModules(event);
-	}
-
-	@Mod.EventHandler
-	public void loadComplete(final FMLLoadCompleteEvent event)
-	{
-		moduleHandler.startModules(event);
 		uniResourceHandler = null;
 		moduleHandler = null;
 		dependencies = null;
@@ -114,8 +108,6 @@ public final class UniDict
 		final Config config = getConfig();
 		if (!config.libraryMode && config.integrationModule)
 			moduleHandler.addModule(new IntegrationModule());
-		//if (config.processingModule)
-		//	moduleHandler.addModule(new ProcessingModule());
 		return moduleHandler;
 	}
 

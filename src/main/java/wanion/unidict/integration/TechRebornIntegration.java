@@ -31,7 +31,7 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 	{
 		RecipeHandler.recipeList.forEach(recipe -> {
 			if (!recipe.useOreDic())
-				resourceHandler.setMainItemStacks(recipe.getInputs());
+				resourceHandler.setMainObjects(recipe.getInputs());
 			resourceHandler.setMainItemStacks(recipe.getOutputs());
 		});
 	}

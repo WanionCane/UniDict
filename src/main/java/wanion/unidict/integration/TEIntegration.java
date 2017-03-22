@@ -8,12 +8,11 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import cofh.thermalexpansion.util.crafting.CompactorManager;
-import cofh.thermalexpansion.util.crafting.FurnaceManager;
-import cofh.thermalexpansion.util.crafting.PulverizerManager;
-import cofh.thermalexpansion.util.crafting.SmelterManager;
-import com.google.common.collect.Lists;
+import cofh.thermalexpansion.util.crafting.*;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 
@@ -35,9 +34,10 @@ final class TEIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixCompactorRecipes();
+			fixRefineryRecipes();
+			fixInductionSmelterRecipes();
 			fixRedstoneFurnaceRecipes();
 			fixPulverizerRecipes();
-			fixInductionSmelterRecipes();
 		} catch (Exception e) {
 			UniDict.getLogger().error(threadName + e);
 		}
@@ -76,9 +76,64 @@ final class TEIntegration extends AbstractIntegrationThread
 			}
 	}
 
+	private void fixInductionSmelterRecipes()
+	{
+		final Map<List<SmelterManager.ComparableItemStackSmelter>, SmelterManager.RecipeSmelter> recipeMap = Util.getField(SmelterManager.class, "recipeMap", null, Map.class);
+		if (recipeMap == null)
+			return;
+		Constructor<SmelterManager.RecipeSmelter> smelterRecipeConstructor = null;
+		try {
+			smelterRecipeConstructor = SmelterManager.RecipeSmelter.class.getDeclaredConstructor(ItemStack.class, ItemStack.class, ItemStack.class, ItemStack.class, int.class, int.class);
+			smelterRecipeConstructor.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		if (smelterRecipeConstructor == null)
+			return;
+		for (final List<SmelterManager.ComparableItemStackSmelter> recipeMapKey : recipeMap.keySet()) {
+			final SmelterManager.RecipeSmelter smelterRecipe = recipeMap.get(recipeMapKey);
+			final ItemStack correctOutput = resourceHandler.getMainItemStack(smelterRecipe.getPrimaryOutput());
+			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(smelterRecipe.getSecondaryOutput());
+			if (correctOutput == smelterRecipe.getPrimaryOutput() && correctSecondaryOutput == smelterRecipe.getSecondaryOutput())
+				continue;
+			try {
+				recipeMap.put(recipeMapKey, smelterRecipeConstructor.newInstance(smelterRecipe.getPrimaryInput(), smelterRecipe.getSecondaryInput(), correctOutput, correctSecondaryOutput, smelterRecipe.getSecondaryOutputChance(), smelterRecipe.getEnergy()));
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void fixRefineryRecipes()
+	{
+		final TIntObjectHashMap<RefineryManager.RecipeRefinery> recipeMap = Util.getField(RefineryManager.class, "recipeMap", null, TIntObjectMap.class);
+		if (recipeMap == null)
+			return;
+		Constructor<RefineryManager.RecipeRefinery> refineryRecipeConstructor = null;
+		try {
+			refineryRecipeConstructor = RefineryManager.RecipeRefinery.class.getDeclaredConstructor(FluidStack.class, FluidStack.class, ItemStack.class, int.class);
+			refineryRecipeConstructor.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		if (refineryRecipeConstructor == null)
+			return;
+		for (final int recipeMapKey : recipeMap.keys()) {
+			final RefineryManager.RecipeRefinery refineryRecipe = recipeMap.get(recipeMapKey);
+			final ItemStack correctOutput = resourceHandler.getMainItemStack(refineryRecipe.getOutputItem());
+			if (correctOutput == refineryRecipe.getOutputItem())
+				continue;
+			try {
+				recipeMap.put(recipeMapKey, refineryRecipeConstructor.newInstance(refineryRecipe.getInput(), refineryRecipe.getOutputFluid(), correctOutput, refineryRecipe.getEnergy()));
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void fixRedstoneFurnaceRecipes()
 	{
-		final Map<FurnaceManager.ComparableItemStackFurnace, FurnaceManager.RecipeFurnace> recipeMap = wanion.lib.common.Util.getField(FurnaceManager.class, "recipeMap", null, Map.class);
+		final Map<FurnaceManager.ComparableItemStackFurnace, FurnaceManager.RecipeFurnace> recipeMap = Util.getField(FurnaceManager.class, "recipeMap", null, Map.class);
 		if (recipeMap == null)
 			return;
 		Constructor<FurnaceManager.RecipeFurnace> redstoneFurnaceRecipeConstructor = null;
@@ -105,7 +160,7 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixPulverizerRecipes()
 	{
-		final Map<PulverizerManager.ComparableItemStackPulverizer, PulverizerManager.RecipePulverizer> recipeMap = wanion.lib.common.Util.getField(PulverizerManager.class, "recipeMap", null, Map.class);
+		final Map<PulverizerManager.ComparableItemStackPulverizer, PulverizerManager.RecipePulverizer> recipeMap = Util.getField(PulverizerManager.class, "recipeMap", null, Map.class);
 		if (recipeMap == null)
 			return;
 		Constructor<PulverizerManager.RecipePulverizer> pulverizerRecipeConstructor = null;
@@ -125,34 +180,6 @@ final class TEIntegration extends AbstractIntegrationThread
 				continue;
 			try {
 				recipeMap.put(recipeMapKey, pulverizerRecipeConstructor.newInstance(pulverizerRecipe.getInput(), correctOutput, correctSecondaryOutput, pulverizerRecipe.getSecondaryOutputChance(), pulverizerRecipe.getEnergy()));
-			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void fixInductionSmelterRecipes()
-	{
-		final Map<List<SmelterManager.ComparableItemStackSmelter>, SmelterManager.RecipeSmelter> recipeMap = Util.getField(SmelterManager.class, "recipeMap", null, Map.class);
-		if (recipeMap == null)
-			return;
-		Constructor<SmelterManager.RecipeSmelter> smelterRecipeConstructor = null;
-		try {
-			smelterRecipeConstructor = SmelterManager.RecipeSmelter.class.getDeclaredConstructor(ItemStack.class, ItemStack.class, ItemStack.class, ItemStack.class, int.class, int.class);
-			smelterRecipeConstructor.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-		if (smelterRecipeConstructor == null)
-			return;
-		for (final List<SmelterManager.ComparableItemStackSmelter> recipeMapKey : recipeMap.keySet()) {
-			final SmelterManager.RecipeSmelter smelterRecipe = recipeMap.get(recipeMapKey);
-			final ItemStack correctOutput = resourceHandler.getMainItemStack(smelterRecipe.getPrimaryOutput());
-			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(smelterRecipe.getSecondaryOutput());
-			if (correctOutput == smelterRecipe.getPrimaryOutput() && correctSecondaryOutput == smelterRecipe.getSecondaryOutput())
-				continue;
-			try {
-				recipeMap.put(recipeMapKey, smelterRecipeConstructor.newInstance(smelterRecipe.getPrimaryInput(), smelterRecipe.getSecondaryInput(), correctOutput, correctSecondaryOutput, smelterRecipe.getSecondaryOutputChance(), smelterRecipe.getEnergy()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}

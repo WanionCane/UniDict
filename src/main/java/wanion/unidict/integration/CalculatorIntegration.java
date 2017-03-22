@@ -8,8 +8,6 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import sonar.calculator.mod.common.recipes.machines.AlgorithmSeparatorRecipes;
-import sonar.calculator.mod.common.recipes.machines.StoneSeparatorRecipes;
 import wanion.unidict.UniDict;
 
 final class CalculatorIntegration extends AbstractIntegrationThread
@@ -31,11 +29,11 @@ final class CalculatorIntegration extends AbstractIntegrationThread
 
 	private void fixStoneSeparatorRecipes()
 	{
-		StoneSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
+		//StoneSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
 	}
 
 	private void fixAlgorithmSeparatorRecipes()
 	{
-		AlgorithmSeparatorRecipes.instance().getRecipes().values().forEach(resourceHandler::setMainItemStacks);
+		//AlgorithmSeparatorRecipes.instance().getRecipes().forEach(resourceHandler::setMainItemStacks);
 	}
 }

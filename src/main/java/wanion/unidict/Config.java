@@ -13,9 +13,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraftforge.common.config.Configuration;
-import org.apache.commons.lang3.text.WordUtils;
 import wanion.unidict.common.Reference;
-import wanion.unidict.resource.Resource;
 
 import java.io.File;
 import java.util.*;
@@ -32,7 +30,8 @@ public final class Config implements UniDict.IDependency
 	public final boolean registerNewCraftingIngredientsAsItemStacks;
 	public final Set<String> keepOneEntryModBlackSet;
 	public final boolean autoHideInJEI;
-	public final Set<String> hideInJEIBlackSet;
+	public final Set<String> hideInJEIKindBlackSet;
+	public final Set<String> hideInJEIEntryBlackSet;
 	// dumps
 	public final boolean kindsDump;
 	public final boolean entriesDump;
@@ -75,7 +74,8 @@ public final class Config implements UniDict.IDependency
 			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through the possibilities of JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("JEI");
-			hideInJEIBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIBlackList", general, new String[]{"ore"}, "put here things that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
+			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "put here kinds that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
+			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "put here entries that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
 			// dumps
 			kindsDump = config.getBoolean("kindsDump", "dump", false, "Enable this to keep track of all the kinds.\nthe output file will be saved on \"config\\unidict\\dump\" folder.\nonce the file is generated, you must delete it to re-generate.");
 			entriesDump = config.getBoolean("entriesDump", "dump", false, "Enable this to keep track of all the entries.\nthe output file will be saved on \"config\\unidict\\dump\"  folder.\nonce the file is generated, you must delete it to re-generate.");

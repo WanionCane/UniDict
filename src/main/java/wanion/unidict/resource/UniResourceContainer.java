@@ -96,7 +96,7 @@ public final class UniResourceContainer
 			return;
 		final Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
 		if (!keepOneEntryBlackSet.isEmpty()) {
-			for (Iterator<ItemStack> keepOneEntryIterator = entries.subList(1, entries.size()).iterator(); keepOneEntryIterator.hasNext(); )
+			for (final Iterator<ItemStack> keepOneEntryIterator = entries.subList(1, entries.size()).iterator(); keepOneEntryIterator.hasNext(); )
 				if (!keepOneEntryBlackSet.contains(keepOneEntryIterator.next()))
 					keepOneEntryIterator.remove();
 		} else entries.subList(1, entries.size()).clear();
@@ -107,7 +107,7 @@ public final class UniResourceContainer
 		if (entries.size() > 1)
 			if (UniDict.getConfig().keepOneEntry)
 				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
-			else if (!UniResourceHandler.getKindBlackSet().contains(kind))
+			else if (!UniResourceHandler.getEntryJEIBlackSet().contains(name) || !UniResourceHandler.getKindJEIBlackSet().contains(kind))
 				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
 	}
 

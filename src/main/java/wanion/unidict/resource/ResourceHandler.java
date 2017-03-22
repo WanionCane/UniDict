@@ -103,6 +103,13 @@ public final class ResourceHandler implements IDependency
 			thingList.set(i, getMainItemStack(thingList.get(i)));
 	}
 
+	public void setMainObjects(@Nonnull final List<Object> thingList)
+	{
+		for (int i = 0; i < thingList.size(); i++)
+			if (thingList.get(i) instanceof ItemStack)
+			thingList.set(i, getMainItemStack((ItemStack) thingList.get(i)));
+	}
+
 	public ItemStack[] getMainItemStacks(@Nonnull final ItemStack[] things)
 	{
 		for (int i = 0; i < things.length; i++)

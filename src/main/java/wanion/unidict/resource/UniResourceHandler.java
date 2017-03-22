@@ -12,8 +12,8 @@ import com.google.common.collect.Sets;
 import gnu.trove.list.TIntList;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -25,7 +25,6 @@ import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.common.Reference;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedWriter;
@@ -40,7 +39,8 @@ import static wanion.unidict.common.Reference.SLASH;
 
 public final class UniResourceHandler
 {
-	private static final TLongSet kindBlackSet = new TLongHashSet();
+	private static final TIntSet kindJEIBlackSet = new TIntHashSet();
+	private static final Set<String> entryJEIBlackSet = new HashSet<>();
 	private static boolean hasInit;
 	private final Map<String, Resource> apiResourceMap = new THashMap<>();
 	private final Map<String, Resource> resourceMap = new THashMap<>();
@@ -78,11 +78,16 @@ public final class UniResourceHandler
 		return new UniResourceHandler();
 	}
 
-	static TLongSet getKindBlackSet()
+	static synchronized TIntSet getKindJEIBlackSet()
 	{
-		if (kindBlackSet.isEmpty())
-			UniDict.getConfig().hideInJEIBlackSet.forEach(blackKind -> kindBlackSet.add(Resource.getKindOfName(blackKind)));
-		return kindBlackSet;
+		if (kindJEIBlackSet.isEmpty())
+			UniDict.getConfig().hideInJEIKindBlackSet.forEach(blackKind -> kindJEIBlackSet.add(Resource.getKindOfName(blackKind)));
+		return kindJEIBlackSet;
+	}
+
+	static Set<String> getEntryJEIBlackSet()
+	{
+		return UniDict.getConfig().hideInJEIEntryBlackSet;
 	}
 
 	public void init()
@@ -188,7 +193,7 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t[");
 				bw.newLine();
-				bw.write("\t\t\t\"minecraft\",");;
+				bw.write("\t\t\t\"minecraft\",");
 				bw.newLine();
 				bw.write("\t\t\t\"thermalfoundation\",");
 				bw.newLine();
@@ -214,7 +219,7 @@ public final class UniResourceHandler
 				bw.newLine();
 				bw.write("\t\t[");
 				bw.newLine();
-				bw.write("\t\t\t\"minecraft\",");;
+				bw.write("\t\t\t\"minecraft\",");
 				bw.newLine();
 				bw.write("\t\t\t\"thermalfoundation\",");
 				bw.newLine();
