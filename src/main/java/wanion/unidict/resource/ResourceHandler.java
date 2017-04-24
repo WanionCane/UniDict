@@ -89,7 +89,7 @@ public final class ResourceHandler implements IDependency
 	public ItemStack getMainItemStack(final ItemStack thing)
 	{
 		final UniAttributes attributesOfThing = get(thing);
-		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.stackSize) : thing;
+		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.getCount()) : thing;
 	}
 
 	public List<ItemStack> getMainItemStacks(@Nonnull final Collection<ItemStack> things)

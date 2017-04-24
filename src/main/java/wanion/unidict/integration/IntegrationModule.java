@@ -43,26 +43,11 @@ public final class IntegrationModule extends AbstractModule
 		CRAFTING(CraftingIntegration.class),
 		FURNACE(FurnaceIntegration.class),
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
-		ADVANCED_ROCKETRY("advancedRocketry", AdvancedRocketryIntegration.class),
-		ADVANCED_SOLAR_PANELS("advanced_solar_panels", AdvancedSolarPanelsIntegration.class, false),
-		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
-		BASE_METALS("basemetals", BaseMetalsIntegration.class),
-		BLOOD_MAGIC("BloodMagic", BloodMagicIntegration.class),
-		//CALCULATOR("calculator", CalculatorIntegration.class, false),
-		CHICKENS("chickens", ChickensIntegration.class),
+		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
-		ENDER_IO("EnderIO", EnderIOIntegration.class),
-		FORESTRY("forestry", ForestryIntegration.class),
-		FOUNDRY("foundry", FoundryIntegration.class),
-		INDUSTRIAL_CRAFT_2("IC2", IC2Integration.class),
-		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
-		MEKANISM("Mekanism", MekanismIntegration.class),
-		MODULAR_MACHINES("modularmachines", ModularMachinesIntegration.class),
-		RAIL_CRAFT("Railcraft", RailcraftIntegration.class),
+		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
-		TECH_REBORN("techreborn", TechRebornIntegration.class),
-		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
-		WATER_POWER("waterpower", WaterPowerIntegration.class, false);
+		TECH_REBORN("techreborn", TechRebornIntegration.class);
 
 		private final String modId;
 		private final Class<? extends AbstractIntegrationThread> integrationClass;

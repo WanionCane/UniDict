@@ -38,8 +38,8 @@ public final class Config implements UniDict.IDependency
 	public final boolean unifiedEntriesDump;
 	// input replacement
 	public final boolean inputReplacementFurnace;
-	public final boolean inputReplacementIC2;
-	public final boolean inputReplacementMekanism;
+	//public final boolean inputReplacementIC2;
+	//public final boolean inputReplacementMekanism;
 	// resource related stuff
 	public final boolean enableSpecificKindSort;
 	public final boolean enableSpecificEntrySort;
@@ -82,8 +82,8 @@ public final class Config implements UniDict.IDependency
 			unifiedEntriesDump = config.getBoolean("unifiedEntriesDump", "dump", false, "Enable this to keep track of all the unificated entries.\nthe output file will be saved on \"config\\unidict\\dump\" folder.\nonce the file is generated, you must delete it to re-generate.");
 			// input replacement
 			inputReplacementFurnace = config.getBoolean("furnace", "inputReplacement", false, "Enabling this will remove all non-standard items as input of the Furnace.");
-			inputReplacementIC2 = config.getBoolean("ic2", "inputReplacement", false, "Enabling this will remove all non-standard items as input of IC2 Machine Recipes.\nNote: this will only affect recipes that doesn't uses OreDictionary.");
-			inputReplacementMekanism = config.getBoolean("mekanism", "inputReplacement", false, "Enabling this will remove all non-standard items as input of Mekanism Machine Recipes.");
+			//inputReplacementIC2 = config.getBoolean("ic2", "inputReplacement", false, "Enabling this will remove all non-standard items as input of IC2 Machine Recipes.\nNote: this will only affect recipes that doesn't uses OreDictionary.");
+			//inputReplacementMekanism = config.getBoolean("mekanism", "inputReplacement", false, "Enabling this will remove all non-standard items as input of Mekanism Machine Recipes.");
 			// resource related stuff
 			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nit also will make \"S:ownerOfEveryThing\" be ignored for this kind.");
 			enableSpecificEntrySort = config.getBoolean("enableSpecificEntrySort", resources, false, "enabling this allow you to specify the \"owner\" of each entry.\nit also will make \"S:ownerOfEveryThing\" be ignored for this entry.");

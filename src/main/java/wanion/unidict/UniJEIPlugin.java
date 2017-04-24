@@ -9,6 +9,7 @@ package wanion.unidict;
  */
 
 import mezz.jei.api.*;
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import net.minecraft.item.ItemStack;
 
@@ -36,8 +37,8 @@ public class UniJEIPlugin implements IModPlugin
 	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)
 	{
-		final IItemBlacklist itemBlackList = iModRegistry.getJeiHelpers().getItemBlacklist();
-		stacksToHideList.forEach(itemBlackList::addItemToBlacklist);
+		final IIngredientBlacklist iIngredientBlacklist = iModRegistry.getJeiHelpers().getIngredientBlacklist();
+		stacksToHideList.forEach(iIngredientBlacklist::addIngredientToBlacklist);
 	}
 
 	@Override

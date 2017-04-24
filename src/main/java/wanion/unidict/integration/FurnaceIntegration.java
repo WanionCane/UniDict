@@ -12,7 +12,6 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
 
@@ -89,7 +88,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 				if (outputContainer == null)
 					continue;
 				else if (inputContainer == null) {
-					furnaceRecipe.setValue(outputContainer.getMainEntry(furnaceRecipe.getValue().stackSize));
+					furnaceRecipe.setValue(outputContainer.getMainEntry(furnaceRecipe.getValue().getCount()));
 					continue;
 				}
 				final int kind = inputContainer.kind;
@@ -99,8 +98,8 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 				final TIntSet kindSet = containerKindMap.get(outputContainer);
 				if (!kindSet.contains(kind)) {
 					kindSet.add(kind);
-					final ItemStack newEntry = outputContainer.getMainEntry(oldEntry.stackSize);
-					newRecipes.put(inputContainer.getMainEntry(furnaceRecipe.getKey().stackSize), newEntry);
+					final ItemStack newEntry = outputContainer.getMainEntry(oldEntry.getCount());
+					newRecipes.put(inputContainer.getMainEntry(furnaceRecipe.getKey().getCount()), newEntry);
 					if (experienceMap.containsKey(oldEntry))
 						experienceMap.put(newEntry, experienceMap.remove(oldEntry));
 				}

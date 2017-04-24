@@ -9,22 +9,19 @@ package wanion.unidict.integration;
  */
 
 import ic2.api.recipe.IRecipeInput;
-import ic2.api.recipe.RecipeInputItemStack;
-import ic2.api.recipe.RecipeOutput;
+import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
 import ic2.core.recipe.BasicMachineRecipeManager;
+import net.minecraft.item.ItemStack;
 import wanion.lib.common.FixedSizeList;
 import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
-	private final List<Map<IRecipeInput, RecipeOutput>> ic2MachinesRecipeList = new FixedSizeList<>(5);
+	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new FixedSizeList<>(5);
 
 	IC2Integration()
 	{
@@ -51,26 +48,9 @@ final class IC2Integration extends AbstractIntegrationThread
 		return threadName + "The world appears to be entirely industrialized.";
 	}
 
-	private void fixMachinesOutputs(final Map<IRecipeInput, RecipeOutput> recipes)
+	private void fixMachinesOutputs(final Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipes)
 	{
-		if (!config.inputReplacementIC2) {
-			for (final Map.Entry<IRecipeInput, RecipeOutput> recipe : recipes.entrySet())
-				recipe.setValue(new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStacks(recipe.getValue().items)));
-		} else {
-			final Map<IRecipeInput, RecipeOutput> newRecipes = new HashMap<>();
-			for (final Iterator<Map.Entry<IRecipeInput, RecipeOutput>> recipesIterator = recipes.entrySet().iterator(); recipesIterator.hasNext(); )
-			{
-				final Map.Entry<IRecipeInput, RecipeOutput> recipe = recipesIterator.next();
-				final IRecipeInput recipeInput = recipe.getKey();
-				final RecipeOutput recipeOutput = recipe.getValue();
-				if (recipeInput instanceof RecipeInputItemStack) {
-					newRecipes.put(new RecipeInputItemStack(resourceHandler.getMainItemStack(((RecipeInputItemStack) recipeInput).input), ((RecipeInputItemStack) recipeInput).amount), new RecipeOutput(recipe.getValue().metadata, resourceHandler.getMainItemStacks(recipeOutput.items)));
-					recipesIterator.remove();
-				} else {
-					recipe.setValue(new RecipeOutput(recipeOutput.metadata, resourceHandler.getMainItemStacks(recipeOutput.items)));
-				}
-			}
-			recipes.putAll(newRecipes);
-		}
+		for (final Map.Entry<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe : recipes.entrySet())
+			recipe.setValue(new MachineRecipe<>(recipe.getValue().getInput(), resourceHandler.getMainItemStacks(recipe.getValue().getOutput())));
 	}
 }
