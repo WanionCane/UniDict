@@ -41,8 +41,9 @@ public final class IntegrationModule extends AbstractModule
 	private enum Integration
 	{
 		CRAFTING(CraftingIntegration.class),
-		FURNACE(FurnaceIntegration.class),
+		FURNACE(FurnaceIntegration.class),		
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
+		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
