@@ -7,3 +7,9 @@ src/META-INF/
 /*.iws
 /*.ipr
 /*.iml
+
+# Eclipse IDE files
+.classpath
+.project
+.settings
+bin/
