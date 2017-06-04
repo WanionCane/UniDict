@@ -13,3 +13,6 @@ src/META-INF/
 .project
 .settings
 bin/
+
+# Minecraft files
+*.launch
