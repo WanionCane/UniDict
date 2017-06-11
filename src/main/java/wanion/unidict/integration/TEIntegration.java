@@ -8,7 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import cofh.thermalexpansion.util.crafting.*;
+import cofh.thermalexpansion.util.managers.machine.*;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
