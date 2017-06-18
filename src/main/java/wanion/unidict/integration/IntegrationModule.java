@@ -43,10 +43,12 @@ public final class IntegrationModule extends AbstractModule
 		CRAFTING(CraftingIntegration.class),
 		FURNACE(FurnaceIntegration.class),
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
+		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
+        THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class);
 
 		private final String modId;
