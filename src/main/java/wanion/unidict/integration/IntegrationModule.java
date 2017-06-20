@@ -46,9 +46,9 @@ public final class IntegrationModule extends AbstractModule
 		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
-		MEKANISM("Mekanism", MekanismIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
+		MEKANISM("Mekanism", MekanismIntegration.class),
 		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);
