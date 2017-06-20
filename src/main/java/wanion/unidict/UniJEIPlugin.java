@@ -11,6 +11,7 @@ package wanion.unidict;
 import mezz.jei.api.*;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -33,6 +34,9 @@ public class UniJEIPlugin implements IModPlugin
 
 	@Override
 	public void registerIngredients(@Nonnull final IModIngredientRegistration iModIngredientRegistration) {}
+
+	@Override
+	public void registerCategories(@Nonnull IRecipeCategoryRegistration iRecipeCategoryRegistration) {}
 
 	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)

@@ -46,10 +46,12 @@ public final class IntegrationModule extends AbstractModule
 		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
+		MEKANISM("Mekanism", MekanismIntegration.class),
+		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
-        THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
-		TECH_REBORN("techreborn", TechRebornIntegration.class);
+		TECH_REBORN("techreborn", TechRebornIntegration.class),
+		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);
 
 		private final String modId;
 		private final Class<? extends AbstractIntegrationThread> integrationClass;
