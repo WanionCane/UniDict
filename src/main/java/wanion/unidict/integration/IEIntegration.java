@@ -136,7 +136,7 @@ final class IEIntegration extends AbstractIntegrationThread
 		if (ingredientStack == null)
 			return null;
 		Object buf;
-		if ((buf = ingredientStack.getShapedRecipeInput()) != null) {
+		if ((buf = ingredientStack.stack) != null) {
 			if (buf instanceof ItemStack)
 				return buf;
 			else if (buf instanceof List && !((List) buf).isEmpty()) {

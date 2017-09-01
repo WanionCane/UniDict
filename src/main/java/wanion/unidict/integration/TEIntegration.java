@@ -111,7 +111,7 @@ final class TEIntegration extends AbstractIntegrationThread
 			return;
 		Constructor<RefineryManager.RefineryRecipe> refineryRecipeConstructor = null;
 		try {
-			refineryRecipeConstructor = RefineryManager.RefineryRecipe.class.getDeclaredConstructor(FluidStack.class, FluidStack.class, ItemStack.class, int.class);
+			refineryRecipeConstructor = RefineryManager.RefineryRecipe.class.getDeclaredConstructor(FluidStack.class, FluidStack.class, ItemStack.class, int.class, int.class);
 			refineryRecipeConstructor.setAccessible(true);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -124,7 +124,7 @@ final class TEIntegration extends AbstractIntegrationThread
 			if (correctOutput == refineryRecipe.getOutputItem())
 				continue;
 			try {
-				recipeMap.put(recipeMapKey, refineryRecipeConstructor.newInstance(refineryRecipe.getInput(), refineryRecipe.getOutputFluid(), correctOutput, refineryRecipe.getEnergy()));
+				recipeMap.put(recipeMapKey, refineryRecipeConstructor.newInstance(refineryRecipe.getInput(), refineryRecipe.getOutputFluid(), correctOutput, refineryRecipe.getEnergy(), refineryRecipe.getChance()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}

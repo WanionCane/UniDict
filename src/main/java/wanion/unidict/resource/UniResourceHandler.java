@@ -104,7 +104,7 @@ public final class UniResourceHandler
 			if (plusSeparator != -1 && plusSeparator > 0) {
 				final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
 				final int separatorChar = itemName.indexOf('#');
-				final Item item = MetaItem.itemRegistry.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
+				final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 				if (item != null) {
 					try {
 						final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));

@@ -40,16 +40,14 @@ public final class IntegrationModule extends AbstractModule
 
 	private enum Integration
 	{
-		CRAFTING(CraftingIntegration.class),
+		//CRAFTING(CraftingIntegration.class),
 		FURNACE(FurnaceIntegration.class),
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
-		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
-		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
-		MEKANISM("Mekanism", MekanismIntegration.class),
-		REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
+		MEKANISM("mekanism", MekanismIntegration.class),
+		//REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);
 

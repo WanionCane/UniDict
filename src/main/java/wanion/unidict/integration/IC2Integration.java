@@ -12,6 +12,7 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
 import ic2.core.recipe.BasicMachineRecipeManager;
+import ic2.core.recipe.MachineRecipeHelper;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.FixedSizeList;
 import wanion.lib.common.Util;
@@ -21,19 +22,19 @@ import java.util.*;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
-	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new FixedSizeList<>(5);
+	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new FixedSizeList<>(7);
 
 	IC2Integration()
 	{
 		super("Industrial Craft 2");
 		try {
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.centrifuge, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.compressor, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.blastfurnace, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.macerator, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerCutting, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerExtruding, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(BasicMachineRecipeManager.class, "recipes", Recipes.metalformerRolling, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.centrifuge, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.compressor, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.blastfurnace, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.macerator, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerCutting, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerExtruding, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerRolling, Map.class));
 		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 	}
 
