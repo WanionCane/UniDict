@@ -13,6 +13,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
@@ -72,10 +73,18 @@ public final class Util
 			if (object instanceof ItemStack) {
 				if ((bufKey = MetaItem.get(resourceHandler.getMainItemStack((ItemStack) object))) > 0)
 					keys.add(bufKey);
+			} else if (object instanceof Ingredient && ((Ingredient) object).getMatchingStacks().length > 0) {
+				if ((bufKey = MetaItem.get(resourceHandler.getMainItemStack(((Ingredient) object).getMatchingStacks()[0]))) > 0)
+					keys.add(bufKey);
 			} else if (object instanceof List && !((List) object).isEmpty())
 				if ((bufKey = MetaItem.get(((ItemStack) ((List) object).get(0)))) > 0)
 					keys.add(bufKey);
 		return keys;
+	}
+
+	public static TIntList getList(@Nonnull final List<?> objects, @Nonnull final ResourceHandler resourceHandler)
+	{
+		return getList(objects.toArray(), resourceHandler);
 	}
 
 	public static TIntSet getSet(@Nonnull final Collection<Resource> resourceCollection, final int kind)

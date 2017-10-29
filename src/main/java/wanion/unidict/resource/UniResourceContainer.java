@@ -59,6 +59,11 @@ public final class UniResourceContainer
 		return new ItemStack(mainEntryItem, size, mainEntryMeta);
 	}
 
+	public ItemStack getMainEntry(final ItemStack itemStack)
+	{
+		return new ItemStack(mainEntryItem, itemStack.getCount(), mainEntryMeta);
+	}
+
 	public List<ItemStack> getEntries()
 	{
 		return UniOreDictionary.getUn(id);
@@ -131,8 +136,10 @@ public final class UniResourceContainer
 	public void sort()
 	{
 		final Comparator<ItemStack> itemStackComparator = getComparator();
-		if (itemStackComparator != null)
-			entries.sort(itemStackComparator);
+		if (itemStackComparator == null)
+			return;
+		entries.sort(itemStackComparator);
+		hashes = MetaItem.getArray(entries);
 	}
 
 	@Override

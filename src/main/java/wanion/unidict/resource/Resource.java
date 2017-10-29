@@ -35,7 +35,6 @@ public class Resource
 	public final String name;
 	private final TIntObjectMap<UniResourceContainer> childrenMap = new TIntObjectHashMap<>();
 	private final List<Resource> copies = new ArrayList<>();
-	private TIntSet children = new TIntHashSet();
 	private boolean updated;
 
 	public Resource(@Nonnull final String name)

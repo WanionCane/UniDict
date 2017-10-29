@@ -55,7 +55,8 @@ public final class ResourceHandler implements IDependency
 
 	private UniAttributes get(final ItemStack thing)
 	{
-		return individualStackAttributes.get(MetaItem.get(thing));
+		final int hash = MetaItem.get(thing);
+		return individualStackAttributes.get(hash);
 	}
 
 	public Resource getResource(final String resourceName)
@@ -89,7 +90,7 @@ public final class ResourceHandler implements IDependency
 	public ItemStack getMainItemStack(final ItemStack thing)
 	{
 		final UniAttributes attributesOfThing = get(thing);
-		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing.getCount()) : thing;
+		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.getMainEntry(thing) : thing;
 	}
 
 	public List<ItemStack> getMainItemStacks(@Nonnull final Collection<ItemStack> things)
