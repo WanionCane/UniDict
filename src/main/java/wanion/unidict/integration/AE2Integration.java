@@ -16,6 +16,7 @@ import appeng.core.features.registries.grinder.GrinderRecipeManager;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
+import scala.App;
 import wanion.lib.common.MetaItem;
 import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
@@ -61,9 +62,10 @@ final class AE2Integration extends AbstractIntegrationThread
 			grindStoneRecipeIterator.remove();
 		}
 		final IGrinderRegistry grinderRecipeManager = AEApi.instance().registries().grinder();
-		final Constructor<AppEngGrinderRecipe> appEngGrinderNormalRecipeConstructor = AppEngGrinderRecipe.class.getConstructor(ItemStack.class, ItemStack.class, int.class);
-		final Constructor<AppEngGrinderRecipe> appEngGrinderOptionalRecipeConstructor = AppEngGrinderRecipe.class.getConstructor(ItemStack.class, ItemStack.class, ItemStack.class, float.class, int.class);
-		final Constructor<AppEngGrinderRecipe> appEngGrinderTwoOptionalRecipeConstructor = AppEngGrinderRecipe.class.getConstructor(ItemStack.class, ItemStack.class, ItemStack.class, ItemStack.class, float.class, float.class, int.class);
+		final Class<AppEngGrinderRecipe> appEngGrinderRecipeClass = AppEngGrinderRecipe.class;
+		final Constructor<AppEngGrinderRecipe> appEngGrinderNormalRecipeConstructor = appEngGrinderRecipeClass.getDeclaredConstructor(ItemStack.class, ItemStack.class, int.class);
+		final Constructor<AppEngGrinderRecipe> appEngGrinderOptionalRecipeConstructor = appEngGrinderRecipeClass.getDeclaredConstructor(ItemStack.class, ItemStack.class, ItemStack.class, float.class, int.class);
+		final Constructor<AppEngGrinderRecipe> appEngGrinderTwoOptionalRecipeConstructor = appEngGrinderRecipeClass.getDeclaredConstructor(ItemStack.class, ItemStack.class, ItemStack.class, ItemStack.class, float.class, float.class, int.class);
 		appEngGrinderNormalRecipeConstructor.setAccessible(true);
 		appEngGrinderOptionalRecipeConstructor.setAccessible(true);
 		appEngGrinderTwoOptionalRecipeConstructor.setAccessible(true);
