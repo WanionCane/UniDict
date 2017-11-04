@@ -157,11 +157,11 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		final List<Object> inputs = new ArrayList<>();
 		if (itemStacksOnly) {
 			for (final Ingredient ingredient : recipe.getIngredients())
-				if (ingredient != null && ingredient.getMatchingStacks().length > 1)
+				if (ingredient != null && ingredient.getMatchingStacks().length > 0)
 					inputs.add(resourceHandler.getMainItemStack(ingredient.getMatchingStacks()[0]));
 		} else {
 			for (final Ingredient ingredient : recipe.getIngredients()) {
-				if (ingredient != null && ingredient.getMatchingStacks().length > 1) {
+				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack input = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(input);
 					inputs.add(container != null ? container.name : input);
