@@ -68,10 +68,10 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 	@Override
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final ShapedRecipes recipe)
 	{
-		final Ingredient[] recipeInputs = (Ingredient[]) recipe.getIngredients().toArray();
+		final List<Ingredient> recipeInputs = recipe.getIngredients();
 		final Object[] newRecipeInputs = new Object[9];
 		for (int i = 0; i < 9; i++) {
-			final Ingredient ingredient = i < recipeInputs.length ? recipeInputs[i] : null;
+			final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
 			if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 				final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 				final UniResourceContainer container = resourceHandler.getContainer(itemStack);
@@ -84,7 +84,7 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputSize + "x_" + outputContainer.name + "_shape:");
+		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
 		for (int i = 0; i < 3; i++)
 			actualName.append(actualNewInputs[i]);
 		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
@@ -93,10 +93,10 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 	@Override
 	public ShapedOreRecipe getNewShapedFromShapelessRecipe(@Nonnull final ShapelessRecipes recipe)
 	{
-		final Ingredient[] recipeInputs = (Ingredient[]) recipe.getIngredients().toArray();
-		final Object[] newRecipeInputs = new Object[recipeInputs.length];
+		final List<Ingredient> recipeInputs = recipe.getIngredients();
+		final Object[] newRecipeInputs = new Object[9];
 		for (int i = 0; i < 9; i++) {
-			final Ingredient ingredient = i < recipeInputs.length ? recipeInputs[i] : null;
+			final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
 			if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 				final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 				final UniResourceContainer container = resourceHandler.getContainer(itemStack);
@@ -109,7 +109,7 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputSize + "x_" + outputContainer.name + "_");
+		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
 		for (int i = 0; i < 3; i++)
 			actualName.append(actualNewInputs[i]);
 		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
@@ -138,7 +138,7 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputSize + "x_" + outputContainer.name + "_size:" + inputs.size()), outputStack, inputs.toArray());
+		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + inputs.size()), outputStack, inputs.toArray());
 	}
 
 	@Override
@@ -163,6 +163,6 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputSize + "x_" + outputContainer.name + "_size:" + inputs.size()), outputStack, inputs.toArray());
+		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + inputs.size()), outputStack, inputs.toArray());
 	}
 }

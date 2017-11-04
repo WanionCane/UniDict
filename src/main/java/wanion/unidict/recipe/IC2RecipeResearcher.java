@@ -107,7 +107,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputSize + "x_" + outputContainer.name + "_shape:");
+		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
 		for (int i = 0; i < 3; i++)
 			actualName.append(actualNewInputs[i]);
 		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
@@ -145,7 +145,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputSize + "x_" + outputContainer.name + "_shape:");
+		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
 		for (int i = 0; i < 3; i++)
 			actualName.append(actualNewInputs[i]);
 		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
@@ -180,7 +180,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputSize + "x_" + outputContainer.name + "_size:" + newInputs.size()), outputStack, newInputs.toArray());
+		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + newInputs.size()), outputStack, newInputs.toArray());
 	}
 
 	@Override
@@ -212,6 +212,6 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputSize + "x_" + outputContainer.name + "_size:" + newInputs.size()), outputStack, newInputs.toArray());
+		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + newInputs.size()), outputStack, newInputs.toArray());
 	}
 }

@@ -16,7 +16,6 @@ import appeng.core.features.registries.grinder.GrinderRecipeManager;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
-import scala.App;
 import wanion.lib.common.MetaItem;
 import wanion.lib.common.Util;
 import wanion.unidict.UniDict;

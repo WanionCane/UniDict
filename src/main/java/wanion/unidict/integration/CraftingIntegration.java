@@ -12,11 +12,12 @@ import com.google.common.collect.Lists;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.GameData;
+import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.UniDict;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
@@ -31,7 +32,7 @@ import java.util.*;
 
 final class CraftingIntegration extends AbstractIntegrationThread
 {
-	//private final RegistryNamespaced<ResourceLocation, IRecipe> REGISTRY = CraftingManager.REGISTRY;
+	private final Set<Map.Entry<ResourceLocation, IRecipe>> recipes = RegistryManager.ACTIVE.<IRecipe>getRegistry(GameData.RECIPES).getEntries();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
 	private final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
@@ -75,22 +76,23 @@ final class CraftingIntegration extends AbstractIntegrationThread
 			reCreateTheRecipes();
 		} catch (Exception e) {
 			UniDict.getLogger().error(threadName + e);
+			e.printStackTrace();
 		}
 		return threadName + "Why so many recipes? I had to deal with " + totalRecipesReCreated + " recipes.";
 	}
 
 	private void doTheResearch()
 	{
-		IRecipe bufferRecipe;
 		UniResourceContainer bufferContainer;
-		/*
-		for (final Iterator<IRecipe> recipeIterator = recipes.iterator(); recipeIterator.hasNext(); ) {
+		final List<ResourceLocation> recipesToRemove = new ArrayList<>();
+		for (final Map.Entry<ResourceLocation, IRecipe> entry : recipes) {
+			final IRecipe recipe = entry.getValue();
 			boolean isShapeless = false;
-			if ((bufferRecipe = recipeIterator.next()) == null || (bufferContainer = resourceHandler.getContainer(bufferRecipe.getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(bufferRecipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(bufferRecipe.getClass()))))
+			if ((recipe == null || recipe.getRecipeOutput() == ItemStack.EMPTY || (bufferContainer = resourceHandler.getContainer(entry.getValue().getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(recipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(recipe.getClass())))))
 				continue;
 			try {
 				final int recipeKey;
-				recipeKey = !isShapeless ? (int) getShapedRecipeKeyMethod.invoke(shapedResearcherMap.get(bufferRecipe.getClass()), bufferRecipe) : (int) getShapelessRecipeKeyMethod.invoke(shapelessResearcherMap.get(bufferRecipe.getClass()), bufferRecipe);
+				recipeKey = !isShapeless ? (int) getShapedRecipeKeyMethod.invoke(shapedResearcherMap.get(recipe.getClass()), recipe) : (int) getShapelessRecipeKeyMethod.invoke(shapelessResearcherMap.get(recipe.getClass()), recipe);
 				if (recipeKey == 0)
 					continue;
 				final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
@@ -98,14 +100,14 @@ final class CraftingIntegration extends AbstractIntegrationThread
 					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
 				else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
 				if (!evenSmarterRecipeMap.containsKey(recipeKey))
-					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(bufferRecipe));
-				else evenSmarterRecipeMap.get(recipeKey).add(bufferRecipe);
-				recipeIterator.remove();
+					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(recipe));
+				else evenSmarterRecipeMap.get(recipeKey).add(recipe);
+				recipesToRemove.add(recipe.getRegistryName());
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
-		*/
+		recipesToRemove.forEach(recipeLocation -> RegistryManager.ACTIVE.getRegistry(GameData.RECIPES).remove(recipeLocation));
 	}
 
 	private void reCreateTheRecipes()
@@ -130,12 +132,12 @@ final class CraftingIntegration extends AbstractIntegrationThread
 							iRecipe = isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapelessFromShapedRecipeMethod.invoke(recipeResearcher, recipe);
 						else
 							iRecipe = isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe);
-						if(iRecipe != null) {
-							//REGISTRY.register(iRecipe.getRegistryName(), iRecipe);
+						if (iRecipe != null) {
+							ForgeRegistries.RECIPES.register(iRecipe.setRegistryName(new ResourceLocation(iRecipe.getGroup())));
 							totalRecipesReCreated++;
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						UniDict.getLogger().warn("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nre-adding the original recipe.");
+						UniDict.getLogger().error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe without issues.");
 					}
 					return true;
 				})

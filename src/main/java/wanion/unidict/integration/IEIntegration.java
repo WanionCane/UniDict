@@ -42,7 +42,9 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) {
+			UniDict.getLogger().error(threadName + e);
+		}
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
 
@@ -50,15 +52,14 @@ final class IEIntegration extends AbstractIntegrationThread
 	{
 		final List<ArcFurnaceRecipe> arcFurnaceRecipes = ArcFurnaceRecipe.recipeList;
 		final List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
-		for (final Iterator<ArcFurnaceRecipe> arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); )
-		{
+		for (final Iterator<ArcFurnaceRecipe> arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); ) {
 			final ArcFurnaceRecipe recipe = arcFurnaceRecipeIterator.next();
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
 			if (correctOutput == recipe.output)
 				continue;
 			final int time = (int) Math.floor((double) ((float) recipe.getTotalProcessTime() / ArcFurnaceRecipe.timeModifier));
 			final int energy = (int) Math.floor((double) ((float) ((recipe.getTotalProcessEnergy() / ArcFurnaceRecipe.energyModifier) / recipe.getTotalProcessTime())));
-			correctRecipes.add(new ArcFurnaceRecipe(correctOutput, ingredientStackToValidInput(recipe.input), recipe.slag, time, energy, ingredientStackToValidInput(recipe.additives)));
+			correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.input, recipe.slag, time, energy, (Object[]) recipe.additives));
 			arcFurnaceRecipeIterator.remove();
 		}
 		arcFurnaceRecipes.addAll(correctRecipes);
@@ -77,8 +78,7 @@ final class IEIntegration extends AbstractIntegrationThread
 		final List<CrusherRecipe> crusherRecipes = CrusherRecipe.recipeList;
 		final List<CrusherRecipe> correctRecipes = new FixedSizeList<>(crusherRecipes.size());
 		final TIntSet uniques = new TIntHashSet(crusherRecipes.size(), 1);
-		for (final Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); )
-		{
+		for (final Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); ) {
 			final CrusherRecipe crusherRecipe = crusherRecipesIterator.next();
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(crusherRecipe.output);
 			if (correctOutput == crusherRecipe.output)
@@ -88,9 +88,9 @@ final class IEIntegration extends AbstractIntegrationThread
 			if (!uniques.contains(recipeId)) {
 				final int energy = (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
 				if (crusherRecipe.secondaryOutput == null)
-					correctRecipes.add(new CrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), energy));
+					correctRecipes.add(new CrusherRecipe(correctOutput, crusherRecipe.input, energy));
 				else
-					correctRecipes.add(new UniCrusherRecipe(correctOutput, ingredientStackToValidInput(crusherRecipe.input), energy, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
+					correctRecipes.add(new UniCrusherRecipe(correctOutput, crusherRecipe.input, energy, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
 				uniques.add(recipeId);
 			}
 			crusherRecipesIterator.remove();
@@ -103,54 +103,19 @@ final class IEIntegration extends AbstractIntegrationThread
 		final ArrayListMultimap<ComparableItemStack, MetalPressRecipe> metalPressRecipes = MetalPressRecipe.recipeList;
 		final ArrayListMultimap<ComparableItemStack, MetalPressRecipe> correctRecipes = ArrayListMultimap.create();
 		final TIntSet uniques = new TIntHashSet(metalPressRecipes.size(), 1);
-		for (final Iterator<MetalPressRecipe> metalPressRecipesIterator = metalPressRecipes.values().iterator(); metalPressRecipesIterator.hasNext(); )
-		{
+		for (final Iterator<MetalPressRecipe> metalPressRecipesIterator = metalPressRecipes.values().iterator(); metalPressRecipesIterator.hasNext(); ) {
 			final MetalPressRecipe metalPressRecipe = metalPressRecipesIterator.next();
 			final ItemStack output = resourceHandler.getMainItemStack(metalPressRecipe.output);
 			if (output == metalPressRecipe.output)
 				continue;
 			final int id = MetaItem.getCumulative(output, metalPressRecipe.mold.stack);
 			if (!uniques.contains(id)) {
-				correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, ingredientStackToValidInput(metalPressRecipe.input), metalPressRecipe.mold, (int) Math.floor((double) ((float) metalPressRecipe.getTotalProcessEnergy() / MetalPressRecipe.timeModifier))).setInputSize(metalPressRecipe.input.inputSize));
+				correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, metalPressRecipe.input, metalPressRecipe.mold, (int) Math.floor((double) ((float) metalPressRecipe.getTotalProcessEnergy() / MetalPressRecipe.timeModifier))).setInputSize(metalPressRecipe.input.inputSize));
 				uniques.add(id);
 			}
 			metalPressRecipesIterator.remove();
 		}
 		metalPressRecipes.putAll(correctRecipes);
-	}
-
-	private Object[] ingredientStackToValidInput(final IngredientStack[] ingredientStacks)
-	{
-		if (ingredientStacks == null)
-			return null;
-		final List<Object> inputs = new ArrayList<>();
-		Object buf;
-		for (IngredientStack ingredientStack : ingredientStacks)
-			if ((buf = ingredientStackToValidInput(ingredientStack)) != null)
-				inputs.add(buf);
-		return inputs.toArray();
-	}
-
-	private Object ingredientStackToValidInput(final IngredientStack ingredientStack)
-	{
-		if (ingredientStack == null)
-			return null;
-		Object buf;
-		if ((buf = ingredientStack.stack) != null) {
-			if (buf instanceof ItemStack)
-				return buf;
-			else if (buf instanceof List && !((List) buf).isEmpty()) {
-				final String oreName = uniOreDictionary.getName(buf);
-				if (oreName != null)
-					return oreName;
-				final Object object = ((List) buf).get(0);
-				if (object instanceof ItemStack)
-					return Arrays.copyOf(((List) buf).toArray(), ((List) buf).size(), ItemStack[].class);
-				else if (object instanceof String)
-					return Arrays.copyOf(((List) buf).toArray(), ((List) buf).size(), String[].class);
-			}
-		}
-		return null;
 	}
 
 	private static final class UniCrusherRecipe extends CrusherRecipe
