@@ -9,6 +9,7 @@ package wanion.unidict;
  */
 
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
@@ -21,6 +22,7 @@ import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
+import wanion.unidict.proxy.CommonProxy;
 import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniResourceHandler;
 
@@ -75,6 +77,14 @@ public final class UniDict
 		return dependencies.get(UniDictAPI.class);
 	}
 
+	public static ModuleHandler getModuleHandler()
+	{
+		return instance.moduleHandler;
+	}
+
+	@SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
+	public static CommonProxy proxy;
+
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event)
 	{
@@ -93,6 +103,12 @@ public final class UniDict
 	{
 		uniResourceHandler.postInit();
 		moduleHandler.startModules(event);
+		proxy.postInit();
+		clean();
+	}
+
+	private void clean()
+	{
 		uniResourceHandler = null;
 		moduleHandler = null;
 		dependencies = null;

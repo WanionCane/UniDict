@@ -14,10 +14,12 @@ public final class Reference
 {
 	public static final String MOD_ID = "unidict";
 	public static final String MOD_NAME = "UniDict";
-	public static final String MOD_VERSION = "1.12.2-1.1b";
-	public static final String DEPENDENCIES = "required-after:wanionlib@[1.12.2-1.1,);after:*";
+	public static final String MOD_VERSION = "1.12.2-1.2";
+	public static final String DEPENDENCIES = "required-after:wanionlib@[1.12.2-1.2,);after:*";
 	public static final char SLASH = separatorChar;
 	public static final String MC_VERSION = "[1.12,]";
+	public static final String CLIENT_PROXY = "wanion.unidict.proxy.ClientProxy";
+	public static final String SERVER_PROXY = "wanion.unidict.proxy.CommonProxy";
 
 	private Reference() {}
 }

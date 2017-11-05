@@ -30,7 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-final class CraftingIntegration extends AbstractIntegrationThread
+public final class CraftingIntegration extends AbstractIntegrationThread
 {
 	private final Set<Map.Entry<ResourceLocation, IRecipe>> recipes = RegistryManager.ACTIVE.<IRecipe>getRegistry(GameData.RECIPES).getEntries();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
@@ -76,7 +76,6 @@ final class CraftingIntegration extends AbstractIntegrationThread
 			reCreateTheRecipes();
 		} catch (Exception e) {
 			UniDict.getLogger().error(threadName + e);
-			e.printStackTrace();
 		}
 		return threadName + "Why so many recipes? I had to deal with " + totalRecipesReCreated + " recipes.";
 	}
@@ -88,7 +87,7 @@ final class CraftingIntegration extends AbstractIntegrationThread
 		for (final Map.Entry<ResourceLocation, IRecipe> entry : recipes) {
 			final IRecipe recipe = entry.getValue();
 			boolean isShapeless = false;
-			if ((recipe == null || recipe.getRecipeOutput() == ItemStack.EMPTY || (bufferContainer = resourceHandler.getContainer(entry.getValue().getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(recipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(recipe.getClass())))))
+			if (config.recipesToIgnore.contains(entry.getKey()) || (recipe == null || recipe.getRecipeOutput() == ItemStack.EMPTY || (bufferContainer = resourceHandler.getContainer(entry.getValue().getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(recipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(recipe.getClass())))))
 				continue;
 			try {
 				final int recipeKey;

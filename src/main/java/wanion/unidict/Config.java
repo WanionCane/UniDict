@@ -12,6 +12,7 @@ import com.google.common.collect.Sets;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import wanion.unidict.common.Reference;
 
@@ -47,8 +48,10 @@ public final class Config implements UniDict.IDependency
 	public final Set<String> metalsToUnify;
 	public final Set<String> childrenOfMetals;
 	public final List<String> resourceBlackList;
+	public final Set<ResourceLocation> recipesToIgnore;
 	public final Map<String, Set<String>> customUnifiedResources;
-	// userRegisteredOreDictEntries
+	// userEntries
+	public final List<String> userRemovedOreDictEntries;
 	public final List<String> userRegisteredOreDictEntries;
 	// modules
 	public final boolean integrationModule;
@@ -91,8 +94,15 @@ public final class Config implements UniDict.IDependency
 			metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminum", "Alumina", "Chrome", "Constantan"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
+			recipesToIgnore = new HashSet<>();
+			for (final String recipeToIgnore : config.getStringList("recipeToIgnoreList", resources, new String[]{"minecraft:iron_nugget", "minecraft:iron_block", "minecraft:iron_ingot_from_block", "minecraft:iron_ingot_from_nuggets", "minecraft:gold_nugget", "minecraft:gold_ingot_from_block", "minecraft:gold_ingot_from_nuggets", "minecraft:gold_block"}, "add here recipes (names) that you don't want the Crafting Integration to mess with.")) {
+				final int separator = recipeToIgnore.indexOf(':');
+				if (separator > 0)
+					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1, recipeToIgnore.length())));
+			}
 			customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
 			// userRegisteredOreDictEntries
+			userRemovedOreDictEntries = Arrays.asList(config.getStringList("userRemovedOreDictEntries", general, new String[]{}, "This allows to the user remove entries before the Unification happen.\nthis is mainly useful to avoid trying to unify certain things.\n\nFormat:\nironIngot-minecraft:iron_ingot#0\nThe example above will remove Iron Ingot from ironIngot."));
 			userRegisteredOreDictEntries = Arrays.asList(config.getStringList("userRegisteredOreDictEntries", general, new String[]{}, "This allows to the user register their own ore entries before the Unification happen.\nthis is mainly useful when the user is trying to unify things that aren't registered previously in the Ore Dictionary.\n\nFormat:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone."));
 			// modules
 			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module.\nif false all the Integrations will be disabled.\n");

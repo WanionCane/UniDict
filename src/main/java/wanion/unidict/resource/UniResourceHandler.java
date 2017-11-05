@@ -20,7 +20,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.lib.common.Dependencies;
-import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
@@ -92,9 +91,36 @@ public final class UniResourceHandler
 
 	public void init()
 	{
+		removeEntries();
 		registerCustomEntries();
 		gatherResources();
 		createAdditionalFiles();
+	}
+
+	private void removeEntries()
+	{
+		config.userRemovedOreDictEntries.forEach(customEntries -> {
+			final int plusSeparator = customEntries.indexOf('-');
+			if (plusSeparator != -1 && plusSeparator > 0) {
+				final String oreName = customEntries.substring(0, plusSeparator);
+				final List<ItemStack> oreList = UniOreDictionary.get(oreName);
+				if (oreList == null)
+					UniDict.getLogger().warn("UniDict couldn't find the entry: " + oreName);
+				else {
+					final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
+					final int separatorChar = itemName.indexOf('#');
+					final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
+					if (item != null) {
+						final int metaData = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+						final ItemStack itemStack = new ItemStack(item, 1, metaData);
+						boolean found = false;
+						for (final Iterator<ItemStack> itemStackIterator = oreList.iterator(); !found && itemStackIterator.hasNext(); )
+							if (found = itemStack.isItemEqual(itemStackIterator.next()))
+								itemStackIterator.remove();
+					}
+				}
+			}
+		});
 	}
 
 	private void registerCustomEntries()
@@ -116,7 +142,6 @@ public final class UniResourceHandler
 			}
 		});
 	}
-
 
 	private void gatherResources()
 	{
