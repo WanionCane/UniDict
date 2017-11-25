@@ -79,13 +79,6 @@ public final class UniOreDictionary implements IDependency
 		return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(oreList.size() - 1).copy() : null;
 	}
 
-	public static Set<ItemStack> get(final Collection<String> oreDictNames)
-	{
-		final Set<ItemStack> itemStacks = new HashSet<>();
-		oreDictNames.forEach(name -> idToStack.get(nameToId.get(name)));
-		return itemStacks;
-	}
-
 	public static List<ItemStack> get(final ItemStack thing)
 	{
 		final int thingId = MetaItem.get(thing);
