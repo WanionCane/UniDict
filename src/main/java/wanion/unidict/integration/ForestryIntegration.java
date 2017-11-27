@@ -22,7 +22,6 @@ import java.util.*;
 final class ForestryIntegration extends AbstractIntegrationThread
 {
 	private Set<ICarpenterRecipe> carpenterRecipes = Util.getField(CarpenterRecipeManager.class, "recipes", null, Set.class);
-	private static final RegistryNamespaced<ResourceLocation, Item> itemRegistry = Item.REGISTRY;
 
 	ForestryIntegration()
 	{
@@ -49,8 +48,8 @@ final class ForestryIntegration extends AbstractIntegrationThread
 	private void bronzeThings()
 	{
 		UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
-		final Item brokenBronzePickaxe = itemRegistry.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
-		final Item brokenBronzeShovel = itemRegistry.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
+		final Item brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
+		final Item brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
 		if (brokenBronzePickaxe != null)
 			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzePickaxe))));
 		if (brokenBronzeShovel != null)
