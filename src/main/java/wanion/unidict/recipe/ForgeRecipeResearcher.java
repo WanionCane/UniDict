@@ -12,11 +12,11 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.TIntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import wanion.lib.recipe.RecipeAttributes;
 import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniDict;
 import wanion.unidict.common.Reference;
@@ -93,11 +93,8 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
-		for (int i = 0; i < 3; i++)
-			actualName.append(actualNewInputs[i]);
-		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
+		final RecipeAttributes newRecipeAttributes = RecipeHelper.rawShapeToShape(newRecipeInputs);
+		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_shape." + newRecipeAttributes.shape), outputStack, newRecipeAttributes.actualShape);
 	}
 
 	@Override
@@ -118,11 +115,8 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
-		for (int i = 0; i < 3; i++)
-			actualName.append(actualNewInputs[i]);
-		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
+		final RecipeAttributes newRecipeAttributes = RecipeHelper.rawShapeToShape(newRecipeInputs);
+		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_shape." + newRecipeAttributes.shape), outputStack, newRecipeAttributes.actualShape);
 	}
 
 	@Override

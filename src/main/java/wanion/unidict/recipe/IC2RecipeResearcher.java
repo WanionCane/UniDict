@@ -21,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.common.MetaItem;
+import wanion.lib.recipe.RecipeAttributes;
 import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.common.Reference;
 import wanion.unidict.resource.UniResourceContainer;
@@ -109,11 +110,8 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
-		for (int i = 0; i < 3; i++)
-			actualName.append(actualNewInputs[i]);
-		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
+		final RecipeAttributes newRecipeAttributes = RecipeHelper.rawShapeToShape(newRecipeInputs);
+		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_shape." + newRecipeAttributes.shape), outputStack, newRecipeAttributes.actualShape);
 	}
 
 	@Override
@@ -147,11 +145,8 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			return null;
 		final int outputSize;
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
-		final Object[] actualNewInputs = RecipeHelper.rawShapeToShape(newRecipeInputs);
-		final StringBuilder actualName = new StringBuilder(outputContainer.name + "_x" + outputSize + "_shape.");
-		for (int i = 0; i < 3; i++)
-			actualName.append(actualNewInputs[i]);
-		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, actualName.toString()), outputStack, actualNewInputs);
+		final RecipeAttributes newRecipeAttributes = RecipeHelper.rawShapeToShape(newRecipeInputs);
+		return new ShapedOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_shape." + newRecipeAttributes.shape), outputStack, newRecipeAttributes.actualShape);
 	}
 
 	@Override

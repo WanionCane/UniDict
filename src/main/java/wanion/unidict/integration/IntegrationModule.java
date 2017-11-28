@@ -51,6 +51,7 @@ public final class IntegrationModule extends AbstractModule
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		IDUSTRIAL_FOREGOIN("industrialforegoing", IndustrialForegoingIntegration.class),
+		MAGNETICRAFT("magneticraft", MagnetiCraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
 		//REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),

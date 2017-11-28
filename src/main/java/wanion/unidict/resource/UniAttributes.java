@@ -10,7 +10,7 @@ package wanion.unidict.resource;
 
 import javax.annotation.Nonnull;
 
-public class UniAttributes
+public final class UniAttributes
 {
 	public final Resource resource;
 	public final UniResourceContainer uniResourceContainer;
