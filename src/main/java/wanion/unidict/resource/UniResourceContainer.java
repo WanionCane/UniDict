@@ -95,6 +95,15 @@ public final class UniResourceContainer
 		return hashes != null ? Arrays.copyOf(hashes, hashes.length) : new int[0];
 	}
 
+	private void removeBadEntriesFromJEI()
+	{
+		if (entries.size() > 1)
+			if (UniDict.getConfig().keepOneEntry)
+				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
+			else if (!UniResourceHandler.getEntryJEIBlackSet().contains(name) || !UniResourceHandler.getKindJEIBlackSet().contains(kind))
+				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
+	}
+
 	private void keepOneEntry()
 	{
 		if (entries.size() == 1)
@@ -107,19 +116,14 @@ public final class UniResourceContainer
 		} else entries.subList(1, entries.size()).clear();
 	}
 
-	private void removeBadEntriesFromJEI()
-	{
-		if (entries.size() > 1)
-			if (UniDict.getConfig().keepOneEntry)
-				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
-			else if (!UniResourceHandler.getEntryJEIBlackSet().contains(name) || !UniResourceHandler.getKindJEIBlackSet().contains(kind))
-				entries.subList(1, entries.size()).forEach(UniJEIPlugin::hide);
-	}
-
 	public Comparator<ItemStack> getComparator()
 	{
 		final Config config = UniDict.getConfig();
-		return config.enableSpecificEntrySort && SpecificEntryItemStackComparator.hasComparatorForEntry(name) ? SpecificEntryItemStackComparator.getComparatorFor(name) : config.enableSpecificKindSort && SpecificKindItemStackComparator.hasComparatorForKind(kind) ? SpecificKindItemStackComparator.getComparatorFor(kind) : Util.itemStackComparatorByModName;
+		if (config.enableSpecificEntrySort && SpecificEntryItemStackComparator.hasComparatorForEntry(name))
+			return SpecificEntryItemStackComparator.getComparatorFor(name);
+		else if (config.enableSpecificKindSort && SpecificKindItemStackComparator.hasComparatorForKind(kind))
+			return SpecificKindItemStackComparator.getComparatorFor(kind);
+		return Util.itemStackComparatorByModName;
 	}
 
 	public boolean isSorted()

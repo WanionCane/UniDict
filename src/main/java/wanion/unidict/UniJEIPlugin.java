@@ -30,21 +30,9 @@ public class UniJEIPlugin implements IModPlugin
 	}
 
 	@Override
-	public void registerItemSubtypes(@Nonnull final ISubtypeRegistry iSubtypeRegistry) {}
-
-	@Override
-	public void registerIngredients(@Nonnull final IModIngredientRegistration iModIngredientRegistration) {}
-
-	@Override
-	public void registerCategories(@Nonnull IRecipeCategoryRegistration iRecipeCategoryRegistration) {}
-
-	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)
 	{
 		final IIngredientBlacklist iIngredientBlacklist = iModRegistry.getJeiHelpers().getIngredientBlacklist();
 		stacksToHideList.forEach(iIngredientBlacklist::addIngredientToBlacklist);
 	}
-
-	@Override
-	public void onRuntimeAvailable(@Nonnull final IJeiRuntime iJeiRuntime) {}
 }
