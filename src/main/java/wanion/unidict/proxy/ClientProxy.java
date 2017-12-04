@@ -33,6 +33,7 @@ public class ClientProxy extends CommonProxy
 	@Override
 	public void postInit()
 	{
+		super.postInit();
 		final AbstractModule integrationModule = UniDict.getModuleHandler().getModule("Integration");
 		if (integrationModule == null || !integrationModule.getManager().containsInstance(CraftingIntegration.class))
 			return;

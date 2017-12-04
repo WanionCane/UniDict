@@ -16,7 +16,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.UniDict;
@@ -106,7 +108,8 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 				e.printStackTrace();
 			}
 		}
-		recipesToRemove.forEach(recipeLocation -> RegistryManager.ACTIVE.getRegistry(GameData.RECIPES).remove(recipeLocation));
+		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
+		recipesToRemove.forEach(recipeRegistry::remove);
 	}
 
 	private void reCreateTheRecipes()

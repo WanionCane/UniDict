@@ -49,6 +49,7 @@ public final class Config implements UniDict.IDependency
 	public final Set<String> childrenOfMetals;
 	public final List<String> resourceBlackList;
 	public final Set<ResourceLocation> recipesToIgnore;
+	public final List<ResourceLocation> recipesToRemove;
 	public final Map<String, Set<String>> customUnifiedResources;
 	// userEntries
 	public final List<String> userRemovedOreDictEntries;
@@ -99,6 +100,13 @@ public final class Config implements UniDict.IDependency
 				final int separator = recipeToIgnore.indexOf(':');
 				if (separator > 0)
 					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1, recipeToIgnore.length())));
+			}
+			recipesToRemove = new ArrayList<>();
+			for (String recipeToRemove : config.getStringList("recipeToRemoveList", resources, new String[]{}, "add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \"")) {
+				recipeToRemove = recipeToRemove.replace("\"", "");
+				final int separator = recipeToRemove.indexOf(':');
+				if (separator > 0)
+					recipesToRemove.add(new ResourceLocation(recipeToRemove.substring(0, separator), recipeToRemove.substring(separator + 1, recipeToRemove.length())));
 			}
 			customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
 			// userRegisteredOreDictEntries
