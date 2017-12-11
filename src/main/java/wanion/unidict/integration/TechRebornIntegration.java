@@ -9,6 +9,9 @@ package wanion.unidict.integration;
  */
 
 import reborncore.api.recipe.RecipeHandler;
+import techreborn.api.reactor.FusionReactorRecipe;
+import techreborn.api.reactor.FusionReactorRecipeHelper;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 
 final class TechRebornIntegration extends AbstractIntegrationThread
@@ -22,6 +25,7 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 	public String call()
 	{
 		try {
+			fixFusionReactorRecipe();
 			fixTechRebornRecipes();
 		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 		return threadName + "now Tech is truly Reborn.";
@@ -34,5 +38,10 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 				resourceHandler.setMainObjects(recipe.getInputs());
 			resourceHandler.setMainItemStacks(recipe.getOutputs());
 		});
+	}
+
+	private void fixFusionReactorRecipe()
+	{
+		FusionReactorRecipeHelper.reactorRecipes.forEach(fusionReactorRecipe -> Util.setField(FusionReactorRecipe.class, "output", fusionReactorRecipe, resourceHandler.getMainItemStack(fusionReactorRecipe.getOutput())));
 	}
 }

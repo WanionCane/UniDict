@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 
 final class IEIntegration extends AbstractIntegrationThread
 {
-	private final UniOreDictionary uniOreDictionary = UniDict.getDependencies().get(UniOreDictionary.class);
-
 	IEIntegration()
 	{
 		super("Immersive Engineering");
@@ -38,6 +36,7 @@ final class IEIntegration extends AbstractIntegrationThread
 	public String call()
 	{
 		try {
+			fixAlloyKilnRecipes();
 			fixArcFurnaceRecipes();
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
@@ -46,6 +45,19 @@ final class IEIntegration extends AbstractIntegrationThread
 			UniDict.getLogger().error(threadName + e);
 		}
 		return threadName + "The world's engineer appears to be more immersive.";
+	}
+
+	private void fixAlloyKilnRecipes()
+	{
+		final List<AlloyRecipe> alloyRecipeList = AlloyRecipe.recipeList;
+		final List<AlloyRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<AlloyRecipe> alloyRecipeIterator = alloyRecipeList.iterator(); alloyRecipeIterator.hasNext(); ) {
+			final AlloyRecipe alloyRecipe = alloyRecipeIterator.next();
+			newRecipes.add(new AlloyRecipe(resourceHandler.getMainItemStack(alloyRecipe.output), alloyRecipe.input0, alloyRecipe.input1, alloyRecipe.time));
+			alloyRecipeIterator.remove();
+		}
+		alloyRecipeList.clear();
+		alloyRecipeList.addAll(newRecipes);
 	}
 
 	private void fixArcFurnaceRecipes()
