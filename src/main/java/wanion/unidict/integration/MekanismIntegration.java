@@ -18,7 +18,6 @@ import mekanism.common.recipe.machines.MetallurgicInfuserRecipe;
 import mekanism.common.recipe.outputs.ItemStackOutput;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
-import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
@@ -42,7 +41,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
 			fixMekanismRecipes(RecipeHandler.Recipe.CRUSHER.get());
 			fixMekanismRecipes(RecipeHandler.Recipe.ENRICHMENT_CHAMBER.get());
 			fixInfusionMekanismRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All the mekanisms were checked.";
 	}
 

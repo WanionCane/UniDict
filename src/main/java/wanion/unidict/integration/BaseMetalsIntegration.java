@@ -14,7 +14,6 @@ import com.mcmoddev.lib.registry.recipe.ICrusherRecipe;
 import com.mcmoddev.lib.registry.recipe.OreDictionaryCrusherRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryModifiable;
 import wanion.lib.common.Util;
 
 import java.util.ArrayList;
@@ -30,29 +29,28 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
 	@Override
 	public String call()
 	{
-		fixCrushingRecipes();
+		try {
+			fixCrushingRecipes();
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Fixing Everything!";
 	}
 
 	private void fixCrushingRecipes()
 	{
-		final CrusherRecipeRegistry crusherRecipeRegistry = Util.getField(CrusherRecipeRegistry.class, "instance", null, CrusherRecipeRegistry.class);
-		final IForgeRegistryModifiable<ICrusherRecipe> registry = Util.getField(CrusherRecipeRegistry.class, "registry", crusherRecipeRegistry, IForgeRegistryModifiable.class);
 		final List<ResourceLocation> recipesToRemove = new ArrayList<>();
 		final List<ICrusherRecipe> newRecipes = new ArrayList<>();
-		registry.getEntries().forEach(recipe -> {
-			final ICrusherRecipe crusherRecipe = recipe.getValue();
-			final ItemStack output = crusherRecipe.getOutput();
-			final ItemStack newOutput = resourceHandler.getMainItemStack(crusherRecipe.getOutput());
+		CrusherRecipeRegistry.getAll().forEach(recipe -> {
+			final ItemStack output = recipe.getOutput();
+			final ItemStack newOutput = resourceHandler.getMainItemStack(recipe.getOutput());
 			if (output != newOutput) {
-				recipesToRemove.add(recipe.getKey());
-				if (crusherRecipe instanceof ArbitraryCrusherRecipe)
-					newRecipes.add(new ArbitraryCrusherRecipe(crusherRecipe.getInputs().get(0), newOutput));
-				else if (crusherRecipe instanceof OreDictionaryCrusherRecipe)
-					newRecipes.add(new OreDictionaryCrusherRecipe(Util.getField(OreDictionaryCrusherRecipe.class, "oreDictSource", crusherRecipe, String .class), newOutput));
+				recipesToRemove.add(recipe.getRegistryName());
+				if (recipe instanceof ArbitraryCrusherRecipe)
+					newRecipes.add(new ArbitraryCrusherRecipe(recipe.getInputs().get(0), newOutput));
+				else if (recipe instanceof OreDictionaryCrusherRecipe)
+					newRecipes.add(new OreDictionaryCrusherRecipe(Util.getField(OreDictionaryCrusherRecipe.class, "oreDictSource", recipe, String .class), newOutput));
 			}
 		});
-		recipesToRemove.forEach(registry::remove);
-		newRecipes.forEach(registry::register);
+		recipesToRemove.forEach(CrusherRecipeRegistry.getInstance()::remove);
+		newRecipes.forEach(CrusherRecipeRegistry.getInstance()::register);
 	}
 }

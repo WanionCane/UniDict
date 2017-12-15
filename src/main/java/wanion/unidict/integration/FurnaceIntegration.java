@@ -12,10 +12,9 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import wanion.unidict.UniDict;
+import wanion.lib.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -23,30 +22,12 @@ import java.util.Map;
 
 final class FurnaceIntegration extends AbstractIntegrationThread
 {
+	private final Map<ItemStack, Float> experienceMap;
+
 	FurnaceIntegration()
 	{
 		super("Furnace");
-	}
-
-	private static final Field experienceListField;
-
-	static {
-		Field obfuscatedField = null;
-		try {
-			obfuscatedField = FurnaceRecipes.class.getDeclaredField("field_77605_c");
-		} catch (NoSuchFieldException e) {
-			UniDict.getLogger().debug("Dev-Environment, right?");
-		}
-		Field deobfuscatedField = null;
-		if (obfuscatedField == null) {
-			try {
-				deobfuscatedField = FurnaceRecipes.class.getDeclaredField("experienceList");
-			} catch (NoSuchFieldException e) {
-				throw new RuntimeException("UniDict couldn't find the experienceList Field, even you being in an Dev-Environment, please report this.");
-			}
-		}
-		if ((experienceListField = obfuscatedField != null ? obfuscatedField : deobfuscatedField) != null)
-			experienceListField.setAccessible(true);
+		experienceMap = Util.getField(FurnaceRecipes.class, "experienceList", "field_77605_c", FurnaceRecipes.instance(), Map.class);
 	}
 
 	@Override
@@ -54,21 +35,13 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	{
 		try {
 			optimizeFurnaceRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) {	logger.error(threadName + e); }
 		return threadName + "Some things that you smelted appear to be different now.";
 	}
 
 	@SuppressWarnings("unchecked")
 	private void optimizeFurnaceRecipes()
 	{
-		final Map<ItemStack, Float> experienceMap;
-		try {
-			experienceMap = (Map<ItemStack, Float>) experienceListField.get(FurnaceRecipes.instance());
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Furnace Integration Couldn't find a required field.");
-		}
 		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
 				final ItemStack oldEntry = furnaceRecipe.getValue();

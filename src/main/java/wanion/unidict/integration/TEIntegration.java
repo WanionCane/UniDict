@@ -14,7 +14,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import wanion.lib.common.Util;
-import wanion.unidict.UniDict;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -38,9 +37,7 @@ final class TEIntegration extends AbstractIntegrationThread
 			fixInductionSmelterRecipes();
 			fixRedstoneFurnaceRecipes();
 			fixPulverizerRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world seems to be more thermally involved.";
 	}
 

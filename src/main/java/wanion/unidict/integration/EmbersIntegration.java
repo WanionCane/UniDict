@@ -9,7 +9,6 @@ package wanion.unidict.integration;
  */
 
 import teamroots.embers.recipe.RecipeRegistry;
-import wanion.unidict.UniDict;
 
 final class EmbersIntegration extends AbstractIntegrationThread
 {
@@ -24,7 +23,7 @@ final class EmbersIntegration extends AbstractIntegrationThread
 		try {
 			RecipeRegistry.stampingRecipes.forEach(itemStampingRecipe -> itemStampingRecipe.result = resourceHandler.getMainItemStack(itemStampingRecipe.result));
 			RecipeRegistry.stampingOreRecipes.forEach(itemStampingOreRecipe -> itemStampingOreRecipe.result = resourceHandler.getMainItemStack(itemStampingOreRecipe.result));
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Stamper is outputting the right things now.";
 	}
 }

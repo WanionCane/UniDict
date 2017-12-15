@@ -8,6 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import org.apache.logging.log4j.Logger;
 import wanion.lib.module.AbstractModuleThread;
 import wanion.lib.module.LoadStage;
 import wanion.lib.module.SpecifiedLoadStage;
@@ -22,6 +23,7 @@ abstract class AbstractIntegrationThread extends AbstractModuleThread
 {
 	protected final ResourceHandler resourceHandler = UniDict.getResourceHandler();
 	protected final Config config = UniDict.getConfig();
+	protected final Logger logger = UniDict.getLogger();
 
 	AbstractIntegrationThread(@Nonnull final String integrationName)
 	{

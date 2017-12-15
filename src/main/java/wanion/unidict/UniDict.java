@@ -10,28 +10,23 @@ package wanion.unidict;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import wanion.lib.common.Dependencies;
-import wanion.lib.module.AbstractModule;
 import wanion.lib.module.ModuleHandler;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.common.SpecificEntryItemStackComparator;
-import wanion.unidict.common.SpecificKindItemStackComparator;
-import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.proxy.CommonProxy;
 import wanion.unidict.resource.ResourceHandler;
-import wanion.unidict.resource.UniResourceHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
-import java.util.Set;
 
 import static wanion.unidict.common.Reference.*;
 
@@ -42,101 +37,64 @@ public final class UniDict
 	@Mod.Instance(MOD_ID)
 	public static UniDict instance;
 
-	private static Dependencies<IDependency> dependencies = new Dependencies<>();
-	private static Logger logger;
-	private UniResourceHandler uniResourceHandler = UniResourceHandler.create();
-	private ModuleHandler moduleHandler;
+	@SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
+	public static CommonProxy proxy;
 
-	public static Dependencies<IDependency> getDependencies()
-	{
-		return dependencies;
-	}
+	private	static Logger logger;
 
 	public static Logger getLogger()
 	{
 		return logger;
 	}
 
+	public static Dependencies<IDependency> getDependencies()
+	{
+		return proxy.dependencies;
+	}
+
 	public static ResourceHandler getResourceHandler()
 	{
-		return dependencies.get(ResourceHandler.class);
+		return proxy.dependencies.get(ResourceHandler.class);
 	}
 
 	public static UniOreDictionary getUniOreDictionary()
 	{
-		return dependencies.get(UniOreDictionary.class);
+		return proxy.dependencies.get(UniOreDictionary.class);
 	}
 
 	public static Config getConfig()
 	{
-		return dependencies.get(Config.class);
+		return proxy.dependencies.get(Config.class);
 	}
 
 	public static UniDictAPI getAPI()
 	{
-		return dependencies.get(UniDictAPI.class);
+		return proxy.dependencies.get(UniDictAPI.class);
 	}
 
 	public static ModuleHandler getModuleHandler()
 	{
-		return instance.moduleHandler;
+		return proxy.moduleHandler;
 	}
-
-	@SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
-	public static CommonProxy proxy;
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
-		moduleHandler = searchForModules(populateModules(new ModuleHandler()), event.getAsmData());
+		proxy.preInit(event);
 	}
 
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event)
 	{
-		uniResourceHandler.init();
+		proxy.init();
 	}
 
 	@Mod.EventHandler
 	public void postInit(final FMLPostInitializationEvent event)
 	{
-		uniResourceHandler.postInit();
-		moduleHandler.startModules(event);
-		proxy.postInit();
-		clean();
-	}
-
-	private void clean()
-	{
-		uniResourceHandler = null;
-		moduleHandler = null;
-		dependencies = null;
-		SpecificKindItemStackComparator.kindSpecificComparators = null;
-		SpecificEntryItemStackComparator.entrySpecificComparators = null;
-	}
-
-	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
-	{
-		final Config config = getConfig();
-		if (!config.libraryMode && config.integrationModule)
-			moduleHandler.addModule(new IntegrationModule());
-		return moduleHandler;
-	}
-
-	private ModuleHandler searchForModules(final ModuleHandler moduleHandler, final ASMDataTable asmDataTable)
-	{
-		final Set<ASMDataTable.ASMData> modules = asmDataTable.getAll("wanion.unidict.UniDict$Module");
-		modules.forEach(asmData -> {
-			try {
-				final Class<?> mayBeAModule = Class.forName(asmData.getClassName());
-				if (mayBeAModule.getSuperclass().isAssignableFrom(AbstractModule.class))
-					moduleHandler.addModule((AbstractModule) mayBeAModule.newInstance());
-			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-				logger.error("Cannot load ", asmData.getClassName(), e);
-			}
-		});
-		return moduleHandler;
+		proxy.postInit(event);
+		proxy.clean();
 	}
 
 	@NetworkCheckHandler

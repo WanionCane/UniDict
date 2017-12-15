@@ -22,7 +22,9 @@ final class IndustrialForegoingIntegration extends AbstractIntegrationThread
 	@Override
 	public String call()
 	{
-		LaserDrillEntry.LASER_DRILL_ENTRIES.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack", laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
+		try {
+			LaserDrillEntry.LASER_DRILL_ENTRIES.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack", laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "enhanced Laser Drill focus.";
 	}
 }

@@ -16,11 +16,9 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.FixedSizeList;
 import wanion.lib.common.MetaItem;
-import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,9 +39,7 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
 

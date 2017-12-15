@@ -40,13 +40,12 @@ public final class UniResourceHandler
 {
 	private static final TIntSet kindJEIBlackSet = new TIntHashSet();
 	private static final Set<String> entryJEIBlackSet = new HashSet<>();
-	private static boolean hasInit;
 	private final Map<String, Resource> apiResourceMap = new THashMap<>();
 	private final Map<String, Resource> resourceMap = new THashMap<>();
 	private final Dependencies<UniDict.IDependency> dependencies = UniDict.getDependencies();
 	private final Config config = UniDict.getConfig();
 
-	private UniResourceHandler()
+	public UniResourceHandler()
 	{
 		dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
 		{
@@ -66,15 +65,6 @@ public final class UniResourceHandler
 				return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
 			}
 		});
-	}
-
-	public static UniResourceHandler create()
-	{
-		if (hasInit)
-			return null;
-		else
-			hasInit = true;
-		return new UniResourceHandler();
 	}
 
 	static synchronized TIntSet getKindJEIBlackSet()

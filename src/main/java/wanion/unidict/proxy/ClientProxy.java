@@ -16,6 +16,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import wanion.lib.common.Util;
 import wanion.lib.module.AbstractModule;
 import wanion.unidict.UniDict;
@@ -31,9 +32,9 @@ public class ClientProxy extends CommonProxy
 	private final List<RecipeList> ALL_RECIPES = Util.getField(RecipeBookClient.class, "ALL_RECIPES", "field_194087_f", null, List.class);
 
 	@Override
-	public void postInit()
+	public void postInit(final FMLPostInitializationEvent event)
 	{
-		super.postInit();
+		super.postInit(event);
 		final AbstractModule integrationModule = UniDict.getModuleHandler().getModule("Integration");
 		if (integrationModule == null || !integrationModule.getManager().containsInstance(CraftingIntegration.class))
 			return;

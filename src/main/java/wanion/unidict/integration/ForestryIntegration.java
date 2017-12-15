@@ -10,10 +10,8 @@ import forestry.factory.recipes.CentrifugeRecipeManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.RegistryNamespaced;
 import wanion.lib.common.MetaItem;
 import wanion.lib.common.Util;
-import wanion.unidict.UniDict;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
@@ -36,7 +34,7 @@ final class ForestryIntegration extends AbstractIntegrationThread
 			if (resourceHandler.containerExists("ingotBronze"))
 				bronzeThings();
 			fixCentrifugeRecipes();
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All these bees... they can hurt, you know?";
 	}
 

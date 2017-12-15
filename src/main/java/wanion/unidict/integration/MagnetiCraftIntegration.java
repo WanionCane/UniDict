@@ -31,8 +31,10 @@ final class MagnetiCraftIntegration extends AbstractIntegrationThread
 	@Override
 	public String call()
 	{
-		fixCrushingTableRecipes();
-		fixSluiceBoxRecipes();
+		try {
+			fixCrushingTableRecipes();
+			fixSluiceBoxRecipes();
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Everything get Magnetized.";
 	}
 

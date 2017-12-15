@@ -47,6 +47,7 @@ public final class IntegrationModule extends AbstractModule
 		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
 		BASE_METALS("basemetals", BaseMetalsIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
+		EXTREME_ENERGY("meem", ExtremeEnergyIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),

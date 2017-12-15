@@ -18,11 +18,13 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
 import wanion.lib.common.Util;
-import wanion.unidict.UniDict;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 final class AE2Integration extends AbstractIntegrationThread
@@ -37,7 +39,7 @@ final class AE2Integration extends AbstractIntegrationThread
 	{
 		try {
 			fixGrindStoneRecipes();
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world of energistics has never been so powerful.";
 	}
 

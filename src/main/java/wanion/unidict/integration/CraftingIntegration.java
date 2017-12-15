@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.UniDict;
@@ -76,9 +75,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		try {
 			doTheResearch();
 			reCreateTheRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) {	logger.error(threadName + e); }
 		return threadName + "Why so many recipes? I had to deal with " + totalRecipesReCreated + " recipes.";
 	}
 

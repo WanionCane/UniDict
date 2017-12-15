@@ -9,7 +9,6 @@ package wanion.unidict.integration;
  */
 
 import net.minecraft.item.ItemStack;
-import wanion.unidict.UniDict;
 import zmaster587.libVulpes.recipe.RecipesMachine;
 
 import java.lang.reflect.Field;
@@ -33,9 +32,7 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixRecipes();
-		} catch (Exception e) {
-			UniDict.getLogger().error(threadName + e);
-		}
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "10. 9...3 2 1... BOOOOM!!";
 	}
 
