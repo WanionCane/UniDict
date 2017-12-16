@@ -14,7 +14,7 @@ public final class Reference
 {
 	public static final String MOD_ID = "unidict";
 	public static final String MOD_NAME = "UniDict";
-	public static final String MOD_VERSION = "1.12.2-1.7";
+	public static final String MOD_VERSION = "1.12.2-1.8";
 	public static final String DEPENDENCIES = "required-after:wanionlib@[1.12.2-1.3,);after:*";
 	public static final char SLASH = separatorChar;
 	public static final String MC_VERSION = "[1.12,]";

@@ -50,7 +50,8 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
 					newRecipes.add(new OreDictionaryCrusherRecipe(Util.getField(OreDictionaryCrusherRecipe.class, "oreDictSource", recipe, String .class), newOutput));
 			}
 		});
-		recipesToRemove.forEach(CrusherRecipeRegistry.getInstance()::remove);
-		newRecipes.forEach(CrusherRecipeRegistry.getInstance()::register);
+		final CrusherRecipeRegistry crusherRecipeRegistry = CrusherRecipeRegistry.getInstance();
+		recipesToRemove.forEach(crusherRecipeRegistry::remove);
+		newRecipes.forEach(crusherRecipeRegistry::register);
 	}
 }

@@ -61,6 +61,8 @@ public class CommonProxy
 
 	private ModuleHandler searchForModules(final ModuleHandler moduleHandler, final ASMDataTable asmDataTable)
 	{
+		if (UniDict.getConfig().libraryMode)
+			return moduleHandler;
 		final Set<ASMDataTable.ASMData> modules = asmDataTable.getAll("wanion.unidict.UniDict$Module");
 		modules.forEach(asmData -> {
 			try {

@@ -9,7 +9,6 @@ package wanion.unidict.resource;
  */
 
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
@@ -25,7 +24,6 @@ public final class ResourceHandler implements IDependency
 	static final Set<ItemStack> keepOneEntryBlackSet = new HashSet<>();
 	public final Collection<Resource> resources;
 	private final TIntObjectMap<UniAttributes> individualStackAttributes = new TIntObjectHashMap<>();
-	private final Map<String, UniResourceContainer> containerMap = new THashMap<>();
 	private final Map<String, Resource> resourceMap;
 
 	ResourceHandler(@Nonnull final Map<String, Resource> resourceMap)
@@ -70,9 +68,9 @@ public final class ResourceHandler implements IDependency
 		return (attributesOfThing != null) ? attributesOfThing.resource : null;
 	}
 
-	public UniResourceContainer getContainer(final String name)
+	public UniResourceContainer getContainer(@Nonnull final String resource, @Nonnull final String child)
 	{
-		return containerMap.get(name);
+		return containerExists(resource, child) ? resourceMap.get(resource).getChild(Resource.getKindOfName(child)) : null;
 	}
 
 	public UniResourceContainer getContainer(final ItemStack thing)
@@ -125,9 +123,9 @@ public final class ResourceHandler implements IDependency
 				things[i] = getMainItemStack((ItemStack) things[i]);
 	}
 
-	public boolean containerExists(@Nonnull final String name)
+	public boolean containerExists(@Nonnull final String resource, @Nonnull final String child)
 	{
-		return containerMap.containsKey(name);
+		return resourceMap.containsKey(resource) && resourceMap.get(resource).childExists(Resource.getKindOfName(child));
 	}
 
 	public List<Resource> getResources(final int... kinds)
@@ -135,10 +133,10 @@ public final class ResourceHandler implements IDependency
 		return Resource.getResources(resources, kinds);
 	}
 
-	void populateIndividualStackAttributes()
+	public void populateIndividualStackAttributes()
 	{
+		individualStackAttributes.clear();
 		resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
-			containerMap.put(container.name, container);
 			final UniAttributes uniAttributes = new UniAttributes(resource, container);
 			for (final int hash : container.getHashes())
 				individualStackAttributes.put(hash, uniAttributes);

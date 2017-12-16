@@ -31,8 +31,9 @@ final class ForestryIntegration extends AbstractIntegrationThread
 	{
 		try {
 			removeBadCarpenterOutputs(carpenterRecipes);
-			if (resourceHandler.containerExists("ingotBronze"))
-				bronzeThings();
+			final UniResourceContainer ingotBronze = resourceHandler.getContainer("Bronze", "ingot");
+			if (ingotBronze != null)
+				bronzeThings(ingotBronze);
 			fixCentrifugeRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All these bees... they can hurt, you know?";
@@ -43,15 +44,14 @@ final class ForestryIntegration extends AbstractIntegrationThread
 		carpenterRecipes.removeIf(carpenterRecipe -> carpenterRecipe != null && resourceHandler.exists(MetaItem.get(carpenterRecipe.getCraftingGridRecipe().getOutput())));
 	}
 
-	private void bronzeThings()
+	private void bronzeThings(@Nonnull final UniResourceContainer ingotBronze)
 	{
-		UniResourceContainer ingotBronze = resourceHandler.getContainer("ingotBronze");
 		final Item brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
 		final Item brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
 		if (brokenBronzePickaxe != null)
 			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzePickaxe))));
 		if (brokenBronzeShovel != null)
-			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(1), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzeShovel))));
+			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzeShovel))));
 	}
 
 	private void fixCentrifugeRecipes()

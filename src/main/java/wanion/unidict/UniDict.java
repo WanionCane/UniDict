@@ -40,7 +40,7 @@ public final class UniDict
 	@SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
 	public static CommonProxy proxy;
 
-	private	static Logger logger;
+	private static Logger logger;
 
 	public static Logger getLogger()
 	{

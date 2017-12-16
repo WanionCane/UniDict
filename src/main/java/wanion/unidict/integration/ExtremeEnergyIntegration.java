@@ -8,6 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import ru.minebot.extreme_energy.recipes.managers.AssemblerRecipes;
 import ru.minebot.extreme_energy.recipes.managers.CrusherRecipes;
 
 import java.util.ArrayList;
@@ -19,13 +20,24 @@ class ExtremeEnergyIntegration extends AbstractIntegrationThread
 	{
 		super("Extreme Energy");
 	}
+
 	@Override
 	public String call()
 	{
 		try {
+			fixAssemblerRecipes();
 			fixCrusherRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "be careful with this much energy.";
+	}
+
+	private void fixAssemblerRecipes()
+	{
+		final List<AssemblerRecipes.FullRecipeAssembler> recipes = AssemblerRecipes.recipesList;
+		final List<AssemblerRecipes.FullRecipeAssembler> newRecipes = new ArrayList<>();
+		recipes.forEach(recipe -> newRecipes.add(new AssemblerRecipes.FullRecipeAssembler(recipe.getInput(), resourceHandler.getMainItemStack(recipe.getOutput()), recipe.getEnergy())));
+		recipes.clear();
+		recipes.addAll(newRecipes);
 	}
 
 	private void fixCrusherRecipes()

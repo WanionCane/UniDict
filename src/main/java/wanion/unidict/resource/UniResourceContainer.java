@@ -33,12 +33,13 @@ public final class UniResourceContainer
 	private boolean updated = false;
 	private Item mainEntryItem;
 	private int mainEntryMeta;
-	private int[] hashes;
+	private List<ItemStack> originalEntries = null;
 
 	public UniResourceContainer(@Nonnull final String name, final int kind)
 	{
 		if ((entries = UniOreDictionary.get(this.id = UniOreDictionary.getId(this.name = name))) == null)
 			throw new RuntimeException("Something may have broke the Ore Dictionary!");
+		originalEntries = new ArrayList<>(entries);
 		this.kind = kind;
 		initialSize = entries.size();
 	}
@@ -77,22 +78,24 @@ public final class UniResourceContainer
 			return true;
 		final ItemStack mainEntry = entries.get(0);
 		mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
-		hashes = MetaItem.getArray(entries);
 		if (sort) {
 			if (initialSize != entries.size())
 				sort();
-			if (UniDict.getConfig().autoHideInJEI)
+			final Config config = UniDict.getConfig();
+			if (config.autoHideInJEI)
 				removeBadEntriesFromJEI();
-			if (UniDict.getConfig().keepOneEntry)
+			if (config.keepOneEntry && !config.keepOneEntryEntryBlackSet.contains(name) && !config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind))) {
+				originalEntries = new ArrayList<>(entries);
 				keepOneEntry();
+			}
 		}
 		return updated = true;
 	}
 
 	@Nonnull
-	public int[] getHashes()
+	int[] getHashes()
 	{
-		return hashes != null ? Arrays.copyOf(hashes, hashes.length) : new int[0];
+		return originalEntries != null ? MetaItem.getArray(originalEntries) : MetaItem.getArray(entries);
 	}
 
 	private void removeBadEntriesFromJEI()
@@ -143,7 +146,6 @@ public final class UniResourceContainer
 		if (itemStackComparator == null)
 			return;
 		entries.sort(itemStackComparator);
-		hashes = MetaItem.getArray(entries);
 	}
 
 	@Override

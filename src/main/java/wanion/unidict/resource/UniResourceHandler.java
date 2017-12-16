@@ -39,7 +39,6 @@ import static wanion.unidict.common.Reference.SLASH;
 public final class UniResourceHandler
 {
 	private static final TIntSet kindJEIBlackSet = new TIntHashSet();
-	private static final Set<String> entryJEIBlackSet = new HashSet<>();
 	private final Map<String, Resource> apiResourceMap = new THashMap<>();
 	private final Map<String, Resource> resourceMap = new THashMap<>();
 	private final Dependencies<UniDict.IDependency> dependencies = UniDict.getDependencies();
