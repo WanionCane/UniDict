@@ -84,9 +84,10 @@ public final class UniResourceContainer
 			final Config config = UniDict.getConfig();
 			if (config.autoHideInJEI)
 				removeBadEntriesFromJEI();
-			if (config.keepOneEntry && !config.keepOneEntryEntryBlackSet.contains(name) && !config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind))) {
+			if (config.keepOneEntry) {
 				originalEntries = new ArrayList<>(entries);
-				keepOneEntry();
+				if ((!config.keepOneEntryBlackListsAsWhiteLists && !config.keepOneEntryEntryBlackSet.contains(name) && !config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind))) || config.keepOneEntryBlackListsAsWhiteLists && config.keepOneEntryEntryBlackSet.contains(name) && config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind)))
+					keepOneEntry();
 			}
 		}
 		return updated = true;

@@ -8,7 +8,9 @@ package wanion.unidict.proxy;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -16,6 +18,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.common.Dependencies;
+import wanion.lib.common.Util;
 import wanion.lib.module.AbstractModule;
 import wanion.lib.module.ModuleHandler;
 import wanion.unidict.Config;
@@ -25,6 +28,7 @@ import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.resource.UniResourceHandler;
 
+import java.util.Map;
 import java.util.Set;
 
 public class CommonProxy
@@ -41,6 +45,26 @@ public class CommonProxy
 	public void init()
 	{
 		(uniResourceHandler = new UniResourceHandler()).init();
+		if (Loader.isModLoaded("tconstruct"))
+			fixTCon();
+	}
+
+	// sorry KnightMiner.
+	// for now, we are completely overriding the setting "S:orePreference" from tconstruct.cfg
+	private void fixTCon()
+	{
+		Class<?> recipeUtilClass = null;
+		try {
+			recipeUtilClass = Class.forName("slimeknights.tconstruct.library.utils.RecipeUtil");
+		} catch (ClassNotFoundException e) {
+			UniDict.getLogger().error("Couldn't find the class: \"slimeknights.tconstruct.library.utils.RecipeUtil\".");
+		}
+		if (recipeUtilClass == null)
+			return;
+		Util.setField(recipeUtilClass, "orePreferences", null, new String[]{});
+		final Map<String, ItemStack> preferenceCache = Util.getField(recipeUtilClass, "preferenceCache", null, Map.class);
+		if (preferenceCache != null && preferenceCache.size() > 0)
+			preferenceCache.clear();
 	}
 
 	public void postInit(final FMLPostInitializationEvent event)

@@ -98,7 +98,7 @@ public final class SpecificEntryItemStackComparator implements Comparator<ItemSt
 	{
 		final String stack1ModName = getModName(itemStack1);
 		final Config config = UniDict.getConfig();
-		if (config.keepOneEntry && config.keepOneEntryModBlackSet.contains(stack1ModName))
+		if (config.keepOneEntry && ((!config.keepOneEntryBlackListsAsWhiteLists && config.keepOneEntryModBlackSet.contains(stack1ModName)) || (config.keepOneEntryBlackListsAsWhiteLists && !config.keepOneEntryModBlackSet.contains(stack1ModName))))
 			ResourceHandler.addToKeepOneEntryModBlackSet(itemStack1);
 		return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
 	}

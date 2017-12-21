@@ -32,6 +32,7 @@ public final class Config implements UniDict.IDependency
 	public final Set<String> keepOneEntryModBlackSet;
 	public final Set<String> keepOneEntryKindBlackSet;
 	public final Set<String> keepOneEntryEntryBlackSet;
+	public final boolean keepOneEntryBlackListsAsWhiteLists;
 	public final boolean autoHideInJEI;
 	public final Set<String> hideInJEIKindBlackSet;
 	public final Set<String> hideInJEIEntryBlackSet;
@@ -80,6 +81,7 @@ public final class Config implements UniDict.IDependency
 			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
 			keepOneEntryKindBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryKindBlackList", general, new String[]{}, "kinds listed here will be blacklisted in keepOneEntry.\nmust be the exact kind name."))));
 			keepOneEntryEntryBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryEntryBlackList", general, new String[]{}, "entries listed here will be blacklisted in keepOneEntry.\nmust be the exact entry name."))));
+			keepOneEntryBlackListsAsWhiteLists = config.getBoolean("keepOneEntryBlackListsAsWhiteLists", general, false, "enable this if you want the keepOneEntry blacklists to became whitelists.\n");
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through the possibilities of JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("jei");
 			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "put here kinds that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
@@ -96,7 +98,7 @@ public final class Config implements UniDict.IDependency
 			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nit also will make \"S:ownerOfEveryThing\" be ignored for this kind.");
 			enableSpecificEntrySort = config.getBoolean("enableSpecificEntrySort", resources, false, "enabling this allow you to specify the \"owner\" of each entry.\nit also will make \"S:ownerOfEveryThing\" be ignored for this entry.");
 			ownerOfEveryThing = new TObjectIntHashMap<>(getOwnerOfEveryThingMap());
-			metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\n"))));
+			metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminum", "Alumina", "Chrome", "Constantan"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
 			recipesToIgnore = new HashSet<>();
