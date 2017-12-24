@@ -8,10 +8,10 @@ package wanion.unidict;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import mezz.jei.api.*;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
-import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JEIPlugin
-public class UniJEIPlugin implements IModPlugin
+public class UniDictJEIPlugin implements IModPlugin
 {
 	private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
 
