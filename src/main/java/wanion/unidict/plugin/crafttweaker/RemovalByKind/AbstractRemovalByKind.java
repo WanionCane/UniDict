@@ -9,7 +9,9 @@ package wanion.unidict.plugin.crafttweaker.RemovalByKind;
  */
 
 import crafttweaker.IAction;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.list.TIntList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.Resource;
@@ -37,13 +39,13 @@ public abstract class AbstractRemovalByKind
 		return UniDictCraftTweakerPlugin.getRemovalByKind(getClass());
 	}
 
-	protected final TIntHashSet getKindsForRemovalHashSet()
+	protected final TIntObjectMap<TIntList> getKindsForRemovalHashMap()
 	{
-		final TIntHashSet kindsForRemoval = new TIntHashSet();
+		final TIntObjectMap<TIntList> kindsForRemoval = new TIntObjectHashMap<>();
 		for (final RemovalByKind removalByKind : RECIPE_REMOVAL_BY_KIND_LIST) {
 			final int kind = Resource.getKindFromName(removalByKind.kind);
 			if (kind > 0)
-				kindsForRemoval.add(kind);
+				kindsForRemoval.put(kind, Resource.kindNamesToKindList(removalByKind.resourceKindWhiteList));
 		}
 		return kindsForRemoval;
 	}
@@ -52,11 +54,13 @@ public abstract class AbstractRemovalByKind
 	{
 		private final AbstractRemovalByKind abstractRemovalByKind;
 		protected final String kind;
+		protected final String[] resourceKindWhiteList;
 
-		protected RemovalByKind(@Nonnull AbstractRemovalByKind abstractRemovalByKind, @Nonnull final String kind)
+		protected RemovalByKind(@Nonnull AbstractRemovalByKind abstractRemovalByKind, @Nonnull final String kind, final String[] resourceKindWhiteList)
 		{
 			this.abstractRemovalByKind = abstractRemovalByKind;
 			this.kind = kind;
+			this.resourceKindWhiteList = resourceKindWhiteList;
 		}
 
 		@Override

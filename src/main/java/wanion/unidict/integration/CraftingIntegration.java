@@ -20,7 +20,6 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
-import wanion.unidict.UniDict;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
 import wanion.unidict.recipe.IC2RecipeResearcher;
 import wanion.unidict.recipe.VanillaRecipeResearcher;
@@ -136,7 +135,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 							totalRecipesReCreated++;
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						UniDict.getLogger().error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe without issues.");
+						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe without issues.");
 					}
 					return true;
 				})

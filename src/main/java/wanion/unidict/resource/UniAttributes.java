@@ -14,10 +14,11 @@ public final class UniAttributes
 {
 	public final Resource resource;
 	public final UniResourceContainer uniResourceContainer;
+	public final int kind;
 
 	public UniAttributes(@Nonnull final Resource resource, @Nonnull final UniResourceContainer uniResourceContainer)
 	{
 		this.resource = resource;
-		this.uniResourceContainer = uniResourceContainer;
+		this.kind = (this.uniResourceContainer = uniResourceContainer).kind;
 	}
 }

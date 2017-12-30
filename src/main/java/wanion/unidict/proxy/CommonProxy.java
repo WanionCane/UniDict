@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -45,9 +46,9 @@ public class CommonProxy
 			UniDictCraftTweakerPlugin.preInit();
 	}
 
-	public void init()
+	public void init(final FMLInitializationEvent event)
 	{
-		(uniResourceHandler = new UniResourceHandler()).init();
+		(uniResourceHandler = new UniResourceHandler()).init(event);
 		if (Loader.isModLoaded("tconstruct"))
 			fixTCon();
 	}

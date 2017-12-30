@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import wanion.lib.common.MetaItem;
+import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniDict.IDependency;
 
@@ -58,7 +59,7 @@ public final class ResourceHandler implements IDependency
 		return resourceMap.containsKey(name);
 	}
 
-	private UniAttributes get(final ItemStack thing)
+	public UniAttributes get(final ItemStack thing)
 	{
 		final int hash = MetaItem.get(thing);
 		return individualStackAttributes.get(hash);
@@ -160,7 +161,8 @@ public final class ResourceHandler implements IDependency
 	{
 		individualStackAttributes.clear();
 		final TIntSet itemStackToIgnoreHashSet = new TIntHashSet();
-		UniDict.getConfig().itemStacksToIgnore.forEach(itemName -> {
+		final Config config = UniDict.getConfig();
+		config.itemStacksNamesToIgnore.forEach(itemName -> {
 			final int separatorChar = itemName.indexOf('#');
 			final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 			if (item != null) {
@@ -168,6 +170,7 @@ public final class ResourceHandler implements IDependency
 				itemStackToIgnoreHashSet.add(MetaItem.get(new ItemStack(item, 1, metaData)));
 			}
 		});
+		config.itemStacksToIgnore.forEach(itemStack -> itemStackToIgnoreHashSet.add(MetaItem.get(itemStack)));
 		resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
 			final UniAttributes uniAttributes = new UniAttributes(resource, container);
 			for (final int hash : container.getHashes())
@@ -175,5 +178,6 @@ public final class ResourceHandler implements IDependency
 					individualStackAttributes.put(hash, uniAttributes);
 			return true;
 		}));
+
 	}
 }

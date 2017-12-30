@@ -17,7 +17,9 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.lib.common.Dependencies;
@@ -79,11 +81,13 @@ public final class UniResourceHandler
 		return UniDict.getConfig().hideInJEIEntryBlackSet;
 	}
 
-	public void init()
+	public void init(final FMLInitializationEvent event)
 	{
 		customEntries();
 		gatherResources();
 		createAdditionalFiles();
+		updateEntries(event);
+		createDumps();
 	}
 
 	private void customEntries()
@@ -126,7 +130,7 @@ public final class UniResourceHandler
 	private void gatherResources()
 	{
 		final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
-		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Brick|Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore).*");
+		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Brick|Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore|Redstone).*");
 		UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).sequential().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
 		final StringBuilder patternBuilder = new StringBuilder("(");
 		for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
@@ -315,7 +319,10 @@ public final class UniResourceHandler
 		}
 	}
 
-	public void postInit(final FMLPostInitializationEvent event)
+	// we may need this on the future, who knows?
+	public void postInit(final FMLPostInitializationEvent event) {}
+
+	private void updateEntries(final FMLStateEvent event)
 	{
 		apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
 		if (!config.libraryMode) {
@@ -331,6 +338,10 @@ public final class UniResourceHandler
 			resourceMap.remove(blackListedResource);
 			apiResourceMap.remove(blackListedResource);
 		}
+	}
+
+	private void createDumps()
+	{
 		if (config.kindsDump || config.entriesDump || config.unifiedEntriesDump) {
 			final File dumpFolder = new File("." + SLASH + "config" + SLASH + MOD_ID + SLASH + "dump");
 			if (!dumpFolder.exists())

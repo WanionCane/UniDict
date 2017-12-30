@@ -48,7 +48,7 @@ public final class UniDictCraftTweakerPlugin
 	private static final List<ShapelessRecipeTemplate> NEW_SHAPELESS_RECIPE_TEMPLATE_LIST = new ArrayList<>();
 	private static final Map<Class<? extends AbstractRemovalByKind>, AbstractRemovalByKind> ABSTRACT_REMOVAL_BY_KIND_MAP = new HashMap<>();
 
-	private UniDictCraftTweakerPlugin() { }
+	private UniDictCraftTweakerPlugin() {}
 
 	@ZenMethod
 	public static void newShapedRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final String[][] inputKinds)
@@ -97,7 +97,7 @@ public final class UniDictCraftTweakerPlugin
 			if (Resource.getKindFromName(shapedRecipeTemplate.outputKind) == 0)
 				badEntry = true;
 			for (final String[] subInputs : shapedRecipeTemplate.inputs)
-				for (String input : subInputs)
+				for (final String input : subInputs)
 					if (!input.isEmpty() && (shapedRecipeTemplate.outputKind.equals(input) || Resource.getKindFromName(input) == 0))
 						badEntry = true;
 			if (!badEntry) {
@@ -180,7 +180,10 @@ public final class UniDictCraftTweakerPlugin
 		{
 			this.outputKind = outputKind;
 			this.outputSize = outputSize;
-			this.inputs = inputs;
+			for (String[] subInputs : (this.inputs = inputs))
+				for (int i = 0; i < subInputs.length; i++)
+					if (subInputs[i] == null)
+						subInputs[i] = "";
 		}
 
 		@Override

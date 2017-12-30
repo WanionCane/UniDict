@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// be sure to call this after init.
 @SuppressWarnings("unused")
 public class UniDictAPI implements UniDict.IDependency
 {
@@ -38,7 +39,6 @@ public class UniDictAPI implements UniDict.IDependency
 	}
 
 	// I (WanionCane) wouldn't recommend using this unless it is really required!
-	// and if really you need, call this after postInit.
 	@Nonnull
 	public ResourceHandler getResourceHandler()
 	{

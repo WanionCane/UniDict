@@ -12,6 +12,7 @@ import com.google.common.collect.Sets;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import wanion.unidict.common.Reference;
@@ -32,7 +33,8 @@ public final class Config implements UniDict.IDependency
 	public final Set<String> keepOneEntryModBlackSet;
 	public final Set<String> keepOneEntryKindBlackSet;
 	public final Set<String> keepOneEntryEntryBlackSet;
-	public final List<String> itemStacksToIgnore;
+	public final List<String> itemStacksNamesToIgnore;
+	public final List<ItemStack> itemStacksToIgnore = new ArrayList<>();
 	public final boolean keepOneEntryBlackListsAsWhiteLists;
 	public final boolean autoHideInJEI;
 	public final Set<String> hideInJEIKindBlackSet;
@@ -59,7 +61,6 @@ public final class Config implements UniDict.IDependency
 	public final List<String> userOreDictEntries;
 	// modules
 	public final boolean integrationModule;
-	//public final boolean processingModule;
 	// config
 	private final Configuration config;
 	// resource related stuff
@@ -82,7 +83,7 @@ public final class Config implements UniDict.IDependency
 			keepOneEntryKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryKindBlackList", general, new String[]{}, "kinds listed here will be blacklisted in keepOneEntry.\nmust be the exact kind name."))));
 			keepOneEntryEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryEntryBlackList", general, new String[]{}, "entries listed here will be blacklisted in keepOneEntry.\nmust be the exact entry name."))));
 			keepOneEntryBlackListsAsWhiteLists = config.getBoolean("keepOneEntryBlackListsAsWhiteLists", general, false, "enable this if you want the keepOneEntry blacklists to became whitelists.\nNote: this doesn't applies for \"S:keepOneEntryModBlackSet\"");
-			itemStacksToIgnore = Arrays.asList(config.getStringList("itemStacksToIgnore", general, new String[]{}, "Put here itemstacks that you want don't want to ignore/not unify.\nExample Format: minecraft:iron_ingot#0"));
+			itemStacksNamesToIgnore = Arrays.asList(config.getStringList("itemStacksNamesToIgnore", general, new String[]{}, "Put here itemstacks that you want don't want to ignore/not unify.\nExample Format: minecraft:iron_ingot#0"));
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through the possibilities of JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("jei");
 			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "put here kinds that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
@@ -101,7 +102,7 @@ public final class Config implements UniDict.IDependency
 			ownerOfEveryThing = new TObjectIntHashMap<>(getOwnerOfEveryThingMap());
 			metalsToUnify = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
-			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminum", "Alumina", "Chrome", "Constantan"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
+			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium", "Alumina", "Chrome", "Redstone"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
 			recipesToIgnore = new HashSet<>();
 			for (final String recipeToIgnore : config.getStringList("recipeToIgnoreList", resources, new String[]{"minecraft:iron_nugget", "minecraft:iron_block", "minecraft:iron_ingot_from_block", "minecraft:iron_ingot_from_nuggets", "minecraft:gold_nugget", "minecraft:gold_ingot_from_block", "minecraft:gold_ingot_from_nuggets", "minecraft:gold_block"}, "add here recipes (names) that you don't want the Crafting Integration to mess with.")) {
 				final int separator = recipeToIgnore.indexOf(':');

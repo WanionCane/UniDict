@@ -97,10 +97,12 @@ public class Resource
 		return kindToName.get(kind);
 	}
 
-	public static TIntList kindNamesToKindList(@Nonnull final String[] kindNames)
+	public static TIntList kindNamesToKindList(final String[] kindNames)
 	{
 		int bufferKind;
 		final TIntList kindList = new TIntArrayList();
+		if (kindNames == null)
+			return kindList;
 		for (final String kindName : kindNames)
 			if ((bufferKind = getKindFromName(kindName)) != 0)
 				kindList.add(bufferKind);
