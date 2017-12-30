@@ -17,6 +17,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.lib.common.Dependencies;
@@ -69,7 +70,7 @@ public final class UniResourceHandler
 	static synchronized TIntSet getKindJEIBlackSet()
 	{
 		if (kindJEIBlackSet.isEmpty())
-			UniDict.getConfig().hideInJEIKindBlackSet.forEach(blackKind -> kindJEIBlackSet.add(Resource.getKindOfName(blackKind)));
+			UniDict.getConfig().hideInJEIKindBlackSet.forEach(blackKind -> kindJEIBlackSet.add(Resource.getKindFromName(blackKind)));
 		return kindJEIBlackSet;
 	}
 
@@ -80,23 +81,33 @@ public final class UniResourceHandler
 
 	public void init()
 	{
-		removeEntries();
-		registerCustomEntries();
+		customEntries();
 		gatherResources();
 		createAdditionalFiles();
 	}
 
-	private void removeEntries()
+	private void customEntries()
 	{
-		config.userRemovedOreDictEntries.forEach(customEntries -> {
-			final int plusSeparator = customEntries.indexOf('-');
-			if (plusSeparator != -1 && plusSeparator > 0) {
-				final String oreName = customEntries.substring(0, plusSeparator);
+		config.userOreDictEntries.forEach(customEntries -> {
+			final int plusSeparator = customEntries.indexOf('+');
+			final int minusSeparator = customEntries.indexOf('-');
+			if (plusSeparator > 0) {
+				final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
+				final int separatorChar = itemName.indexOf('#');
+				final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
+				if (item != null) {
+					try {
+						final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+						OreDictionary.registerOre(customEntries.substring(0, plusSeparator), new ItemStack(item, 1, metadata));
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+				}
+			} else if (minusSeparator > 0) {
+				final String oreName = customEntries.substring(0, minusSeparator);
 				final List<ItemStack> oreList = UniOreDictionary.get(oreName);
-				if (oreList == null)
-					UniDict.getLogger().warn("UniDict couldn't find the entry: " + oreName);
-				else {
-					final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
+				if (oreList != null) {
+					final String itemName = customEntries.substring(minusSeparator + 1, customEntries.length());
 					final int separatorChar = itemName.indexOf('#');
 					final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 					if (item != null) {
@@ -112,37 +123,17 @@ public final class UniResourceHandler
 		});
 	}
 
-	private void registerCustomEntries()
-	{
-		config.userRegisteredOreDictEntries.forEach(customEntries -> {
-			final int plusSeparator = customEntries.indexOf('+');
-			if (plusSeparator != -1 && plusSeparator > 0) {
-				final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
-				final int separatorChar = itemName.indexOf('#');
-				final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
-				if (item != null) {
-					try {
-						final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
-						OreDictionary.registerOre(customEntries.substring(0, plusSeparator), new ItemStack(item, 1, metadata));
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-	}
-
 	private void gatherResources()
 	{
 		final List<String> allTheResourceNames = Collections.synchronizedList(new ArrayList<>());
-		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore).*");
+		final Pattern resourceBlackTagsPattern = Pattern.compile(".*(?i)(Brick|Dense|Nether|Dye|Glass|Tiny|Small|Slime|Coralium|Fuel|Certus|ChargedCertus|ore).*");
 		UniOreDictionary.getThoseThatMatches("^ingot").parallelStream().filter(matcher -> !resourceBlackTagsPattern.matcher(matcher.replaceFirst("")).find()).sequential().forEach(matcher -> allTheResourceNames.add(WordUtils.capitalize(matcher.replaceFirst(""))));
 		final StringBuilder patternBuilder = new StringBuilder("(");
 		for (final Iterator<String> allTheResourceNamesIterator = allTheResourceNames.iterator(); allTheResourceNamesIterator.hasNext(); )
 			patternBuilder.append(allTheResourceNamesIterator.next()).append(allTheResourceNamesIterator.hasNext() ? "|" : ")$");
 		final Map<String, Set<String>> basicResourceMap = new HashMap<>();
 		final Set<String> allTheKinds = new LinkedHashSet<>();
-		final Set<String> allTheKindsBlackSet = Sets.newHashSet("stair", "bars", "fence", "trapdoor", "stairs", "bucketLiquid", "slab", "crystal", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "gem", "sapling", "pulp", "item", "stone", "wood", "bottleLiquid", "quartz", "mana", "chest", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "door", "bells", "arrow", "itemCompressed", "enlightenedFused", "darkFused", "crystalShard", "food", "hardened", "blockPsi", "blockStainedHardened", "rubber", "scaffoldingTreated", "fenceGate", "drill", "bowl", "powder", "oc:stone", "calculatorReinforced");
+		final Set<String> allTheKindsBlackSet = Sets.newHashSet("blockFuel", "blockPrudentium", "trapdoor", "oreChargedCertus", "slabNether", "bucketDust", "oreCoralium", "sapling", "pulp", "item", "stone", "wood", "bottleLiquid", "quartz", "mana", "crafter", "material", "leaves", "oreCertus", "crystalSHard", "eternalLife", "blockPrismarine", "bells", "enlightenedFused", "darkFused", "crystalShard", "food", "hardened", "blockPsi", "blockStainedHardened", "rubber", "scaffoldingTreated", "fenceGate", "oc:stone", "calculatorReinforced");
 		UniOreDictionary.getThoseThatMatches(Pattern.compile(patternBuilder.toString())).forEach(matcher -> {
 			final String kindName = matcher.replaceFirst("");
 			if (!allTheKindsBlackSet.contains(kindName)) {
@@ -157,7 +148,7 @@ public final class UniResourceHandler
 		basicResourceMap.forEach((resourceName, kinds) -> {
 			final TIntObjectHashMap<UniResourceContainer> kindMap = new TIntObjectHashMap<>();
 			kinds.forEach(kindName -> {
-				final int kind = Resource.getKindOfName(kindName);
+				final int kind = Resource.getKindFromName(kindName);
 				kindMap.put(kind, new UniResourceContainer(kindName + resourceName, kind));
 			});
 			apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
@@ -324,7 +315,7 @@ public final class UniResourceHandler
 		}
 	}
 
-	public void postInit()
+	public void postInit(final FMLPostInitializationEvent event)
 	{
 		apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
 		if (!config.libraryMode) {
@@ -334,8 +325,7 @@ public final class UniResourceHandler
 					customResource.updateEntries();
 			if (config.keepOneEntry)
 				OreDictionary.rebakeMap();
-			final ResourceHandler resourceHandler = dependencies.get(ResourceHandler.class);
-			resourceHandler.populateIndividualStackAttributes();
+			dependencies.get(ResourceHandler.class).populateIndividualStackAttributes(event);
 		}
 		for (final String blackListedResource : config.resourceBlackList) {
 			resourceMap.remove(blackListedResource);

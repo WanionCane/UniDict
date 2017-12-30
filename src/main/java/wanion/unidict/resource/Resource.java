@@ -59,7 +59,7 @@ public class Resource
 		final TIntList kindList = new TIntArrayList();
 		for (final String kindName : kinds) {
 			final int kind;
-			if ((kind = Resource.getKindOfName(kindName)) == 0)
+			if ((kind = Resource.getKindFromName(kindName)) == 0)
 				return Collections.emptyList();
 			kindList.add(kind);
 		}
@@ -87,12 +87,12 @@ public class Resource
 		return Collections.unmodifiableList(new ArrayList<>(nameToKind.keySet()));
 	}
 
-	public static int getKindOfName(@Nonnull final String name)
+	public static int getKindFromName(@Nonnull final String name)
 	{
 		return nameToKind.get(name);
 	}
 
-	public static String getNameOfKind(final int kind)
+	public static String getNameFromKind(final int kind)
 	{
 		return kindToName.get(kind);
 	}
@@ -102,7 +102,7 @@ public class Resource
 		int bufferKind;
 		final TIntList kindList = new TIntArrayList();
 		for (final String kindName : kindNames)
-			if ((bufferKind = getKindOfName(kindName)) != 0)
+			if ((bufferKind = getKindFromName(kindName)) != 0)
 				kindList.add(bufferKind);
 		return kindList;
 	}

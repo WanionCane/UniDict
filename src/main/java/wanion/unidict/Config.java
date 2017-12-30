@@ -32,6 +32,7 @@ public final class Config implements UniDict.IDependency
 	public final Set<String> keepOneEntryModBlackSet;
 	public final Set<String> keepOneEntryKindBlackSet;
 	public final Set<String> keepOneEntryEntryBlackSet;
+	public final List<String> itemStacksToIgnore;
 	public final boolean keepOneEntryBlackListsAsWhiteLists;
 	public final boolean autoHideInJEI;
 	public final Set<String> hideInJEIKindBlackSet;
@@ -55,8 +56,7 @@ public final class Config implements UniDict.IDependency
 	public final List<ResourceLocation> recipesToRemove;
 	public final Map<String, Set<String>> customUnifiedResources;
 	// userEntries
-	public final List<String> userRemovedOreDictEntries;
-	public final List<String> userRegisteredOreDictEntries;
+	public final List<String> userOreDictEntries;
 	// modules
 	public final boolean integrationModule;
 	//public final boolean processingModule;
@@ -78,14 +78,15 @@ public final class Config implements UniDict.IDependency
 			final String general = Configuration.CATEGORY_GENERAL;
 			libraryMode = config.getBoolean("libraryMode", general, false, "Enable this if you have mods that depends on UniDict but you don't like the unification.");
 			keepOneEntry = config.getBoolean("keepOneEntry", general, false, "keep only one entry per ore dict entry?");
-			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
-			keepOneEntryKindBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryKindBlackList", general, new String[]{}, "kinds listed here will be blacklisted in keepOneEntry.\nmust be the exact kind name."))));
-			keepOneEntryEntryBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("keepOneEntryEntryBlackList", general, new String[]{}, "entries listed here will be blacklisted in keepOneEntry.\nmust be the exact entry name."))));
+			keepOneEntryModBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryModBlackList", general, new String[]{}, "mods listed here will be blacklisted in keepOneEntry.\nmust be the exact modID."))));
+			keepOneEntryKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryKindBlackList", general, new String[]{}, "kinds listed here will be blacklisted in keepOneEntry.\nmust be the exact kind name."))));
+			keepOneEntryEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryEntryBlackList", general, new String[]{}, "entries listed here will be blacklisted in keepOneEntry.\nmust be the exact entry name."))));
 			keepOneEntryBlackListsAsWhiteLists = config.getBoolean("keepOneEntryBlackListsAsWhiteLists", general, false, "enable this if you want the keepOneEntry blacklists to became whitelists.\nNote: this doesn't applies for \"S:keepOneEntryModBlackSet\"");
+			itemStacksToIgnore = Arrays.asList(config.getStringList("itemStacksToIgnore", general, new String[]{}, "Put here itemstacks that you want don't want to ignore/not unify.\nExample Format: minecraft:iron_ingot#0"));
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through the possibilities of JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "auto hide items in JEI?") && isModLoaded("jei");
-			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "put here kinds that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
-			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "put here entries that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
+			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "put here kinds that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
+			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "put here entries that you don't want to hide in JEI.\nonly works if keepOneEntry is false."))));
 			// dumps
 			kindsDump = config.getBoolean("kindsDump", "dump", false, "Enable this to keep track of all the kinds.\nthe output file will be saved on \"config\\unidict\\dump\" folder.\nonce the file is generated, you must delete it to re-generate.");
 			entriesDump = config.getBoolean("entriesDump", "dump", false, "Enable this to keep track of all the entries.\nthe output file will be saved on \"config\\unidict\\dump\"  folder.\nonce the file is generated, you must delete it to re-generate.");
@@ -98,8 +99,8 @@ public final class Config implements UniDict.IDependency
 			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nit also will make \"S:ownerOfEveryThing\" be ignored for this kind.");
 			enableSpecificEntrySort = config.getBoolean("enableSpecificEntrySort", resources, false, "enabling this allow you to specify the \"owner\" of each entry.\nit also will make \"S:ownerOfEveryThing\" be ignored for this entry.");
 			ownerOfEveryThing = new TObjectIntHashMap<>(getOwnerOfEveryThingMap());
-			metalsToUnify = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
-			childrenOfMetals = Collections.unmodifiableSet(Sets.newLinkedHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
+			metalsToUnify = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
+			childrenOfMetals = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminum", "Alumina", "Chrome", "Constantan"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
 			recipesToIgnore = new HashSet<>();
 			for (final String recipeToIgnore : config.getStringList("recipeToIgnoreList", resources, new String[]{"minecraft:iron_nugget", "minecraft:iron_block", "minecraft:iron_ingot_from_block", "minecraft:iron_ingot_from_nuggets", "minecraft:gold_nugget", "minecraft:gold_ingot_from_block", "minecraft:gold_ingot_from_nuggets", "minecraft:gold_block"}, "add here recipes (names) that you don't want the Crafting Integration to mess with.")) {
@@ -116,11 +117,9 @@ public final class Config implements UniDict.IDependency
 			}
 			customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
 			// userRegisteredOreDictEntries
-			userRemovedOreDictEntries = Arrays.asList(config.getStringList("userRemovedOreDictEntries", general, new String[]{}, "This allows to the user remove entries before the Unification happen.\nthis is mainly useful to avoid trying to unify certain things.\n\nFormat:\nironIngot-minecraft:iron_ingot#0\nThe example above will remove Iron Ingot from ironIngot."));
-			userRegisteredOreDictEntries = Arrays.asList(config.getStringList("userRegisteredOreDictEntries", general, new String[]{}, "This allows to the user register their own ore entries before the Unification happen.\nthis is mainly useful when the user is trying to unify things that aren't registered previously in the Ore Dictionary.\n\nFormat:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone."));
-			// modules
+			userOreDictEntries = Arrays.asList(config.getStringList("userOreDictEntries", general, new String[]{}, "This allows to the user add/remove entries before the Unification happen.\nthis is mainly useful to avoid trying to unify certain things.\n\nFormat to Add entries to the OreDictionary:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone.\n\nFormat to Remove entries from the OreDictionary:\nweirdStone-minecraft:stone#1\nThe example above will remove Granite from weirdStone."));
+			// integration module
 			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module.\nif false all the Integrations will be disabled.\n");
-			//processingModule = config.getBoolean("processing", "modules", false, "Processing Module.\nif false all the Processing Addons will be disabled.\n");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}
@@ -150,7 +149,7 @@ public final class Config implements UniDict.IDependency
 		for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust", "Stone:dust", "Obsidian:dust|dustSmall", "Coal:dust|dustSmall", "Sulfur:dust|dustSmall", "Salt:dust"}, "Here you can put a list to custom unify them.\nmust be in this format \"ResourceName:kind1|kind2|...\".")) {
 			final int baseSeparatorIndex;
 			final Set<String> kindSet;
-			if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newLinkedHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1, customUnifiedResource.length()))))).isEmpty())
+			if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1, customUnifiedResource.length()))))).isEmpty())
 				customUnifiedResources.put(customUnifiedResource.substring(0, baseSeparatorIndex), kindSet);
 		}
 		return customUnifiedResources;

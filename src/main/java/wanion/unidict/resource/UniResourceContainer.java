@@ -13,11 +13,11 @@ import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
-import wanion.unidict.UniDictJEIPlugin;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.common.Util;
+import wanion.unidict.plugin.UniDictJEIPlugin;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -86,7 +86,7 @@ public final class UniResourceContainer
 				removeBadEntriesFromJEI();
 			if (config.keepOneEntry) {
 				originalEntries = new ArrayList<>(entries);
-				if ((!config.keepOneEntryBlackListsAsWhiteLists && (!config.keepOneEntryEntryBlackSet.contains(name) || !config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind)))) || (config.keepOneEntryBlackListsAsWhiteLists && (config.keepOneEntryEntryBlackSet.contains(name) || config.keepOneEntryKindBlackSet.contains(Resource.getNameOfKind(kind)))))
+				if ((!config.keepOneEntryBlackListsAsWhiteLists && (!config.keepOneEntryEntryBlackSet.contains(name) || !config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))) || (config.keepOneEntryBlackListsAsWhiteLists && (config.keepOneEntryEntryBlackSet.contains(name) || config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))))
 					keepOneEntry();
 			}
 		}

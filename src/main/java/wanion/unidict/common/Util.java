@@ -32,21 +32,18 @@ public final class Util
 	public static final Comparator<ItemStack> itemStackComparatorByModName = new Comparator<ItemStack>()
 	{
 		@Override
-		public int compare(final ItemStack itemStack1, final ItemStack itemStack2)
+		public int compare(@Nonnull final ItemStack itemStack1, @Nonnull final ItemStack itemStack2)
 		{
-			final String stack1ModName = getModName(itemStack1);
+			final String stack1ModName = getModName(itemStack1), stack2ModName = getModName(itemStack2);
 			final Config config = UniDict.getConfig();
 			if (config.keepOneEntry && config.keepOneEntryModBlackSet.contains(stack1ModName))
 				ResourceHandler.addToKeepOneEntryModBlackSet(itemStack1);
-			return getIndex(stack1ModName) < getIndex(itemStack2) ? -1 : 0;
+			final int stackIndex1 = getIndex(stack1ModName), stackIndex2 = getIndex(stack2ModName);
+			final boolean sameIndexModAndItem = stackIndex1 == stackIndex2 && stack1ModName.equals(stack2ModName) && itemStack1.getItem() == itemStack2.getItem();
+			return !sameIndexModAndItem ? (stackIndex1 < stackIndex2 ? -1 : 0) : itemStack1.getItemDamage() < itemStack2.getItemDamage() ? -1 : 0;
 		}
 
-		private long getIndex(final ItemStack itemStack)
-		{
-			return UniDict.getConfig().ownerOfEveryThing.get(getModName(itemStack));
-		}
-
-		private long getIndex(final String modName)
+		private int getIndex(final String modName)
 		{
 			return UniDict.getConfig().ownerOfEveryThing.get(modName);
 		}

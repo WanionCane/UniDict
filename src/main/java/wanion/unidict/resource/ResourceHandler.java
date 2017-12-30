@@ -10,8 +10,14 @@ package wanion.unidict.resource;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.event.FMLStateEvent;
 import wanion.lib.common.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.UniDict.IDependency;
 
 import javax.annotation.Nonnull;
@@ -25,8 +31,9 @@ public final class ResourceHandler implements IDependency
 	public final Collection<Resource> resources;
 	private final TIntObjectMap<UniAttributes> individualStackAttributes = new TIntObjectHashMap<>();
 	private final Map<String, Resource> resourceMap;
+	private FMLStateEvent event = null;
 
-	ResourceHandler(@Nonnull final Map<String, Resource> resourceMap)
+	public ResourceHandler(@Nonnull final Map<String, Resource> resourceMap)
 	{
 		resources = (this.resourceMap = resourceMap).values();
 	}
@@ -70,7 +77,7 @@ public final class ResourceHandler implements IDependency
 
 	public UniResourceContainer getContainer(@Nonnull final String resource, @Nonnull final String child)
 	{
-		return containerExists(resource, child) ? resourceMap.get(resource).getChild(Resource.getKindOfName(child)) : null;
+		return containerExists(resource, child) ? resourceMap.get(resource).getChild(Resource.getKindFromName(child)) : null;
 	}
 
 	public UniResourceContainer getContainer(final ItemStack thing)
@@ -96,6 +103,13 @@ public final class ResourceHandler implements IDependency
 		return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
 	}
 
+	public int getKind(final ItemStack thing)
+	{
+		final UniAttributes attributesOfThing = get(thing);
+		return (attributesOfThing != null) ? attributesOfThing.uniResourceContainer.kind : 0;
+
+	}
+
 	public void setMainItemStacks(@Nonnull final List<ItemStack> thingList)
 	{
 		for (int i = 0; i < thingList.size(); i++)
@@ -106,7 +120,7 @@ public final class ResourceHandler implements IDependency
 	{
 		for (int i = 0; i < thingList.size(); i++)
 			if (thingList.get(i) instanceof ItemStack)
-			thingList.set(i, getMainItemStack((ItemStack) thingList.get(i)));
+				thingList.set(i, getMainItemStack((ItemStack) thingList.get(i)));
 	}
 
 	public ItemStack[] getMainItemStacks(@Nonnull final ItemStack[] things)
@@ -125,7 +139,7 @@ public final class ResourceHandler implements IDependency
 
 	public boolean containerExists(@Nonnull final String resource, @Nonnull final String child)
 	{
-		return resourceMap.containsKey(resource) && resourceMap.get(resource).childExists(Resource.getKindOfName(child));
+		return resourceMap.containsKey(resource) && resourceMap.get(resource).childExists(Resource.getKindFromName(child));
 	}
 
 	public List<Resource> getResources(final int... kinds)
@@ -133,13 +147,32 @@ public final class ResourceHandler implements IDependency
 		return Resource.getResources(resources, kinds);
 	}
 
+
+	public void populateIndividualStackAttributes(final FMLStateEvent event)
+	{
+		if (this.event == null || this.event != event) {
+			this.event = event;
+			populateIndividualStackAttributes();
+		}
+	}
+
 	public void populateIndividualStackAttributes()
 	{
 		individualStackAttributes.clear();
+		final TIntSet itemStackToIgnoreHashSet = new TIntHashSet();
+		UniDict.getConfig().itemStacksToIgnore.forEach(itemName -> {
+			final int separatorChar = itemName.indexOf('#');
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
+			if (item != null) {
+				final int metaData = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+				itemStackToIgnoreHashSet.add(MetaItem.get(new ItemStack(item, 1, metaData)));
+			}
+		});
 		resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
 			final UniAttributes uniAttributes = new UniAttributes(resource, container);
 			for (final int hash : container.getHashes())
-				individualStackAttributes.put(hash, uniAttributes);
+				if (!itemStackToIgnoreHashSet.contains(hash))
+					individualStackAttributes.put(hash, uniAttributes);
 			return true;
 		}));
 	}

@@ -10,6 +10,7 @@ package wanion.unidict.api;
 
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.Resource;
+import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -23,6 +24,7 @@ public class UniDictAPI implements UniDict.IDependency
 {
 	public final Collection<Resource> resources;
 	private final Map<String, Resource> resourceMap;
+	private ResourceHandler resourceHandler = null;
 
 	public UniDictAPI(@Nonnull final Map<String, Resource> resourceMap)
 	{
@@ -30,9 +32,21 @@ public class UniDictAPI implements UniDict.IDependency
 	}
 
 	@Nonnull
-	public static Map<String, Resource> toResourceMap(@Nonnull final List<Resource> resources)
+	public static Map<String, Resource> toResourceMap(@Nonnull final Collection<Resource> resources)
 	{
 		return resources.stream().collect(Collectors.toMap(Resource::getName, Function.identity()));
+	}
+
+	// I (WanionCane) wouldn't recommend using this unless it is really required!
+	// and if really you need, call this after postInit.
+	@Nonnull
+	public ResourceHandler getResourceHandler()
+	{
+		if (resourceHandler == null) {
+			resourceHandler = new ResourceHandler(resourceMap);
+			resourceHandler.populateIndividualStackAttributes();
+		}
+		return resourceHandler;
 	}
 
 	public Resource getResource(@Nonnull final String resourceName)

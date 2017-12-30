@@ -1,4 +1,4 @@
-package wanion.unidict;
+package wanion.unidict.plugin;
 
 /*
  * Created by WanionCane(https://github.com/WanionCane).
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JEIPlugin
-public class UniDictJEIPlugin implements IModPlugin
+public final class UniDictJEIPlugin implements IModPlugin
 {
 	private static final List<ItemStack> stacksToHideList = Collections.synchronizedList(new ArrayList<>());
 

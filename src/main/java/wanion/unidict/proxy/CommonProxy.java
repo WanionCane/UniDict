@@ -26,6 +26,7 @@ import wanion.unidict.UniDict;
 import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.IntegrationModule;
+import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.UniResourceHandler;
 
 import java.util.Map;
@@ -40,6 +41,8 @@ public class CommonProxy
 	public void preInit(final FMLPreInitializationEvent event)
 	{
 		moduleHandler = searchForModules(populateModules(new ModuleHandler()), event.getAsmData());
+		if (Loader.isModLoaded("crafttweaker"))
+			UniDictCraftTweakerPlugin.preInit();
 	}
 
 	public void init()
@@ -69,10 +72,12 @@ public class CommonProxy
 
 	public void postInit(final FMLPostInitializationEvent event)
 	{
-		uniResourceHandler.postInit();
+		uniResourceHandler.postInit(event);
 		moduleHandler.startModules(event);
 		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
 		UniDict.getConfig().recipesToRemove.forEach(recipeRegistry::remove);
+		if (Loader.isModLoaded("crafttweaker"))
+			UniDictCraftTweakerPlugin.postInit(event);
 	}
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
