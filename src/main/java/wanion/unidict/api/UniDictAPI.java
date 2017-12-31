@@ -50,6 +50,12 @@ public class UniDictAPI implements UniDict.IDependency
 		return resourceHandler;
 	}
 
+	public static void addItemStackToBlackList(final ItemStack itemStack)
+	{
+		if (itemStack != null)
+			UniDict.getConfig().itemStacksToIgnore.add(itemStack);
+	}
+
 	public Resource getResource(@Nonnull final String resourceName)
 	{
 		return resourceMap.get(resourceName);
@@ -63,11 +69,5 @@ public class UniDictAPI implements UniDict.IDependency
 	public List<Resource> getResources(@Nonnull final int... kinds)
 	{
 		return Resource.getResources(resources, kinds);
-	}
-
-	public static void addItemStackToBlackList(final ItemStack itemStack)
-	{
-		if (itemStack != null)
-			UniDict.getConfig().itemStacksToIgnore.add(itemStack);
 	}
 }
