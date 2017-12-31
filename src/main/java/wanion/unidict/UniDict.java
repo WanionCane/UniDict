@@ -8,7 +8,6 @@ package wanion.unidict;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -76,12 +75,6 @@ public final class UniDict
 	public static ModuleHandler getModuleHandler()
 	{
 		return proxy.moduleHandler;
-	}
-
-	public static void addItemStackToBlackList(final ItemStack itemStack)
-	{
-		if (itemStack != null)
-			getConfig().itemStacksToIgnore.add(itemStack);
 	}
 
 	@Mod.EventHandler

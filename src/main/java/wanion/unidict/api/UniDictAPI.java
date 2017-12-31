@@ -8,6 +8,7 @@ package wanion.unidict.api;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
@@ -62,5 +63,11 @@ public class UniDictAPI implements UniDict.IDependency
 	public List<Resource> getResources(@Nonnull final int... kinds)
 	{
 		return Resource.getResources(resources, kinds);
+	}
+
+	public static void addItemStackToBlackList(final ItemStack itemStack)
+	{
+		if (itemStack != null)
+			UniDict.getConfig().itemStacksToIgnore.add(itemStack);
 	}
 }
