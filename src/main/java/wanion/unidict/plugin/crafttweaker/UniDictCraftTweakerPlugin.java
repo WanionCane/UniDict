@@ -29,8 +29,9 @@ import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniDict;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Reference;
-import wanion.unidict.plugin.crafttweaker.RemovalByKind.AbstractRemovalByKind;
 import wanion.unidict.plugin.crafttweaker.RemovalByKind.Crafting;
+import wanion.unidict.plugin.crafttweaker.RemovalByKind.Furnace;
+import wanion.unidict.plugin.crafttweaker.RemovalByKind.RemovalByKind;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.UniResourceContainer;
 
@@ -46,7 +47,8 @@ public final class UniDictCraftTweakerPlugin
 {
 	private static final List<ShapedRecipeTemplate> NEW_SHAPED_RECIPE_TEMPLATE_LIST = new ArrayList<>();
 	private static final List<ShapelessRecipeTemplate> NEW_SHAPELESS_RECIPE_TEMPLATE_LIST = new ArrayList<>();
-	private static final Map<Class<? extends AbstractRemovalByKind>, AbstractRemovalByKind> ABSTRACT_REMOVAL_BY_KIND_MAP = new HashMap<>();
+	private static final Map<Class<? extends RemovalByKind>, RemovalByKind> REMOVAL_BY_KIND_MAP = new HashMap<>();
+	public static final Map<String, RemovalByKind> NAME_REMOVAL_BY_KIND_MAP = new HashMap<>();
 
 	private UniDictCraftTweakerPlugin() {}
 
@@ -65,24 +67,27 @@ public final class UniDictCraftTweakerPlugin
 	public static void preInit()
 	{
 		registerAbstractRemovalByKind(new Crafting());
+		registerAbstractRemovalByKind(new Furnace());
 	}
 
-	private static void registerAbstractRemovalByKind(@Nonnull final AbstractRemovalByKind abstractRemovalByKind)
+	private static void registerAbstractRemovalByKind(@Nonnull final RemovalByKind removalByKind)
 	{
-		ABSTRACT_REMOVAL_BY_KIND_MAP.put(abstractRemovalByKind.getClass(), abstractRemovalByKind);
+		CraftTweakerAPI.registerClass(removalByKind.getClass());
+		REMOVAL_BY_KIND_MAP.put(removalByKind.getClass(), removalByKind);
+		NAME_REMOVAL_BY_KIND_MAP.put(removalByKind.toString(), removalByKind);
 	}
 
-	public static <R extends AbstractRemovalByKind> R getRemovalByKind(@Nonnull final Class<R> abstractRemovalByKindClass)
+	public static <R extends RemovalByKind> R getRemovalByKind(@Nonnull final Class<R> abstractRemovalByKindClass)
 	{
-		return abstractRemovalByKindClass.cast(ABSTRACT_REMOVAL_BY_KIND_MAP.get(abstractRemovalByKindClass));
+		return abstractRemovalByKindClass.cast(REMOVAL_BY_KIND_MAP.get(abstractRemovalByKindClass));
 	}
 
 	public static void postInit(@Nonnull final FMLPostInitializationEvent event)
 	{
-		final UniDictAPI uniDictAPI = ABSTRACT_REMOVAL_BY_KIND_MAP.size() > 0 || NEW_SHAPED_RECIPE_TEMPLATE_LIST.size() > 0 || NEW_SHAPELESS_RECIPE_TEMPLATE_LIST.size() > 0 ? UniDict.getAPI() : null;
+		final UniDictAPI uniDictAPI = REMOVAL_BY_KIND_MAP.size() > 0 || NEW_SHAPED_RECIPE_TEMPLATE_LIST.size() > 0 || NEW_SHAPELESS_RECIPE_TEMPLATE_LIST.size() > 0 ? UniDict.getAPI() : null;
 		if (uniDictAPI == null)
 			return;
-		ABSTRACT_REMOVAL_BY_KIND_MAP.values().forEach(removalByKind -> removalByKind.apply(uniDictAPI));
+		REMOVAL_BY_KIND_MAP.values().forEach(removalByKind -> removalByKind.apply(uniDictAPI));
 		final List<IRecipe> recipeList = new ArrayList<>();
 		fetchShapedRecipeTemplates(uniDictAPI, recipeList);
 		fetchShapelessRecipeTemplates(uniDictAPI, recipeList);

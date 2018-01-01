@@ -9,7 +9,6 @@ package wanion.unidict.plugin.crafttweaker.RemovalByKind;
  */
 
 import crafttweaker.CraftTweakerAPI;
-import crafttweaker.annotations.ZenRegister;
 import gnu.trove.list.TIntList;
 import gnu.trove.map.TIntObjectMap;
 import net.minecraft.item.crafting.IRecipe;
@@ -18,10 +17,9 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.annotations.ZenMethod;
 import wanion.unidict.api.UniDictAPI;
-import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniAttributes;
 
@@ -31,14 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@ZenRegister
-@ZenClass("mods.unidict.removalByKind")
-public final class Crafting extends AbstractRemovalByKind
+@ZenExpansion("mods.unidict.removalByKind")
+public final class Crafting extends RemovalByKind
 {
+	@Override
 	@ZenMethod
-	public static void crafting(@Nonnull final String kind, @Optional final String[] resourceKindWhiteList)
+	public void remove(@Nonnull String kind, @Optional String[] resourceKindWhiteList)
 	{
-		CraftTweakerAPI.apply(new RemovalByKind(UniDictCraftTweakerPlugin.getRemovalByKind(Crafting.class), kind, resourceKindWhiteList));
+		CraftTweakerAPI.apply(this.new RemovalByKindAction(kind, resourceKindWhiteList));
 	}
 
 	@Override
@@ -59,6 +57,13 @@ public final class Crafting extends AbstractRemovalByKind
 		}
 		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
 		recipesToRemove.forEach(recipeRegistry::remove);
+	}
+
+	@Nonnull
+	@Override
+	protected String getName()
+	{
+		return "Crafting";
 	}
 
 	@Nonnull
