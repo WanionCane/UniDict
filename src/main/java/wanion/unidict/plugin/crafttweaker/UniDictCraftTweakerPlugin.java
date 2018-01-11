@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -72,7 +71,6 @@ public final class UniDictCraftTweakerPlugin
 
 	private static void registerAbstractRemovalByKind(@Nonnull final RemovalByKind removalByKind)
 	{
-		CraftTweakerAPI.registerClass(removalByKind.getClass());
 		REMOVAL_BY_KIND_MAP.put(removalByKind.getClass(), removalByKind);
 		NAME_REMOVAL_BY_KIND_MAP.put(removalByKind.toString(), removalByKind);
 	}
@@ -82,7 +80,7 @@ public final class UniDictCraftTweakerPlugin
 		return abstractRemovalByKindClass.cast(REMOVAL_BY_KIND_MAP.get(abstractRemovalByKindClass));
 	}
 
-	public static void postInit(@Nonnull final FMLPostInitializationEvent event)
+	public static void init()
 	{
 		final UniDictAPI uniDictAPI = REMOVAL_BY_KIND_MAP.size() > 0 || NEW_SHAPED_RECIPE_TEMPLATE_LIST.size() > 0 || NEW_SHAPELESS_RECIPE_TEMPLATE_LIST.size() > 0 ? UniDict.getAPI() : null;
 		if (uniDictAPI == null)
@@ -95,7 +93,7 @@ public final class UniDictCraftTweakerPlugin
 		recipeList.forEach(recipe -> recipeRegistry.register(recipe.setRegistryName(new ResourceLocation(recipe.getGroup()))));
 	}
 
-	private static void fetchShapedRecipeTemplates(@Nonnull UniDictAPI uniDictAPI, @Nonnull final List<IRecipe> recipeList)
+	private static void fetchShapedRecipeTemplates(@Nonnull final UniDictAPI uniDictAPI, @Nonnull final List<IRecipe> recipeList)
 	{
 		NEW_SHAPED_RECIPE_TEMPLATE_LIST.forEach(shapedRecipeTemplate -> {
 			boolean badEntry = false;
@@ -130,7 +128,7 @@ public final class UniDictCraftTweakerPlugin
 		});
 	}
 
-	private static void fetchShapelessRecipeTemplates(@Nonnull UniDictAPI uniDictAPI, @Nonnull final List<IRecipe> recipeList)
+	private static void fetchShapelessRecipeTemplates(@Nonnull final UniDictAPI uniDictAPI, @Nonnull final List<IRecipe> recipeList)
 	{
 		NEW_SHAPELESS_RECIPE_TEMPLATE_LIST.forEach(shapelessRecipeTemplate -> {
 			boolean badEntry = false;

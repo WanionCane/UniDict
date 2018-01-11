@@ -47,7 +47,9 @@ public final class UniResourceHandler
 	private final Dependencies<UniDict.IDependency> dependencies = UniDict.getDependencies();
 	private final Config config = UniDict.getConfig();
 
-	public UniResourceHandler()
+	public UniResourceHandler() {}
+
+	public void preInit()
 	{
 		dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
 		{

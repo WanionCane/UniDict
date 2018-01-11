@@ -44,13 +44,16 @@ public class CommonProxy
 		moduleHandler = searchForModules(populateModules(new ModuleHandler()), event.getAsmData());
 		if (Loader.isModLoaded("crafttweaker"))
 			UniDictCraftTweakerPlugin.preInit();
+		(uniResourceHandler = new UniResourceHandler()).preInit();
 	}
 
 	public void init(final FMLInitializationEvent event)
 	{
-		(uniResourceHandler = new UniResourceHandler()).init(event);
+		uniResourceHandler.init(event);
 		if (Loader.isModLoaded("tconstruct"))
 			fixTCon();
+		if (Loader.isModLoaded("crafttweaker"))
+			UniDictCraftTweakerPlugin.init();
 	}
 
 	// sorry KnightMiner.
@@ -77,8 +80,6 @@ public class CommonProxy
 		moduleHandler.startModules(event);
 		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
 		UniDict.getConfig().recipesToRemove.forEach(recipeRegistry::remove);
-		if (Loader.isModLoaded("crafttweaker"))
-			UniDictCraftTweakerPlugin.postInit(event);
 	}
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
@@ -110,6 +111,7 @@ public class CommonProxy
 	{
 		uniResourceHandler = null;
 		moduleHandler = null;
+		dependencies = null;
 		SpecificKindItemStackComparator.kindSpecificComparators = null;
 		SpecificEntryItemStackComparator.entrySpecificComparators = null;
 	}

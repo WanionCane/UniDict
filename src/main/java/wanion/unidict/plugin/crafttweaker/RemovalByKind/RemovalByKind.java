@@ -38,7 +38,7 @@ public abstract class RemovalByKind
 	{
 		name = name != null ? name.toLowerCase() : null;
 		if (!UniDictCraftTweakerPlugin.NAME_REMOVAL_BY_KIND_MAP.containsKey(name)) {
-			CraftTweakerAPI.logError("mods.unidict.removalByKind.get(" + name + ") doesn't exists!");
+			CraftTweakerAPI.logError("mods.unidict.removalByKind.get(\"" + name + "\") doesn't exists!");
 			return null;
 		}
 		return UniDictCraftTweakerPlugin.NAME_REMOVAL_BY_KIND_MAP.get(name);
@@ -55,7 +55,7 @@ public abstract class RemovalByKind
 	@Nonnull
 	protected abstract String getDescription();
 
-	public final wanion.unidict.plugin.crafttweaker.RemovalByKind.RemovalByKind getInstance()
+	public final RemovalByKind getInstance()
 	{
 		return UniDictCraftTweakerPlugin.getRemovalByKind(getClass());
 	}

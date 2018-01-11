@@ -49,12 +49,12 @@ public final class IntegrationModule extends AbstractModule
 		EMBERS("embers", EmbersIntegration.class),
 		EXTREME_ENERGY("meem", ExtremeEnergyIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
+		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		IDUSTRIAL_FOREGOIN("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagnetiCraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
-		//REFINED_STORAGE("refinedstorage", RefinedStorageIntegration.class, false),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);
 

@@ -178,6 +178,5 @@ public final class ResourceHandler implements IDependency
 					individualStackAttributes.put(hash, uniAttributes);
 			return true;
 		}));
-
 	}
 }

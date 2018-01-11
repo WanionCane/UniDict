@@ -18,7 +18,6 @@ import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.resource.ResourceHandler;
 import wanion.unidict.resource.UniAttributes;
@@ -33,7 +32,6 @@ import java.util.Set;
 public final class Crafting extends RemovalByKind
 {
 	@Override
-	@ZenMethod
 	public void remove(@Nonnull String kind, @Optional String[] resourceKindWhiteList)
 	{
 		CraftTweakerAPI.apply(this.new RemovalByKindAction(kind, resourceKindWhiteList));
