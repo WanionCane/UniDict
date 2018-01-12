@@ -24,8 +24,9 @@ import java.util.regex.Pattern;
 import static net.minecraftforge.fml.common.Loader.isModLoaded;
 import static wanion.unidict.common.Reference.SLASH;
 
-public final class Config implements UniDict.IDependency
+public final class Config
 {
+	public static final Config INSTANCE = new Config();
 	// general configs
 	public final boolean libraryMode;
 	public final boolean keepOneEntry;

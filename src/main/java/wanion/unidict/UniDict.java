@@ -64,7 +64,7 @@ public final class UniDict
 
 	public static Config getConfig()
 	{
-		return proxy.dependencies.get(Config.class);
+		return Config.INSTANCE;
 	}
 
 	public static UniDictAPI getAPI()
