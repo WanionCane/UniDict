@@ -36,7 +36,9 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	{
 		try {
 			optimizeFurnaceRecipes();
-		} catch (Exception e) {	logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+		}
 		return threadName + "Some things that you smelted appear to be different now.";
 	}
 
@@ -48,11 +50,11 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
 				if (stacksToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())))
 					continue;
-					final ItemStack oldEntry = furnaceRecipe.getValue();
-					final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
-					furnaceRecipe.setValue(newEntry);
-					if (experienceMap.containsKey(oldEntry))
-						experienceMap.put(newEntry, experienceMap.remove(oldEntry));
+				final ItemStack oldEntry = furnaceRecipe.getValue();
+				final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
+				furnaceRecipe.setValue(newEntry);
+				if (experienceMap.containsKey(oldEntry))
+					experienceMap.put(newEntry, experienceMap.remove(oldEntry));
 			}
 		} else {
 			final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
