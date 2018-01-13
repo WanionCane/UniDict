@@ -13,6 +13,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -84,6 +85,11 @@ public class CommonProxy
 		moduleHandler.startModules(event);
 		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
 		UniDict.getConfig().recipesToRemove.forEach(recipeRegistry::remove);
+	}
+
+	public void loadComplete(final FMLLoadCompleteEvent event)
+	{
+		moduleHandler.startModules(event);
 	}
 
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
