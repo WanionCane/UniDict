@@ -56,6 +56,7 @@ public final class Config
 	public final Set<String> childrenOfMetals;
 	public final List<String> resourceBlackList;
 	public final Set<ResourceLocation> recipesToIgnore;
+	public final List<String> furnaceRecipesToIgnore;
 	public final List<ResourceLocation> recipesToRemove;
 	public final Set<String> ignoreModIdRecipes;
 	public final Map<String, Set<String>> customUnifiedResources;
@@ -105,12 +106,16 @@ public final class Config
 			metalsToUnify = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "List of Metals to unify.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium", "Alumina", "Chrome", "Redstone"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
+
 			recipesToIgnore = new HashSet<>();
 			for (final String recipeToIgnore : config.getStringList("recipeToIgnoreList", resources, new String[]{"minecraft:iron_nugget", "minecraft:iron_block", "minecraft:iron_ingot_from_block", "minecraft:iron_ingot_from_nuggets", "minecraft:gold_nugget", "minecraft:gold_ingot_from_block", "minecraft:gold_ingot_from_nuggets", "minecraft:gold_block"}, "add here recipes (names) that you don't want the Crafting Integration to mess with.")) {
 				final int separator = recipeToIgnore.indexOf(':');
 				if (separator > 0)
 					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1, recipeToIgnore.length())));
 			}
+
+			furnaceRecipesToIgnore = Arrays.asList(config.getStringList("furnaceRecipesToIgnoreList", resources, new String[]{""}, "Add here recipes (item registry names) that you don't want the Furnace Integration to mess with."));
+
 			recipesToRemove = new ArrayList<>();
 			for (String recipeToRemove : config.getStringList("recipeToRemoveList", resources, new String[]{}, "add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \"")) {
 				recipeToRemove = recipeToRemove.replace("\"", "");
