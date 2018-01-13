@@ -12,7 +12,8 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import wanion.lib.common.Util;
+import wanion.lib.common.MetaItem;
+import wanion.unidict.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	FurnaceIntegration()
 	{
 		super("Furnace");
-		experienceMap = Util.getField(FurnaceRecipes.class, "experienceList", "field_77605_c", FurnaceRecipes.instance(), Map.class);
+		experienceMap = wanion.lib.common.Util.getField(FurnaceRecipes.class, "experienceList", "field_77605_c", FurnaceRecipes.instance(), Map.class);
 	}
 
 	@Override
@@ -42,17 +43,16 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	@SuppressWarnings("unchecked")
 	private void optimizeFurnaceRecipes()
 	{
+		final TIntSet stacksToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceRecipesToIgnore));
 		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
-
-				if(!config.furnaceRecipesToIgnore.contains(furnaceRecipe.getKey().getItem().getRegistryName().toString())){
+				if (stacksToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())))
+					continue;
 					final ItemStack oldEntry = furnaceRecipe.getValue();
 					final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
 					furnaceRecipe.setValue(newEntry);
 					if (experienceMap.containsKey(oldEntry))
 						experienceMap.put(newEntry, experienceMap.remove(oldEntry));
-				}
-
 			}
 		} else {
 			final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
@@ -60,12 +60,10 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 			final Map<ItemStack, ItemStack> newRecipes = new HashMap<>();
 			for (final Iterator<Map.Entry<ItemStack, ItemStack>> furnaceRecipeIterator = furnaceRecipes.entrySet().iterator(); furnaceRecipeIterator.hasNext(); ) {
 				final Map.Entry<ItemStack, ItemStack> furnaceRecipe = furnaceRecipeIterator.next();
+				if (stacksToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())))
+					continue;
 				final UniResourceContainer inputContainer = resourceHandler.getContainer(furnaceRecipe.getKey());
 				final UniResourceContainer outputContainer = resourceHandler.getContainer(furnaceRecipe.getValue());
-
-				if(config.furnaceRecipesToIgnore.contains(furnaceRecipe.getKey().getItem().getRegistryName().toString()))
-					continue;
-
 				if (outputContainer == null)
 					continue;
 				else if (inputContainer == null) {

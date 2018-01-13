@@ -12,14 +12,13 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLStateEvent;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniDict.IDependency;
+import wanion.unidict.common.Util;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -162,14 +161,7 @@ public final class ResourceHandler implements IDependency
 		individualStackAttributes.clear();
 		final TIntSet itemStackToIgnoreHashSet = new TIntHashSet();
 		final Config config = UniDict.getConfig();
-		config.itemStacksNamesToIgnore.forEach(itemName -> {
-			final int separatorChar = itemName.indexOf('#');
-			final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
-			if (item != null) {
-				final int metaData = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
-				itemStackToIgnoreHashSet.add(MetaItem.get(new ItemStack(item, 1, metaData)));
-			}
-		});
+		Util.stringListToItemStackList(config.itemStacksNamesToIgnore).forEach(itemStack -> itemStackToIgnoreHashSet.add(MetaItem.get(itemStack)));
 		config.itemStacksToIgnore.forEach(itemStack -> itemStackToIgnoreHashSet.add(MetaItem.get(itemStack)));
 		resources.forEach(resource -> resource.getChildrenMap().forEachValue(container -> {
 			final UniAttributes uniAttributes = new UniAttributes(resource, container);

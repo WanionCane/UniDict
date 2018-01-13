@@ -12,8 +12,10 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
@@ -21,6 +23,7 @@ import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -49,7 +52,9 @@ public final class Util
 		}
 	};
 
-	private Util() {}
+	private Util()
+	{
+	}
 
 	public static int getCumulative(@Nonnull final Object[] objects, @Nonnull final ResourceHandler resourceHandler)
 	{
@@ -89,5 +94,20 @@ public final class Util
 		final TIntSet keys = new TIntHashSet();
 		resourceCollection.stream().filter(resource -> resource.childExists(kind)).forEach(resource -> keys.addAll(MetaItem.getList(resource.getChild(kind).getEntries())));
 		return keys;
+	}
+
+	public static List<ItemStack> stringListToItemStackList(@Nonnull final List<String> stringList)
+	{
+		final List<ItemStack> itemStackList = new ArrayList<>();
+		stringList.forEach(s -> {
+			final int separatorChar = s.indexOf('#');
+			final String itemName = s.substring(0, s.length());
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
+			if (item != null) {
+				final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+				itemStackList.add(new ItemStack(item, 1, metadata));
+			}
+		});
+		return itemStackList;
 	}
 }

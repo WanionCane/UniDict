@@ -114,7 +114,7 @@ public final class Config
 					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1, recipeToIgnore.length())));
 			}
 
-			furnaceRecipesToIgnore = Arrays.asList(config.getStringList("furnaceRecipesToIgnoreList", resources, new String[]{""}, "Add here recipes (item registry names) that you don't want the Furnace Integration to mess with."));
+			furnaceRecipesToIgnore = Arrays.asList(config.getStringList("furnaceRecipesToIgnoreList", resources, new String[]{""}, "Add here recipes (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
 
 			recipesToRemove = new ArrayList<>();
 			for (String recipeToRemove : config.getStringList("recipeToRemoveList", resources, new String[]{}, "add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \"")) {
