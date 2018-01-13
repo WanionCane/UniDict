@@ -11,20 +11,36 @@ package wanion.unidict.integration;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.commons.lang3.text.WordUtils;
 import wanion.lib.module.AbstractModule;
+import wanion.unidict.UniDict;
 import wanion.unidict.common.Reference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static net.minecraftforge.fml.common.Loader.isModLoaded;
 import static wanion.unidict.common.Reference.SLASH;
 
-public final class IntegrationModule extends AbstractModule
+public final class IntegrationModule extends AbstractModule implements UniDict.IDependency
 {
+	private final Set<Class<AbstractIntegrationThread>> MOD_INTEGRATIONS = new LinkedHashSet<>();
+
 	public IntegrationModule()
 	{
 		super("Integration", Class::newInstance);
+	}
+
+	public static IntegrationModule getIntegrationModule()
+	{
+		return UniDict.getDependencies().get(IntegrationModule.class);
+	}
+
+	public void registerIntegration(@Nonnull final Class<AbstractIntegrationThread> integrationClassToRegister)
+	{
+		if (!MOD_INTEGRATIONS.contains(integrationClassToRegister))
+			MOD_INTEGRATIONS.add(integrationClassToRegister);
 	}
 
 	@Override
@@ -34,6 +50,7 @@ public final class IntegrationModule extends AbstractModule
 		for (final Integration integration : Integration.values())
 			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && (integration.modId == null || isModLoaded(integration.modId)))
 				manager.add(integration.integrationClass);
+		MOD_INTEGRATIONS.forEach(manager::add);
 		if (config.hasChanged())
 			config.save();
 	}

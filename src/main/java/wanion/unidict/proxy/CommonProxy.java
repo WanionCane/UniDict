@@ -26,6 +26,7 @@ import wanion.unidict.Config;
 import wanion.unidict.UniDict;
 import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
+import wanion.unidict.integration.AbstractIntegrationThread;
 import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.UniResourceHandler;
@@ -42,9 +43,11 @@ public class CommonProxy
 	public void preInit(final FMLPreInitializationEvent event)
 	{
 		moduleHandler = searchForModules(populateModules(new ModuleHandler()), event.getAsmData());
+		searchForIntegrations(event.getAsmData());
 		if (Loader.isModLoaded("crafttweaker"))
 			UniDictCraftTweakerPlugin.preInit();
 		(uniResourceHandler = new UniResourceHandler()).preInit();
+		moduleHandler.startModules(event);
 	}
 
 	public void init(final FMLInitializationEvent event)
@@ -54,6 +57,7 @@ public class CommonProxy
 			fixTCon();
 		if (Loader.isModLoaded("crafttweaker"))
 			UniDictCraftTweakerPlugin.init();
+		moduleHandler.startModules(event);
 	}
 
 	// sorry KnightMiner.
@@ -86,7 +90,7 @@ public class CommonProxy
 	{
 		final Config config = UniDict.getConfig();
 		if (!config.libraryMode && config.integrationModule)
-			moduleHandler.addModule(new IntegrationModule());
+			moduleHandler.addModule(IntegrationModule.getIntegrationModule());
 		return moduleHandler;
 	}
 
@@ -105,6 +109,23 @@ public class CommonProxy
 			}
 		});
 		return moduleHandler;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void searchForIntegrations(final ASMDataTable asmDataTable)
+	{
+		if (UniDict.getConfig().libraryMode)
+			return;
+		final Set<ASMDataTable.ASMData> modules = asmDataTable.getAll("wanion.unidict.UniDict$Integration");
+		modules.forEach(asmData -> {
+			try {
+				final Class<?> mayBeAIntegration = Class.forName(asmData.getClassName());
+				if (mayBeAIntegration.getSuperclass().isAssignableFrom(AbstractIntegrationThread.class))
+					IntegrationModule.getIntegrationModule().registerIntegration((Class<AbstractIntegrationThread>) mayBeAIntegration);
+			} catch (ClassNotFoundException e) {
+				UniDict.getLogger().error("Cannot load ", asmData.getClassName(), e);
+			}
+		});
 	}
 
 	public void clean()

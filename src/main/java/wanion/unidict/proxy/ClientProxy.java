@@ -18,9 +18,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import wanion.lib.common.Util;
-import wanion.lib.module.AbstractModule;
-import wanion.unidict.UniDict;
-import wanion.unidict.integration.CraftingIntegration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +32,6 @@ public class ClientProxy extends CommonProxy
 	public void postInit(final FMLPostInitializationEvent event)
 	{
 		super.postInit(event);
-		final AbstractModule integrationModule = UniDict.getModuleHandler().getModule("Integration");
-		if (integrationModule == null || !integrationModule.getManager().containsInstance(CraftingIntegration.class))
-			return;
 
 		RECIPES_BY_TAB.clear();
 		ALL_RECIPES.clear();

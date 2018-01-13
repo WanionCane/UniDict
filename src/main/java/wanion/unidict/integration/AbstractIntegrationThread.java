@@ -19,7 +19,7 @@ import wanion.unidict.resource.ResourceHandler;
 import javax.annotation.Nonnull;
 
 @SpecifiedLoadStage(stage = LoadStage.POST_INIT)
-abstract class AbstractIntegrationThread extends AbstractModuleThread
+public abstract class AbstractIntegrationThread extends AbstractModuleThread
 {
 	protected final ResourceHandler resourceHandler = UniDict.getResourceHandler();
 	protected final Config config = UniDict.getConfig();

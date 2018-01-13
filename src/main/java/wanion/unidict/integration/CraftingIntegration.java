@@ -85,7 +85,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		for (final Map.Entry<ResourceLocation, IRecipe> entry : recipes) {
 			final IRecipe recipe = entry.getValue();
 			boolean isShapeless = false;
-			if (config.recipesToIgnore.contains(entry.getKey()) || (recipe == null || recipe.getRecipeOutput() == ItemStack.EMPTY || (bufferContainer = resourceHandler.getContainer(entry.getValue().getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(recipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(recipe.getClass())))))
+			if (config.recipesToIgnore.contains(entry.getKey()) || config.ignoreModIdRecipes.contains(entry.getKey().getResourceDomain()) ||  (recipe == null || recipe.getRecipeOutput() == ItemStack.EMPTY || (bufferContainer = resourceHandler.getContainer(entry.getValue().getRecipeOutput())) == null || !(shapedResearcherMap.containsKey(recipe.getClass()) || (isShapeless = shapelessResearcherMap.containsKey(recipe.getClass())))))
 				continue;
 			try {
 				final int recipeKey;
@@ -135,7 +135,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 							totalRecipesReCreated++;
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe without issues.");
+						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe.");
 					}
 					return true;
 				})

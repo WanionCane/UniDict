@@ -57,6 +57,7 @@ public final class Config
 	public final List<String> resourceBlackList;
 	public final Set<ResourceLocation> recipesToIgnore;
 	public final List<ResourceLocation> recipesToRemove;
+	public final Set<String> ignoreModIdRecipes;
 	public final Map<String, Set<String>> customUnifiedResources;
 	// userEntries
 	public final List<String> userOreDictEntries;
@@ -101,7 +102,7 @@ public final class Config
 			enableSpecificKindSort = config.getBoolean("enableSpecificKindSort", resources, false, "enabling this allow you to specify the \"owner\" of each kind.\nit also will make \"S:ownerOfEveryThing\" be ignored for this kind.");
 			enableSpecificEntrySort = config.getBoolean("enableSpecificEntrySort", resources, false, "enabling this allow you to specify the \"owner\" of each entry.\nit also will make \"S:ownerOfEveryThing\" be ignored for this entry.");
 			ownerOfEveryThing = new TObjectIntHashMap<>(getOwnerOfEveryThingMap());
-			metalsToUnify = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "list of things to do unifying things.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
+			metalsToUnify = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("metalsToUnify", resources, new String[]{"Iron", "Gold", "Copper", "Tin", "Silver", "Lead", "Nickel", "Platinum", "Zinc", "Aluminium", "Aluminum", "Alumina", "Chromium", "Chrome", "Uranium", "Iridium", "Osmium", "Bronze", "Steel", "Brass", "Invar", "Electrum", "Cupronickel", "Constantan"}, "List of Metals to unify.\nNote 1: this will only work for \"metals\"\nNote 2: if your \"metal\" doesn't have an ingot form, check the \"S:customUnifiedResources\" config option.\n"))));
 			childrenOfMetals = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("childrenOfMetals", resources, new String[]{"ore", "dustTiny", "dustSmall", "chunk", "dust", "nugget", "ingot", "block", "plate", "gear", "rod"}, "what kind of child do you want to make a standard?\n"))));
 			resourceBlackList = Arrays.asList(config.getStringList("resourceBlackList", resources, new String[]{"Aluminium", "Alumina", "Chrome", "Redstone"}, "resources to be black-listed.\nthis exists to avoid duplicates.\nthis affect the API."));
 			recipesToIgnore = new HashSet<>();
@@ -117,6 +118,7 @@ public final class Config
 				if (separator > 0)
 					recipesToRemove.add(new ResourceLocation(recipeToRemove.substring(0, separator), recipeToRemove.substring(separator + 1, recipeToRemove.length())));
 			}
+			ignoreModIdRecipes = new LinkedHashSet<>(Arrays.asList(config.getStringList("ignoreModIdRecipes", resources, new String[]{"oreshrubs"}, "Crafting Integration will ignore recipes created by the ModId's listed below.\n")));
 			customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
 			// userRegisteredOreDictEntries
 			userOreDictEntries = Arrays.asList(config.getStringList("userOreDictEntries", general, new String[]{}, "This allows to the user add/remove entries before the Unification happen.\nthis is mainly useful to avoid trying to unify certain things.\n\nFormat to Add entries to the OreDictionary:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone.\n\nFormat to Remove entries from the OreDictionary:\nweirdStone-minecraft:stone#1\nThe example above will remove Granite from weirdStone."));

@@ -8,6 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import cofh.core.inventory.ComparableItemStackSafe;
 import cofh.thermalexpansion.util.managers.machine.*;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -43,8 +44,8 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixCompactorRecipes()
 	{
-		final Map<CompactorManager.ComparableItemStackCompactor, CompactorManager.CompactorRecipe> recipeMapPress = Util.getField(CompactorManager.class, "recipeMapPress", null, Map.class);
-		final Map<CompactorManager.ComparableItemStackCompactor, CompactorManager.CompactorRecipe> recipeMapStorage = Util.getField(CompactorManager.class, "recipeMapStorage", null, Map.class);
+		final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMapPress = Util.getField(CompactorManager.class, "recipeMapPress", null, Map.class);
+		final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMapStorage = Util.getField(CompactorManager.class, "recipeMapStorage", null, Map.class);
 		if (recipeMapPress == null || recipeMapStorage == null)
 			return;
 		Constructor<CompactorManager.CompactorRecipe> recipeCompactorConstructor = null;
@@ -56,11 +57,11 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (recipeCompactorConstructor == null)
 			return;
-		final List<Map<CompactorManager.ComparableItemStackCompactor, CompactorManager.CompactorRecipe>> recipeMaps = new ArrayList<>();
+		final List<Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe>> recipeMaps = new ArrayList<>();
 		recipeMaps.add(recipeMapPress);
 		recipeMaps.add(recipeMapStorage);
-		for (final Map<CompactorManager.ComparableItemStackCompactor, CompactorManager.CompactorRecipe> recipeMap : recipeMaps)
-			for (final CompactorManager.ComparableItemStackCompactor recipeMapKey : recipeMap.keySet()) {
+		for (final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMap : recipeMaps)
+			for (final ComparableItemStackSafe recipeMapKey : recipeMap.keySet()) {
 				final CompactorManager.CompactorRecipe recipeCompactor = recipeMap.get(recipeMapKey);
 				final ItemStack correctOutput = resourceHandler.getMainItemStack(recipeCompactor.getOutput());
 				if (correctOutput == recipeCompactor.getOutput())
