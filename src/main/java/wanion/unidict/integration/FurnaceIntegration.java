@@ -44,11 +44,15 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	{
 		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
-				final ItemStack oldEntry = furnaceRecipe.getValue();
-				final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
-				furnaceRecipe.setValue(newEntry);
-				if (experienceMap.containsKey(oldEntry))
-					experienceMap.put(newEntry, experienceMap.remove(oldEntry));
+
+				if(!config.furnaceRecipesToIgnore.contains(furnaceRecipe.getKey().getItem().getRegistryName().toString())){
+					final ItemStack oldEntry = furnaceRecipe.getValue();
+					final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
+					furnaceRecipe.setValue(newEntry);
+					if (experienceMap.containsKey(oldEntry))
+						experienceMap.put(newEntry, experienceMap.remove(oldEntry));
+				}
+
 			}
 		} else {
 			final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
@@ -58,6 +62,10 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 				final Map.Entry<ItemStack, ItemStack> furnaceRecipe = furnaceRecipeIterator.next();
 				final UniResourceContainer inputContainer = resourceHandler.getContainer(furnaceRecipe.getKey());
 				final UniResourceContainer outputContainer = resourceHandler.getContainer(furnaceRecipe.getValue());
+
+				if(config.furnaceRecipesToIgnore.contains(furnaceRecipe.getKey().getItem().getRegistryName().toString()))
+					continue;
+
 				if (outputContainer == null)
 					continue;
 				else if (inputContainer == null) {
