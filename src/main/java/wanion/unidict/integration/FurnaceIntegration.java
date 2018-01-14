@@ -45,10 +45,11 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	@SuppressWarnings("unchecked")
 	private void optimizeFurnaceRecipes()
 	{
-		final TIntSet stacksToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceRecipesToIgnore));
+		final TIntSet outputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceOutputsToIgnore));
+		final TIntSet inputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceInputsToIgnore));
 		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
-				if (stacksToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())))
+				if (outputsToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())) || inputsToIgnore.contains(MetaItem.get(furnaceRecipe.getKey())))
 					continue;
 				final ItemStack oldEntry = furnaceRecipe.getValue();
 				final ItemStack newEntry = resourceHandler.getMainItemStack(oldEntry);
@@ -62,7 +63,7 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 			final Map<ItemStack, ItemStack> newRecipes = new HashMap<>();
 			for (final Iterator<Map.Entry<ItemStack, ItemStack>> furnaceRecipeIterator = furnaceRecipes.entrySet().iterator(); furnaceRecipeIterator.hasNext(); ) {
 				final Map.Entry<ItemStack, ItemStack> furnaceRecipe = furnaceRecipeIterator.next();
-				if (stacksToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())))
+				if (outputsToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())) || inputsToIgnore.contains(MetaItem.get(furnaceRecipe.getKey())))
 					continue;
 				final UniResourceContainer inputContainer = resourceHandler.getContainer(furnaceRecipe.getKey());
 				final UniResourceContainer outputContainer = resourceHandler.getContainer(furnaceRecipe.getValue());
