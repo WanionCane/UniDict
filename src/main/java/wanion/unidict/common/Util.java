@@ -102,7 +102,7 @@ public final class Util
 		stringList.forEach(s -> {
 			final int separatorChar = s.indexOf('#');
 			final String itemName = s.substring(0, s.length());
-			final Item item = Item.REGISTRY.getObject(new ResourceLocation(itemName));
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 			if (item != null) {
 				final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
 				itemStackList.add(new ItemStack(item, 1, metadata));
