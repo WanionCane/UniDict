@@ -18,6 +18,7 @@ import wanion.lib.common.FixedSizeList;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.UniOreDictionary;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,9 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+		}
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
 
@@ -95,10 +98,7 @@ final class IEIntegration extends AbstractIntegrationThread
 			final int recipeId = MetaItem.getCumulative(input, correctOutput);
 			if (!uniques.contains(recipeId)) {
 				final int energy = (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
-				if (crusherRecipe.secondaryOutput == null)
-					correctRecipes.add(new CrusherRecipe(correctOutput, crusherRecipe.input, energy));
-				else
-					correctRecipes.add(new UniCrusherRecipe(correctOutput, crusherRecipe.input, energy, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
+				correctRecipes.add(getSecondaryOutputAndChance(new CrusherRecipe(correctOutput, crusherRecipe.input, energy), resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
 				uniques.add(recipeId);
 			}
 			crusherRecipesIterator.remove();
@@ -126,13 +126,16 @@ final class IEIntegration extends AbstractIntegrationThread
 		metalPressRecipes.putAll(correctRecipes);
 	}
 
-	private static final class UniCrusherRecipe extends CrusherRecipe
+	private static CrusherRecipe getSecondaryOutputAndChance(@Nonnull final CrusherRecipe crusherRecipe, final ItemStack[] itemStacks, final float[] chance)
 	{
-		private UniCrusherRecipe(ItemStack output, Object input, int energy, ItemStack[] secondaryOutputs, float[] secondaryChances)
-		{
-			super(output, input, energy);
-			super.secondaryOutput = secondaryOutputs;
-			super.secondaryChance = secondaryChances;
+		if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && itemStacks.length == chance.length) {
+			final List<Object> secondaryAndChanceList = new ArrayList<>();
+			for (int i = 0; i < itemStacks.length; i++) {
+				secondaryAndChanceList.add(itemStacks[i]);
+				secondaryAndChanceList.add(chance[i]);
+			}
+			crusherRecipe.addToSecondaryOutput(secondaryAndChanceList.toArray());
 		}
+		return crusherRecipe;
 	}
 }

@@ -69,7 +69,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
-		IDUSTRIAL_FOREGOIN("industrialforegoing", IndustrialForegoingIntegration.class),
+		INDUSTRIAL_FOREGOIN("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagnetiCraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),

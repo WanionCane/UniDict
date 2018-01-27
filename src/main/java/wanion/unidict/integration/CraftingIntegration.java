@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
@@ -81,7 +80,6 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	private void doTheResearch()
 	{
 		UniResourceContainer bufferContainer;
-		final List<ResourceLocation> recipesToRemove = new ArrayList<>();
 		for (final Map.Entry<ResourceLocation, IRecipe> entry : recipes) {
 			final IRecipe recipe = entry.getValue();
 			boolean isShapeless = false;
@@ -99,17 +97,15 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 				if (!evenSmarterRecipeMap.containsKey(recipeKey))
 					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(recipe));
 				else evenSmarterRecipeMap.get(recipeKey).add(recipe);
-				recipesToRemove.add(recipe.getRegistryName());
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
-		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
-		recipesToRemove.forEach(recipeRegistry::remove);
 	}
 
 	private void reCreateTheRecipes()
 	{
+		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
 		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new HashMap<>();
 		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {
 					if (recipeList.size() > 1) {
@@ -130,12 +126,16 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 							iRecipe = isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapelessFromShapedRecipeMethod.invoke(recipeResearcher, recipe);
 						else
 							iRecipe = isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe);
-						if (iRecipe != null) {
-							ForgeRegistries.RECIPES.register(iRecipe.setRegistryName(new ResourceLocation(iRecipe.getGroup())));
+						boolean differentSize = iRecipe == null || recipe.getIngredients().size() != iRecipe.getIngredients().size();
+						if (!differentSize) {
+							recipeRegistry.register(iRecipe.setRegistryName(new ResourceLocation(iRecipe.getGroup())));
+							recipeRegistry.remove(recipe.getRegistryName());
 							totalRecipesReCreated++;
+						} else {
+							logger.error("Crafting Integration: Couldn't create a new recipe for " + recipe.getRecipeOutput().getDisplayName() + ". due to: " + recipeResearcher);
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe.");
+						logger.error("Crafting Integration: Couldn't create a new recipe for " + recipe.getRecipeOutput().getDisplayName() + ". due to: " + e);
 					}
 					return true;
 				})
