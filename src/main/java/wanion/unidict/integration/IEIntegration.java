@@ -97,8 +97,10 @@ final class IEIntegration extends AbstractIntegrationThread
 			final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
 			final int recipeId = MetaItem.getCumulative(input, correctOutput);
 			if (!uniques.contains(recipeId)) {
-				final int energy = (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
-				correctRecipes.add(getSecondaryOutputAndChance(new CrusherRecipe(correctOutput, crusherRecipe.input, energy), resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance));
+				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier)));
+				if (crusherRecipe.secondaryOutput != null)
+					setSecondaryOutputAndChance(newRecipe,resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);
+				correctRecipes.add(newRecipe);
 				uniques.add(recipeId);
 			}
 			crusherRecipesIterator.remove();
@@ -126,7 +128,7 @@ final class IEIntegration extends AbstractIntegrationThread
 		metalPressRecipes.putAll(correctRecipes);
 	}
 
-	private static CrusherRecipe getSecondaryOutputAndChance(@Nonnull final CrusherRecipe crusherRecipe, final ItemStack[] itemStacks, final float[] chance)
+	private static void setSecondaryOutputAndChance(@Nonnull final CrusherRecipe crusherRecipe, final ItemStack[] itemStacks, final float[] chance)
 	{
 		if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && itemStacks.length == chance.length) {
 			final List<Object> secondaryAndChanceList = new ArrayList<>();
@@ -136,6 +138,5 @@ final class IEIntegration extends AbstractIntegrationThread
 			}
 			crusherRecipe.addToSecondaryOutput(secondaryAndChanceList.toArray());
 		}
-		return crusherRecipe;
 	}
 }
