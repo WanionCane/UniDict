@@ -9,6 +9,8 @@ package wanion.unidict.api;
  */
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import wanion.unidict.UniDict;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.ResourceHandler;
@@ -54,6 +56,19 @@ public class UniDictAPI implements UniDict.IDependency
 	{
 		if (itemStack != null)
 			UniDict.getConfig().itemStacksToIgnore.add(itemStack);
+	}
+
+	public static void addModIdToCraftingIntegrationBlackList(final String modId)
+	{
+		if (modId != null && !modId.isEmpty() && Loader.isModLoaded(modId))
+			UniDict.getConfig().ignoreModIdRecipes.add(modId);
+	}
+
+	public static void addCurrentModToCraftingIntegrationBlackList()
+	{
+		final ModContainer modContainer = Loader.instance().activeModContainer();
+		if (modContainer != null)
+			UniDict.getConfig().ignoreModIdRecipes.add(modContainer.getModId());
 	}
 
 	public Resource getResource(@Nonnull final String resourceName)
