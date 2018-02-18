@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 import wanion.lib.common.Dependencies;
@@ -84,7 +83,6 @@ public final class UniDict
 	{
 		logger = event.getModLog();
 		proxy.preInit(event);
-		GameRegistry.addShapedRecipe();
 	}
 
 	@Mod.EventHandler
