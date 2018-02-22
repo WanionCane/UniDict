@@ -34,7 +34,9 @@ final class MagnetiCraftIntegration extends AbstractIntegrationThread
 		try {
 			fixCrushingTableRecipes();
 			fixSluiceBoxRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+		}
 		return threadName + "Everything get Magnetized.";
 	}
 
@@ -52,9 +54,9 @@ final class MagnetiCraftIntegration extends AbstractIntegrationThread
 		final List<ISluiceBoxRecipe> newRecipes = new ArrayList<>();
 		final List<ISluiceBoxRecipe> recipes = Util.getField(SluiceBoxRecipeManager.class, "recipes", SluiceBoxRecipeManager.INSTANCE, List.class);
 		recipes.forEach(iSluiceBoxRecipe -> {
-			final List<Pair<ItemStack, Float>> newSecondaryOutputs = new ArrayList<>();
-			iSluiceBoxRecipe.getSecondaryOutput().forEach(itemStackFloatPair -> newSecondaryOutputs.add(new Pair<>(resourceHandler.getMainItemStack(itemStackFloatPair.getFirst()), itemStackFloatPair.getSecond())));
-			newRecipes.add(new SluiceBoxRecipe(iSluiceBoxRecipe.getInput(), resourceHandler.getMainItemStack(iSluiceBoxRecipe.getPrimaryOutput()), newSecondaryOutputs, iSluiceBoxRecipe.useOreDictionaryEquivalencies()));
+			final List<Pair<ItemStack, Float>> outputs = new ArrayList<>();
+			iSluiceBoxRecipe.getOutputs().forEach(itemStackFloatPair -> outputs.add(new Pair<>(resourceHandler.getMainItemStack(itemStackFloatPair.getFirst()), itemStackFloatPair.getSecond())));
+			newRecipes.add(new SluiceBoxRecipe(iSluiceBoxRecipe.getInput(), outputs, iSluiceBoxRecipe.useOreDictionaryEquivalencies()));
 		});
 		recipes.clear();
 		recipes.addAll(newRecipes);
