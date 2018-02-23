@@ -70,13 +70,16 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final ShapedRecipes recipe)
 	{
 		final List<Ingredient> recipeInputs = recipe.getIngredients();
-		final Object[] newRecipeInputs = new Object[9];
-		for (int i = 0; i < 9; i++) {
-			final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-			if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
-				final ItemStack itemStack = ingredient.getMatchingStacks()[0];
-				final UniResourceContainer container = resourceHandler.getContainer(itemStack);
-				newRecipeInputs[i] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
+		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = width > height ? width : height;
+		final Object[] newRecipeInputs = new Object[root * root];
+		for (int y = 0, i = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, i++) {
+				final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
+				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
+					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+					newRecipeInputs[y * root + x] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
+				}
 			}
 		}
 		final UniResourceContainer outputContainer = resourceHandler.getContainer(recipe.getRecipeOutput());
