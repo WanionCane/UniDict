@@ -26,7 +26,7 @@ import java.util.Map;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
-	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new ArrayList<>(7);
+	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new ArrayList<>(8);
 
 	IC2Integration()
 	{
@@ -49,9 +49,11 @@ final class IC2Integration extends AbstractIntegrationThread
 		ic2MachinesRecipeList.forEach(map -> {
 			try {
 				fixMachinesOutputs(map);
-				fixScrapBoxDrops();
 			} catch (Exception e) { logger.error(threadName + e); }
 		});
+		try {
+			fixScrapBoxDrops();
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world appears to be entirely industrialized.";
 	}
 

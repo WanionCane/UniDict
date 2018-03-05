@@ -15,7 +15,6 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
 import ic2.core.recipe.RecipeInputOreDict;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -33,8 +32,6 @@ import java.util.List;
 
 public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
 {
-	private final Item ic2ForgeHammer = Item.REGISTRY.getObject(new ResourceLocation("ic2", "forge_hammer"));
-
 	@Override
 	public int getShapedRecipeKey(@Nonnull AdvRecipe recipe)
 	{
@@ -157,7 +154,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			for (final IRecipeInput recipeInput : recipe.input) {
 				final List<ItemStack> inputs = recipeInput.getInputs();
 				if (!inputs.isEmpty())
-					inputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
+					newInputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
 			}
 		} else {
 			for (final IRecipeInput recipeInput : recipe.input) {
@@ -169,12 +166,8 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 						newInputs.add(oreName);
 					else if (notEmpty)
 						newInputs.add(recipeInput.getInputs().get(0));
-				} else {
-					if (oreName.equals("craftingToolForgeHammer") && ic2ForgeHammer != null)
-						newInputs.add(new ItemStack(ic2ForgeHammer, 1, 32767));
-					else
+				} else
 						newInputs.add(oreName);
-				}
 			}
 		}
 		final UniResourceContainer outputContainer = resourceHandler.getContainer(recipe.getRecipeOutput());
@@ -193,7 +186,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 			for (final IRecipeInput recipeInput : recipe.input) {
 				final List<ItemStack> inputs = recipeInput.getInputs();
 				if (!inputs.isEmpty())
-					inputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
+					newInputs.add(resourceHandler.getMainItemStack(inputs.get(0)));
 			}
 		} else {
 			for (final IRecipeInput recipeInput : recipe.input) {

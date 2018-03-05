@@ -136,6 +136,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe.");
+						e.printStackTrace();
 					}
 					return true;
 				})

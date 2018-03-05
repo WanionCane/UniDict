@@ -67,10 +67,12 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		EXTREME_ENERGY("meem", ExtremeEnergyIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
 		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
+		GADGETRY_CORE("gadgetrycore", GadgetryCoreIntegration.class),
+		GADGETRY_MACHINES("gadgetrymachines", GadgetryMachinesIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
 		INDUSTRIAL_FOREGOING("industrialforegoing", IndustrialForegoingIntegration.class),
-		MAGNETICRAFT("magneticraft", MagnetiCraftIntegration.class),
+		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);

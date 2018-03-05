@@ -24,11 +24,14 @@ import java.util.Map;
 final class FurnaceIntegration extends AbstractIntegrationThread
 {
 	private final Map<ItemStack, Float> experienceMap;
+	private final TIntSet outputsToIgnore, inputsToIgnore;
 
 	FurnaceIntegration()
 	{
 		super("Furnace");
 		experienceMap = wanion.lib.common.Util.getField(FurnaceRecipes.class, "experienceList", "field_77605_c", FurnaceRecipes.instance(), Map.class);
+		outputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceOutputsToIgnore));
+		inputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceInputsToIgnore));
 	}
 
 	@Override
@@ -36,17 +39,13 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	{
 		try {
 			optimizeFurnaceRecipes();
-		} catch (Exception e) {
-			logger.error(threadName + e);
-		}
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Some things that you smelted appear to be different now.";
 	}
 
 	@SuppressWarnings("unchecked")
 	private void optimizeFurnaceRecipes()
 	{
-		final TIntSet outputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceOutputsToIgnore));
-		final TIntSet inputsToIgnore = MetaItem.getSet(Util.stringListToItemStackList(config.furnaceInputsToIgnore));
 		if (!config.inputReplacementFurnace) {
 			for (final Map.Entry<ItemStack, ItemStack> furnaceRecipe : FurnaceRecipes.instance().getSmeltingList().entrySet()) {
 				if (outputsToIgnore.contains(MetaItem.get(furnaceRecipe.getValue())) || inputsToIgnore.contains(MetaItem.get(furnaceRecipe.getKey())))
