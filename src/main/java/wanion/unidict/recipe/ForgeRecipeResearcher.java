@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.recipe.RecipeAttributes;
@@ -24,6 +25,7 @@ import wanion.unidict.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +33,20 @@ import java.util.List;
 
 public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
 {
+	private final Field oresField;
+
+	public ForgeRecipeResearcher()
+	{
+		Field dummyOresField = null;
+		try {
+			dummyOresField = OreIngredient.class.getDeclaredField("ores");
+			dummyOresField.setAccessible(true);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		oresField = dummyOresField;
+	}
+
 	@Override
 	public int getShapedRecipeKey(@Nonnull final ShapedOreRecipe recipe)
 	{
@@ -88,6 +104,10 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 					newRecipeInputs[y * root + x] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
+				} else if (ingredient instanceof OreIngredient) {
+					try {
+						newRecipeInputs[y * root + x] = uniOreDictionary.getName(oresField.get(ingredient));
+					} catch (IllegalAccessException e) { e.printStackTrace(); }
 				}
 			}
 		}

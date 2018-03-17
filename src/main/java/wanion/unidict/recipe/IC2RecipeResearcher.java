@@ -15,6 +15,7 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.core.recipe.AdvRecipe;
 import ic2.core.recipe.AdvShapelessRecipe;
 import ic2.core.recipe.RecipeInputOreDict;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -32,6 +33,8 @@ import java.util.List;
 
 public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, AdvShapelessRecipe>
 {
+	private final Item ic2ForgeHammer = Item.REGISTRY.getObject(new ResourceLocation("ic2", "forge_hammer"));
+
 	@Override
 	public int getShapedRecipeKey(@Nonnull AdvRecipe recipe)
 	{
@@ -166,8 +169,12 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 						newInputs.add(oreName);
 					else if (notEmpty)
 						newInputs.add(recipeInput.getInputs().get(0));
-				} else
+				} else {
+					if (oreName.equals("craftingToolForgeHammer") && ic2ForgeHammer != null)
+						newInputs.add(new ItemStack(ic2ForgeHammer, 1, 32767));
+					else
 						newInputs.add(oreName);
+				}
 			}
 		}
 		final UniResourceContainer outputContainer = resourceHandler.getContainer(recipe.getRecipeOutput());
