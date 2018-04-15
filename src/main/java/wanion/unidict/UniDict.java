@@ -83,6 +83,7 @@ public final class UniDict
 	{
 		logger = event.getModLog();
 		proxy.preInit(event);
+
 	}
 
 	@Mod.EventHandler
