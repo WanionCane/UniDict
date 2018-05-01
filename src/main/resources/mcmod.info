@@ -3,7 +3,7 @@
   "modid": "unidict",
   "name": "UniDict",
   "description": "a mod about unifying all the things.",
-  "version": "1.12.2-2.5",
+  "version": "1.12.2-2.5b",
   "mcversion": "${mcversion}",
   "url": "http://minecraft.curseforge.com/projects/unidict",
   "updateUrl": "",
