@@ -8,7 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import cofh.core.inventory.ComparableItemStackSafe;
+import cofh.core.inventory.ComparableItemStack;
 import cofh.thermalexpansion.util.managers.machine.*;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import wanion.lib.common.Util;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -44,9 +45,17 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixCompactorRecipes()
 	{
-		final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMapPress = Util.getField(CompactorManager.class, "recipeMapPress", null, Map.class);
-		final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMapStorage = Util.getField(CompactorManager.class, "recipeMapStorage", null, Map.class);
-		if (recipeMapPress == null || recipeMapStorage == null)
+		final List<Map<ComparableItemStack, CompactorManager.CompactorRecipe>> compactorRecipeMapList = new ArrayList<>();
+		compactorRecipeMapList.add(Util.getField(CompactorManager.class, "recipeMapAll", null, Map.class));
+		compactorRecipeMapList.add(Util.getField(CompactorManager.class, "recipeMapPlate", null, Map.class));
+		compactorRecipeMapList.add(Util.getField(CompactorManager.class, "recipeMapCoin", null, Map.class));
+		compactorRecipeMapList.add(Util.getField(CompactorManager.class, "recipeMapGear", null, Map.class));
+		compactorRecipeMapList.forEach(this::fixCompactorRecipe);
+	}
+
+	private void fixCompactorRecipe(final Map<ComparableItemStack, CompactorManager.CompactorRecipe> compactorRecipeMap)
+	{
+		if (compactorRecipeMap == null)
 			return;
 		Constructor<CompactorManager.CompactorRecipe> recipeCompactorConstructor = null;
 		try {
@@ -57,26 +66,22 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (recipeCompactorConstructor == null)
 			return;
-		final List<Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe>> recipeMaps = new ArrayList<>();
-		recipeMaps.add(recipeMapPress);
-		recipeMaps.add(recipeMapStorage);
-		for (final Map<ComparableItemStackSafe, CompactorManager.CompactorRecipe> recipeMap : recipeMaps)
-			for (final ComparableItemStackSafe recipeMapKey : recipeMap.keySet()) {
-				final CompactorManager.CompactorRecipe recipeCompactor = recipeMap.get(recipeMapKey);
-				final ItemStack correctOutput = resourceHandler.getMainItemStack(recipeCompactor.getOutput());
-				if (correctOutput == recipeCompactor.getOutput())
-					continue;
-				try {
-					recipeMap.put(recipeMapKey, recipeCompactorConstructor.newInstance(recipeCompactor.getInput(), correctOutput, recipeCompactor.getEnergy()));
-				} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-					e.printStackTrace();
-				}
+		for (final ComparableItemStack recipeMapKey : compactorRecipeMap.keySet()) {
+			final CompactorManager.CompactorRecipe recipeCompactor = compactorRecipeMap.get(recipeMapKey);
+			final ItemStack correctOutput = resourceHandler.getMainItemStack(recipeCompactor.getOutput());
+			if (correctOutput == recipeCompactor.getOutput())
+				continue;
+			try {
+				compactorRecipeMap.put(recipeMapKey, recipeCompactorConstructor.newInstance(recipeCompactor.getInput(), correctOutput, recipeCompactor.getEnergy()));
+			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
 			}
+		}
 	}
 
 	private void fixInductionSmelterRecipes()
 	{
-		final Map<List<SmelterManager.ComparableItemStackSmelter>, SmelterManager.SmelterRecipe> recipeMap = Util.getField(SmelterManager.class, "recipeMap", null, Map.class);
+		final Map<List<ComparableItemStack>, SmelterManager.SmelterRecipe> recipeMap = Util.getField(SmelterManager.class, "recipeMap", null, Map.class);
 		if (recipeMap == null)
 			return;
 		Constructor<SmelterManager.SmelterRecipe> smelterRecipeConstructor = null;
@@ -88,7 +93,7 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (smelterRecipeConstructor == null)
 			return;
-		for (final List<SmelterManager.ComparableItemStackSmelter> recipeMapKey : recipeMap.keySet()) {
+		for (final List<ComparableItemStack> recipeMapKey : recipeMap.keySet()) {
 			final SmelterManager.SmelterRecipe smelterRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(smelterRecipe.getPrimaryOutput());
 			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(smelterRecipe.getSecondaryOutput());
@@ -131,7 +136,7 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixRedstoneFurnaceRecipes()
 	{
-		final Map<FurnaceManager.ComparableItemStackFurnace, FurnaceManager.FurnaceRecipe> recipeMap = Util.getField(FurnaceManager.class, "recipeMap", null, Map.class);
+		final Map<ComparableItemStack, FurnaceManager.FurnaceRecipe> recipeMap = Util.getField(FurnaceManager.class, "recipeMap", null, Map.class);
 		if (recipeMap == null)
 			return;
 		Constructor<FurnaceManager.FurnaceRecipe> redstoneFurnaceRecipeConstructor = null;
@@ -143,7 +148,7 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (redstoneFurnaceRecipeConstructor == null)
 			return;
-		for (final FurnaceManager.ComparableItemStackFurnace recipeMapKey : recipeMap.keySet()) {
+		for (final ComparableItemStack recipeMapKey : recipeMap.keySet()) {
 			final FurnaceManager.FurnaceRecipe redstoneFurnaceRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(redstoneFurnaceRecipe.getOutput());
 			if (correctOutput == redstoneFurnaceRecipe.getOutput())
@@ -158,7 +163,7 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixPulverizerRecipes()
 	{
-		final Map<PulverizerManager.ComparableItemStackPulverizer, PulverizerManager.PulverizerRecipe> recipeMap = Util.getField(PulverizerManager.class, "recipeMap", null, Map.class);
+		final Map<ComparableItemStack, PulverizerManager.PulverizerRecipe> recipeMap = Util.getField(PulverizerManager.class, "recipeMap", null, Map.class);
 		if (recipeMap == null)
 			return;
 		Constructor<PulverizerManager.PulverizerRecipe> pulverizerRecipeConstructor = null;
@@ -170,7 +175,7 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (pulverizerRecipeConstructor == null)
 			return;
-		for (final PulverizerManager.ComparableItemStackPulverizer recipeMapKey : recipeMap.keySet()) {
+		for (final ComparableItemStack recipeMapKey : recipeMap.keySet()) {
 			final PulverizerManager.PulverizerRecipe pulverizerRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(pulverizerRecipe.getPrimaryOutput());
 			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(pulverizerRecipe.getSecondaryOutput());
