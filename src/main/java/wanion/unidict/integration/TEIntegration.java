@@ -10,8 +10,7 @@ package wanion.unidict.integration;
 
 import cofh.core.inventory.ComparableItemStack;
 import cofh.thermalexpansion.util.managers.machine.*;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import wanion.lib.common.Util;
@@ -109,7 +108,7 @@ final class TEIntegration extends AbstractIntegrationThread
 
 	private void fixRefineryRecipes()
 	{
-		final TIntObjectHashMap<RefineryManager.RefineryRecipe> recipeMap = Util.getField(RefineryManager.class, "recipeMap", null, TIntObjectMap.class);
+		final Int2ObjectOpenHashMap<RefineryManager.RefineryRecipe> recipeMap = Util.getField(RefineryManager.class, "recipeMap", null, Int2ObjectOpenHashMap.class);
 		if (recipeMap == null)
 			return;
 		Constructor<RefineryManager.RefineryRecipe> refineryRecipeConstructor = null;
@@ -121,7 +120,7 @@ final class TEIntegration extends AbstractIntegrationThread
 		}
 		if (refineryRecipeConstructor == null)
 			return;
-		for (final int recipeMapKey : recipeMap.keys()) {
+		for (final int recipeMapKey : recipeMap.keySet()) {
 			final RefineryManager.RefineryRecipe refineryRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(refineryRecipe.getOutputItem());
 			if (correctOutput == refineryRecipe.getOutputItem())
