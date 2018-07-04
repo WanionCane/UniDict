@@ -40,6 +40,7 @@ final class IC2Integration extends AbstractIntegrationThread
 			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerExtruding, Map.class));
 			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerRolling, Map.class));
 			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.blockcutter, Map.class));
+			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.extractor, Map.class));
 		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 	}
 

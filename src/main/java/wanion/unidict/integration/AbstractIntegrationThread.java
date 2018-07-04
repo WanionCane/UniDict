@@ -25,7 +25,7 @@ public abstract class AbstractIntegrationThread extends AbstractModuleThread
 	protected final Config config = UniDict.getConfig();
 	protected final Logger logger = UniDict.getLogger();
 
-	AbstractIntegrationThread(@Nonnull final String integrationName)
+	public AbstractIntegrationThread(@Nonnull final String integrationName)
 	{
 		super(integrationName, "Integration");
 	}

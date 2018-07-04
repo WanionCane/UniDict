@@ -92,18 +92,16 @@ final class IEIntegration extends AbstractIntegrationThread
 		for (final Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); ) {
 			final CrusherRecipe crusherRecipe = crusherRecipesIterator.next();
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(crusherRecipe.output);
-			if (correctOutput == crusherRecipe.output)
-				continue;
 			final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
 			final int recipeId = MetaItem.getCumulative(input, correctOutput);
 			if (!uniques.contains(recipeId)) {
 				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier)));
 				if (crusherRecipe.secondaryOutput != null)
-					setSecondaryOutputAndChance(newRecipe,resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);
+					setSecondaryOutputAndChance(newRecipe, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);
 				correctRecipes.add(newRecipe);
 				uniques.add(recipeId);
+				crusherRecipesIterator.remove();
 			}
-			crusherRecipesIterator.remove();
 		}
 		crusherRecipes.addAll(correctRecipes);
 	}
