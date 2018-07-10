@@ -96,12 +96,12 @@ final class IEIntegration extends AbstractIntegrationThread
 			final int recipeId = MetaItem.getCumulative(input, correctOutput);
 			if (!uniques.contains(recipeId)) {
 				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier)));
-				if (crusherRecipe.secondaryOutput != null)
+				if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && crusherRecipe.secondaryOutput.length == crusherRecipe.secondaryChance.length)
 					setSecondaryOutputAndChance(newRecipe, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);
 				correctRecipes.add(newRecipe);
 				uniques.add(recipeId);
-				crusherRecipesIterator.remove();
 			}
+			crusherRecipesIterator.remove();
 		}
 		crusherRecipes.addAll(correctRecipes);
 	}
@@ -128,13 +128,11 @@ final class IEIntegration extends AbstractIntegrationThread
 
 	private static void setSecondaryOutputAndChance(@Nonnull final CrusherRecipe crusherRecipe, final ItemStack[] itemStacks, final float[] chance)
 	{
-		if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && itemStacks.length == chance.length) {
-			final List<Object> secondaryAndChanceList = new ArrayList<>();
-			for (int i = 0; i < itemStacks.length; i++) {
-				secondaryAndChanceList.add(itemStacks[i]);
-				secondaryAndChanceList.add(chance[i]);
-			}
-			crusherRecipe.addToSecondaryOutput(secondaryAndChanceList.toArray());
+		final List<Object> secondaryAndChanceList = new ArrayList<>();
+		for (int i = 0; i < itemStacks.length; i++) {
+			secondaryAndChanceList.add(itemStacks[i]);
+			secondaryAndChanceList.add(chance[i]);
 		}
+		crusherRecipe.addToSecondaryOutput(secondaryAndChanceList.toArray());
 	}
 }
