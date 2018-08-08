@@ -8,15 +8,17 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import ic2.api.recipe.IBasicMachineRecipeManager;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
 import ic2.core.recipe.MachineRecipeHelper;
 import ic2.core.recipe.ScrapboxRecipeManager;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.Util;
-import wanion.unidict.UniDict;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -26,42 +28,48 @@ import java.util.Map;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
-	private final List<Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>>> ic2MachinesRecipeList = new ArrayList<>(8);
-
 	IC2Integration()
 	{
 		super("Industrial Craft 2");
-		try {
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.centrifuge, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.compressor, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.blastfurnace, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.macerator, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerCutting, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerExtruding, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.metalformerRolling, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.blockcutter, Map.class));
-			ic2MachinesRecipeList.add(Util.getField(MachineRecipeHelper.class, "recipes", Recipes.extractor, Map.class));
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 	}
 
 	@Override
 	public String call()
 	{
-		ic2MachinesRecipeList.forEach(map -> {
-			try {
-				fixMachinesOutputs(map);
-			} catch (Exception e) { logger.error(threadName + e); }
-		});
+		try {
+			fixMachineOutput(Recipes.centrifuge);
+			fixMachineOutput(Recipes.compressor);
+			fixMachineOutput(Recipes.blastfurnace);
+			fixMachineOutput(Recipes.macerator);
+			fixMachineOutput(Recipes.metalformerCutting);
+			fixMachineOutput(Recipes.metalformerExtruding);
+			fixMachineOutput(Recipes.metalformerRolling);
+			fixMachineOutput(Recipes.blockcutter);
+			fixMachineOutput(Recipes.extractor);
+		} catch (Exception e) { logger.error(threadName + e); }
 		try {
 			fixScrapBoxDrops();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world appears to be entirely industrialized.";
 	}
 
-	private void fixMachinesOutputs(final Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipes)
+	private void fixMachineOutput(@Nonnull final IBasicMachineRecipeManager iBasicMachineRecipeManager)
 	{
-		for (final Map.Entry<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe : recipes.entrySet())
-			recipe.setValue(new MachineRecipe<>(recipe.getValue().getInput(), resourceHandler.getMainItemStacks(recipe.getValue().getOutput())));
+		final Map<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipes = Util.getField(MachineRecipeHelper.class, "recipes", iBasicMachineRecipeManager, Map.class);
+		final Map<Item, List<MachineRecipe<IRecipeInput, Collection<ItemStack>>>> recipeCache = Util.getField(MachineRecipeHelper.class, "recipeCache", iBasicMachineRecipeManager, Map.class);
+		final List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> uncacheableRecipes = Util.getField(MachineRecipeHelper.class, "uncacheableRecipes", iBasicMachineRecipeManager, List.class);
+		if (recipes != null)
+			for (final Map.Entry<IRecipeInput, MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe : recipes.entrySet())
+				recipe.setValue(fixMachineRecipe(recipe.getValue()));
+		if (recipeCache != null)
+			recipeCache.forEach((item, recipeList) -> recipeList.replaceAll(this::fixMachineRecipe));
+		if (uncacheableRecipes != null)
+			uncacheableRecipes.replaceAll(this::fixMachineRecipe);
+	}
+
+	private MachineRecipe<IRecipeInput, Collection<ItemStack>> fixMachineRecipe(@Nonnull final MachineRecipe<IRecipeInput, Collection<ItemStack>> machineRecipe)
+	{
+		return new MachineRecipe<>(machineRecipe.getInput(), resourceHandler.getMainItemStacks(machineRecipe.getOutput()), machineRecipe.getMetaData());
 	}
 
 	private void fixScrapBoxDrops()

@@ -66,7 +66,6 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
 		ENDER_IO("enderio", EnderIOIntegration.class),
-		EXTREME_ENERGY("meem", ExtremeEnergyIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
 		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
 		GADGETRY_CORE("gadgetrycore", GadgetryCoreIntegration.class),

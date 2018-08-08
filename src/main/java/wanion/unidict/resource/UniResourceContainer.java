@@ -78,6 +78,8 @@ public final class UniResourceContainer
 			return true;
 		final ItemStack mainEntry = entries.get(0);
 		mainEntryMeta = (mainEntryItem = mainEntry.getItem()).getDamage(mainEntry);
+		if (originalEntries.size() != entries.size())
+			originalEntries = new ArrayList<>(entries);
 		if (sort) {
 			if (initialSize != entries.size())
 				sort();
@@ -85,7 +87,6 @@ public final class UniResourceContainer
 			if (config.autoHideInJEI)
 				removeBadEntriesFromJEI();
 			if (config.keepOneEntry) {
-				originalEntries = new ArrayList<>(entries);
 				if ((!config.keepOneEntryBlackListsAsWhiteLists && (!config.keepOneEntryEntryBlackSet.contains(name) || !config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))) || (config.keepOneEntryBlackListsAsWhiteLists && (config.keepOneEntryEntryBlackSet.contains(name) || config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))))
 					keepOneEntry();
 			}
@@ -96,7 +97,7 @@ public final class UniResourceContainer
 	@Nonnull
 	int[] getHashes()
 	{
-		return originalEntries != null ? MetaItem.getArray(originalEntries) : MetaItem.getArray(entries);
+		return MetaItem.getArray(originalEntries);
 	}
 
 	private void removeBadEntriesFromJEI()
