@@ -76,7 +76,8 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
-		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class);
+		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
+		DRACONIC_EVOLUTION("draconicevolution", DraconicEvolutionIntegration.class);
 
 		private final String modId;
 		private final Class<? extends AbstractIntegrationThread> integrationClass;
