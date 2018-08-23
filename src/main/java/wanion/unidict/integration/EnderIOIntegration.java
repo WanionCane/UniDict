@@ -16,7 +16,6 @@ import crazypants.enderio.base.recipe.alloysmelter.AlloyRecipeManager;
 import crazypants.enderio.base.recipe.sagmill.SagMillRecipeManager;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.FixedSizeList;
-import wanion.unidict.UniDict;
 
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,7 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 		try {
 			fixAlloySmelterRecipes();
 			fixSagMillRecipes();
-		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Some inanimate objects appear to have used ender pearls. They all disappeared, how this is possible?";
 	}
 

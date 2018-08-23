@@ -42,9 +42,7 @@ final class MagneticraftIntegration extends AbstractIntegrationThread
 			fixSluiceBoxRecipes();
 			fixGrinderRecipes();
 			fixSieveRecipe();
-		} catch (Exception e) {
-			logger.error(threadName + e);
-		}
+		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Everything got Magnetized.";
 	}
 

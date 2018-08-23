@@ -39,8 +39,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 
 	public void registerIntegration(@Nonnull final Class<AbstractIntegrationThread> integrationClassToRegister)
 	{
-		if (!MOD_INTEGRATIONS.contains(integrationClassToRegister))
-			MOD_INTEGRATIONS.add(integrationClassToRegister);
+		MOD_INTEGRATIONS.add(integrationClassToRegister);
 	}
 
 	@Override
