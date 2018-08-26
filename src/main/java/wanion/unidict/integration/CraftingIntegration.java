@@ -50,7 +50,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
 		researcherList.add(new VanillaRecipeResearcher());
 		researcherList.add(new ForgeRecipeResearcher());
-		if (Loader.isModLoaded("ic2"))
+		if (Loader.isModLoaded("ic2") && !Loader.isModLoaded("ic2-classic-spmod"))
 			researcherList.add(new IC2RecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));

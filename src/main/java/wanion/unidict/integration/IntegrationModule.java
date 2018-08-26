@@ -47,7 +47,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 	{
 		final Configuration config = new Configuration(new File("." + SLASH + "config" + SLASH + Reference.MOD_ID + SLASH + "IntegrationModule.cfg"));
 		for (final Integration integration : Integration.values())
-			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && (integration.modId == null || isModLoaded(integration.modId)))
+			if (config.get("Integrations", WordUtils.capitalizeFully(integration.name().replace("_", " ")).replace(" ", ""), integration.enabledByDefault).getBoolean() && ((integration.modId == null || isModLoaded(integration.modId)) && (integration.blackListedModId == null || !isModLoaded(integration.blackListedModId))))
 				manager.add(integration.integrationClass);
 		MOD_INTEGRATIONS.forEach(manager::add);
 		if (config.hasChanged())
@@ -70,7 +70,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		GADGETRY_CORE("gadgetrycore", GadgetryCoreIntegration.class),
 		GADGETRY_MACHINES("gadgetrymachines", GadgetryMachinesIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
-		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class),
+		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class, true, "ic2-classic-spmod"),
 		INDUSTRIAL_FOREGOING("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
@@ -79,6 +79,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		DRACONIC_EVOLUTION("draconicevolution", DraconicEvolutionIntegration.class);
 
 		private final String modId;
+		private final String blackListedModId;
 		private final Class<? extends AbstractIntegrationThread> integrationClass;
 		private final boolean enabledByDefault;
 
@@ -89,16 +90,15 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 
 		Integration(@Nullable final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass)
 		{
-			this.modId = modId;
-			this.integrationClass = integrationClass;
-			this.enabledByDefault = true;
+			this(modId, integrationClass, true, null);
 		}
 
-		Integration(@Nullable final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass, final boolean enabledByDefault)
+		Integration(@Nullable final String modId, @Nonnull final Class<? extends AbstractIntegrationThread> integrationClass, final boolean enabledByDefault, @Nullable final String blackListedModId)
 		{
 			this.modId = modId;
 			this.integrationClass = integrationClass;
 			this.enabledByDefault = enabledByDefault;
+			this.blackListedModId = blackListedModId;
 		}
 	}
 }
