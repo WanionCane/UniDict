@@ -71,6 +71,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		GADGETRY_MACHINES("gadgetrymachines", GadgetryMachinesIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
 		INDUSTRIAL_CRAFT_2("ic2", IC2Integration.class, true, "ic2-classic-spmod"),
+		INDUSTRIAL_CRAFT_2_CLASSIC("ic2-classic-spmod", IC2CIntegration.class),
 		INDUSTRIAL_FOREGOING("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),

@@ -21,6 +21,7 @@ import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.recipe.ForgeRecipeResearcher;
+import wanion.unidict.recipe.IC2CRecipeResearcher;
 import wanion.unidict.recipe.IC2RecipeResearcher;
 import wanion.unidict.recipe.VanillaRecipeResearcher;
 import wanion.unidict.resource.UniResourceContainer;
@@ -44,7 +45,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	private final Method getNewShapelessFromShapedRecipeMethod;
 	private int totalRecipesReCreated = 0;
 
-	CraftingIntegration()
+	public CraftingIntegration()
 	{
 		super("Crafting");
 		final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
@@ -52,6 +53,8 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		researcherList.add(new ForgeRecipeResearcher());
 		if (Loader.isModLoaded("ic2") && !Loader.isModLoaded("ic2-classic-spmod"))
 			researcherList.add(new IC2RecipeResearcher());
+		if (Loader.isModLoaded("ic2-classic-spmod"))
+			researcherList.add(new IC2CRecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
 			researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
@@ -74,8 +77,10 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		try {
 			doTheResearch();
 			reCreateTheRecipes();
-		} catch (Exception e) {	logger.error(threadName + e); }
-		return threadName + "Why so many recipes? I had to deal with " + totalRecipesReCreated + " recipes.";
+			if (Loader.isModLoaded("ic2-classic-spmod"))
+				IC2CIntegration.fixAdvancedRecipes(resourceHandler);
+		} catch (Exception e) {	e.printStackTrace(); logger.error(threadName + e); }
+		return threadName + "Why so many recipes? I had to deal with at least " + totalRecipesReCreated + " recipes.";
 	}
 
 	private void doTheResearch()

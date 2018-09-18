@@ -103,6 +103,19 @@ public final class ResourceHandler implements IDependency
 		return things.stream().map(this::getMainItemStack).collect(Collectors.toList());
 	}
 
+	public List<ItemStack> getMainItemStacksChecked(@Nonnull final List<ItemStack> things)
+	{
+		boolean found = false;
+		final List<ItemStack> newThings = new ArrayList<>();
+		for (final ItemStack thing : things) {
+			final ItemStack newThing = getMainItemStack(thing);
+			if (!found && newThing != thing)
+				found = true;
+			newThings.add(newThing);
+		}
+		return !found ? things : newThings;
+	}
+
 	public int getKind(final ItemStack thing)
 	{
 		final UniAttributes attributesOfThing = get(thing);
