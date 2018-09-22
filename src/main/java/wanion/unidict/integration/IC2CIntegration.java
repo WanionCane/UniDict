@@ -45,7 +45,7 @@ final class IC2CIntegration extends AbstractIntegrationThread
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return threadName + "The world appears to be entirely industrialized.";
+		return threadName + "Expect the world to be nuked by the Industrial Revolution.";
 	}
 
 	private void fixMachineOutput(@Nonnull final IMachineRecipeList iMachineRecipeList)
