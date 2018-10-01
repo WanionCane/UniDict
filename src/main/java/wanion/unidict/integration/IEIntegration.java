@@ -14,8 +14,8 @@ import com.google.common.collect.ArrayListMultimap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
-import wanion.lib.common.FixedSizeList;
 import wanion.lib.common.MetaItem;
+import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 
 import javax.annotation.Nonnull;
@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 final class IEIntegration extends AbstractIntegrationThread
 {
+	private final boolean duplicateCheck = UniDict.getConfig().ieIntegrationDuplicateRemoval;
+
 	IEIntegration()
 	{
 		super("Immersive Engineering");
@@ -40,7 +42,9 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+		}
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
 
@@ -85,14 +89,17 @@ final class IEIntegration extends AbstractIntegrationThread
 	private void fixCrusherRecipes()
 	{
 		final List<CrusherRecipe> crusherRecipes = CrusherRecipe.recipeList;
-		final List<CrusherRecipe> correctRecipes = new FixedSizeList<>(crusherRecipes.size());
+		final List<CrusherRecipe> correctRecipes = new ArrayList<>(crusherRecipes.size());
 		final TIntSet uniques = new TIntHashSet(crusherRecipes.size(), 1);
 		for (final Iterator<CrusherRecipe> crusherRecipesIterator = crusherRecipes.iterator(); crusherRecipesIterator.hasNext(); ) {
 			final CrusherRecipe crusherRecipe = crusherRecipesIterator.next();
-			final ItemStack correctOutput = resourceHandler.getMainItemStack(crusherRecipe.output);
+			final ItemStack output = crusherRecipe.output;
+			final ItemStack correctOutput = resourceHandler.getMainItemStack(output);
+			if (output == correctOutput)
+				continue;
 			final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
-			final int recipeId = MetaItem.getCumulative(input, correctOutput);
-			if (!uniques.contains(recipeId)) {
+			final int recipeId = duplicateCheck ? MetaItem.getCumulative(input, correctOutput) : 0;
+			if (recipeId == 0 || !uniques.contains(recipeId)) {
 				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier)));
 				if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && crusherRecipe.secondaryOutput.length == crusherRecipe.secondaryChance.length)
 					setSecondaryOutputAndChance(newRecipe, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);

@@ -61,6 +61,8 @@ public final class Config
 	public final List<ResourceLocation> recipesToRemove;
 	public final Set<String> ignoreModIdRecipes;
 	public final Map<String, Set<String>> customUnifiedResources;
+	// integration specific configs:
+	public final boolean ieIntegrationDuplicateRemoval;
 	// userEntries
 	public final List<String> userOreDictEntries;
 	// modules
@@ -117,6 +119,9 @@ public final class Config
 
 			furnaceInputsToIgnore = Arrays.asList(config.getStringList("furnaceInputsToIgnore", resources, new String[]{""}, "Add here input ItemStack's (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
 			furnaceOutputsToIgnore = Arrays.asList(config.getStringList("furnaceOutputsToIgnore", resources, new String[]{""}, "Add here output ItemStack's (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
+
+			// integration specific configs
+			ieIntegrationDuplicateRemoval = config.getBoolean("ieIntegrationDuplicateRemoval", "integrations", true, "this controls if duplicate check & removal of duplicates on Immersive Engineering Integration.");
 
 			recipesToRemove = new ArrayList<>();
 			for (String recipeToRemove : config.getStringList("recipeToRemoveList", resources, new String[]{}, "add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \"")) {
