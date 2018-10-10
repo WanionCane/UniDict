@@ -63,6 +63,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
 		BASE_METALS("basemetals", BaseMetalsIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),
+		CHICKENS("chickens", ChickensIntegration.class),
 		EMBERS("embers", EmbersIntegration.class),
 		ENDER_IO("enderio", EnderIOIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),

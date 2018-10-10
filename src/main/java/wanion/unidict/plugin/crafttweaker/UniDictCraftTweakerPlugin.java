@@ -11,6 +11,8 @@ package wanion.unidict.plugin.crafttweaker;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
+import crafttweaker.mc1120.item.MCItemStack;
+import crafttweaker.mc1120.oredict.MCOreDictEntry;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraft.item.ItemStack;
@@ -52,15 +54,15 @@ public final class UniDictCraftTweakerPlugin
 	private UniDictCraftTweakerPlugin() {}
 
 	@ZenMethod
-	public static void newShapedRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final String[][] inputKinds)
+	public static void newShapedRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final Object[][] inputs)
 	{
-		CraftTweakerAPI.apply(new ShapedRecipeTemplate(outputKind, outputSize, inputKinds));
+		CraftTweakerAPI.apply(new ShapedRecipeTemplate(outputKind, outputSize, inputs));
 	}
 
 	@ZenMethod
-	public static void newShapelessRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final String[] inputKinds)
+	public static void newShapelessRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final Object[] inputs)
 	{
-		CraftTweakerAPI.apply(new ShapelessRecipeTemplate(outputKind, outputSize, inputKinds));
+		CraftTweakerAPI.apply(new ShapelessRecipeTemplate(outputKind, outputSize, inputs));
 	}
 
 	public static void preInit()
@@ -99,21 +101,30 @@ public final class UniDictCraftTweakerPlugin
 			boolean badEntry = false;
 			if (Resource.getKindFromName(shapedRecipeTemplate.outputKind) == 0)
 				badEntry = true;
-			for (final String[] subInputs : shapedRecipeTemplate.inputs)
-				for (final String input : subInputs)
-					if (!input.isEmpty() && (shapedRecipeTemplate.outputKind.equals(input) || Resource.getKindFromName(input) == 0))
+			for (final Object[] subInputs : shapedRecipeTemplate.inputs)
+				for (final Object input : subInputs)
+					if (input != null && (input instanceof String && !((String) input).isEmpty() && (shapedRecipeTemplate.outputKind.equals(input) || Resource.getKindFromName((String) input) == 0)))
 						badEntry = true;
 			if (!badEntry) {
 				final TObjectIntMap<String> nameKindMap = new TObjectIntHashMap<>();
+				for (final Object input : shapedRecipeTemplate.inputs)
+					if (input instanceof String && !nameKindMap.containsKey(input))
+						nameKindMap.put((String) input, Resource.getKindFromName((String) input));
 				nameKindMap.put(shapedRecipeTemplate.outputKind, Resource.getKindFromName(shapedRecipeTemplate.outputKind));
-				final String[] trueInputs = new String[9];
-				for (int x = 0; x < 3; x++)
-					for (int y = 0; y < 3; y++)
-						if ((y * 3 + x) < trueInputs.length)
-							trueInputs[y * 3 + x] = !shapedRecipeTemplate.inputs[x][y].equals("") ? shapedRecipeTemplate.inputs[x][y] : null;
-				for (final String input : trueInputs)
-					if (input != null && !nameKindMap.containsKey(input))
-						nameKindMap.put(input, Resource.getKindFromName(input));
+				final Object[] trueInputs = new Object[9];
+				for (int x = 0; x < 3; x++) {
+					for (int y = 0; y < 3; y++) {
+						if ((y * 3 + x) < trueInputs.length) {
+							final Object input = shapedRecipeTemplate.inputs[x][y];
+							if (input instanceof String && !input.equals(""))
+								trueInputs[y * 3 + x] = input;
+							else if (input instanceof MCItemStack && ((MCItemStack) input).getInternal() instanceof ItemStack)
+								trueInputs[y * 3 + x] = ((MCItemStack) input).getInternal();
+							else if (input instanceof MCOreDictEntry)
+								trueInputs[y * 3 + x] = ((MCOreDictEntry) input).getName();
+						}
+					}
+				}
 				final RecipeAttributes recipeAttributes = RecipeHelper.rawShapeToShape(trueInputs);
 				final int outputKind = Resource.getKindFromName(shapedRecipeTemplate.outputKind);
 				final List<Resource> resourceList = uniDictAPI.getResources(nameKindMap.values());
@@ -134,15 +145,15 @@ public final class UniDictCraftTweakerPlugin
 			boolean badEntry = false;
 			if (Resource.getKindFromName(shapelessRecipeTemplate.outputKind) == 0)
 				badEntry = true;
-			for (final String input : shapelessRecipeTemplate.inputs)
-				if (!input.isEmpty() && (shapelessRecipeTemplate.outputKind.equals(input) || Resource.getKindFromName(input) == 0))
+			for (final Object input : shapelessRecipeTemplate.inputs)
+				if (input instanceof String && !((String) input).isEmpty() && (shapelessRecipeTemplate.outputKind.equals(input) || Resource.getKindFromName((String) input) == 0))
 					badEntry = true;
 			if (!badEntry) {
 				final TObjectIntMap<String> nameKindMap = new TObjectIntHashMap<>();
 				nameKindMap.put(shapelessRecipeTemplate.outputKind, Resource.getKindFromName(shapelessRecipeTemplate.outputKind));
-				for (final String input : shapelessRecipeTemplate.inputs)
-					if (!nameKindMap.containsKey(input))
-						nameKindMap.put(input, Resource.getKindFromName(input));
+				for (final Object input : shapelessRecipeTemplate.inputs)
+					if (input instanceof String && !nameKindMap.containsKey(input))
+						nameKindMap.put((String) input, Resource.getKindFromName((String) input));
 				final int outputKind = Resource.getKindFromName(shapelessRecipeTemplate.outputKind);
 				final List<Resource> resourceList = uniDictAPI.getResources(nameKindMap.values());
 				resourceList.forEach(resource -> {
@@ -161,14 +172,14 @@ public final class UniDictCraftTweakerPlugin
 		final Object[] newInputKinds = new Object[inputs.length];
 		for (int i = 0; i < inputs.length; i++) {
 			final Object input = inputs[i];
-			if (input instanceof String) {
-				final int kind = Resource.getKindFromName((String) input);
-				if (kind != 0) {
-					newInputKinds[i] = resource.getChild(kind).name;
-					continue;
-				}
-			}
-			newInputKinds[i] = input;
+			final int kind = input instanceof String ? Resource.getKindFromName((String) input) : 0;
+			if (kind != 0)
+				newInputKinds[i] = resource.getChild(kind).name;
+			else if (input instanceof MCItemStack && ((MCItemStack) input).getInternal() instanceof ItemStack)
+				newInputKinds[i] = ((MCItemStack) input).getInternal();
+			else if (input instanceof MCOreDictEntry)
+				newInputKinds[i] = ((MCOreDictEntry) input).getName();
+			else newInputKinds[i] = input;
 		}
 		return newInputKinds;
 	}
@@ -177,16 +188,13 @@ public final class UniDictCraftTweakerPlugin
 	{
 		private final String outputKind;
 		private final int outputSize;
-		private final String[][] inputs;
+		private final Object[][] inputs;
 
-		private ShapedRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final String[][] inputs)
+		private ShapedRecipeTemplate(@Nonnull final String outputKind, final int outputSize, @Nonnull final Object[][] inputs)
 		{
 			this.outputKind = outputKind;
 			this.outputSize = outputSize;
-			for (String[] subInputs : (this.inputs = inputs))
-				for (int i = 0; i < subInputs.length; i++)
-					if (subInputs[i] == null)
-						subInputs[i] = "";
+			this.inputs = inputs;
 		}
 
 		@Override
@@ -206,9 +214,9 @@ public final class UniDictCraftTweakerPlugin
 	{
 		private final String outputKind;
 		private final int outputSize;
-		private final String[] inputs;
+		private final Object[] inputs;
 
-		private ShapelessRecipeTemplate(@Nonnull final String output, final int outputSize, @Nonnull final String[] inputs)
+		private ShapelessRecipeTemplate(@Nonnull final String output, final int outputSize, @Nonnull final Object[] inputs)
 		{
 			this.outputKind = output;
 			this.outputSize = outputSize;

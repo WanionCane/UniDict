@@ -42,9 +42,7 @@ final class IC2CIntegration extends AbstractIntegrationThread
 			fixMachineOutput(ClassicRecipes.sawMill);
 			fixMachineOutput(ClassicRecipes.recycler);
 			fixScrapBoxDrops();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) { e.printStackTrace(); }
 		return threadName + "Expect the world to be nuked by the Industrial Revolution.";
 	}
 
