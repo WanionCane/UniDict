@@ -68,7 +68,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		ENDER_IO("enderio", EnderIOIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
 		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
-		//FOUNDRY("foundry", FoundryIntegration.class),
+		FOUNDRY("foundry", FoundryIntegration.class),
 		GADGETRY_CORE("gadgetrycore", GadgetryCoreIntegration.class),
 		GADGETRY_MACHINES("gadgetrymachines", GadgetryMachinesIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),

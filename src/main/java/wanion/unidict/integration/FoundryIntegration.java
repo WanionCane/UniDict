@@ -11,18 +11,22 @@ package wanion.unidict.integration;
 import exter.foundry.api.recipe.IAlloyFurnaceRecipe;
 import exter.foundry.api.recipe.IAtomizerRecipe;
 import exter.foundry.api.recipe.ICastingRecipe;
+import exter.foundry.api.recipe.ICastingTableRecipe;
 import exter.foundry.api.recipe.matcher.ItemStackMatcher;
 import exter.foundry.recipes.AlloyFurnaceRecipe;
 import exter.foundry.recipes.AtomizerRecipe;
 import exter.foundry.recipes.CastingRecipe;
+import exter.foundry.recipes.CastingTableRecipe;
 import exter.foundry.recipes.manager.AlloyFurnaceRecipeManager;
 import exter.foundry.recipes.manager.AtomizerRecipeManager;
 import exter.foundry.recipes.manager.CastingRecipeManager;
+import exter.foundry.recipes.manager.CastingTableRecipeManager;
 import net.minecraft.item.ItemStack;
 import wanion.unidict.UniDict;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 final class FoundryIntegration extends AbstractIntegrationThread
 {
@@ -38,6 +42,7 @@ final class FoundryIntegration extends AbstractIntegrationThread
 			fixAlloyFurnaceRecipes();
 			fixAtomizerRecipes();
 			fixCastingRecipes();
+			fixCastingTableRecipes();
 		} catch (Exception e) { UniDict.getLogger().error(threadName + e); }
 		return threadName + "Somethings that were made in casts had to change.";
 	}
@@ -92,5 +97,17 @@ final class FoundryIntegration extends AbstractIntegrationThread
 		}
 		removalList.forEach(castingRecipeManager::removeRecipe);
 		newRecipes.forEach(castingRecipeManager::addRecipe);
+	}
+
+	private void fixCastingTableRecipes()
+	{
+		final Map<ICastingTableRecipe.TableType, Map<String, ICastingTableRecipe>> castingTableRecipeMap = CastingTableRecipeManager.INSTANCE.getRecipesMap();
+		castingTableRecipeMap.forEach((tableType, stringICastingTableRecipeMap) -> stringICastingTableRecipeMap.entrySet().forEach(entry -> {
+			final ICastingTableRecipe castingTableRecipe = entry.getValue();
+			final ItemStack correctOutput = resourceHandler.getMainItemStack(castingTableRecipe.getOutput());
+			if (castingTableRecipe.getOutput() != correctOutput) {
+				entry.setValue(new CastingTableRecipe(new ItemStackMatcher(correctOutput), castingTableRecipe.getInput(), castingTableRecipe.getTableType()));
+			}
+		}));
 	}
 }

@@ -10,18 +10,18 @@ package wanion.unidict.integration;
 
 import blusunrize.immersiveengineering.api.ComparableItemStack;
 import blusunrize.immersiveengineering.api.crafting.*;
+import blusunrize.immersiveengineering.common.crafting.ArcRecyclingRecipe;
 import com.google.common.collect.ArrayListMultimap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
+import wanion.lib.common.Util;
 import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 final class IEIntegration extends AbstractIntegrationThread
@@ -65,12 +65,21 @@ final class IEIntegration extends AbstractIntegrationThread
 		final List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
 		for (final Iterator<ArcFurnaceRecipe> arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); ) {
 			final ArcFurnaceRecipe recipe = arcFurnaceRecipeIterator.next();
-			final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
-			if (correctOutput == recipe.output)
-				continue;
 			final int time = (int) Math.floor((double) ((float) recipe.getTotalProcessTime() / ArcFurnaceRecipe.timeModifier));
 			final int energy = (int) Math.floor((double) ((float) ((recipe.getTotalProcessEnergy() / ArcFurnaceRecipe.energyModifier) / recipe.getTotalProcessTime())));
-			correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.input, recipe.slag, time, energy, (Object[]) recipe.additives));
+			if (recipe instanceof ArcRecyclingRecipe) {
+				final Map<ItemStack, Double> outputs = Util.getField(ArcRecyclingRecipe.class, "outputs", recipe, Map.class);
+				if (outputs == null || outputs.isEmpty())
+					continue;
+				final Map<ItemStack, Double> newOutputs = new HashMap<>();
+				outputs.forEach(((itemStack, chance) -> newOutputs.put(resourceHandler.getMainItemStack(itemStack), chance)));
+				correctRecipes.add(new ArcRecyclingRecipe(newOutputs, recipe.input, time, energy));
+			} else {
+				final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
+				if (correctOutput == recipe.output)
+					continue;
+				correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.input, recipe.slag, time, energy, (Object[]) recipe.additives));
+			}
 			arcFurnaceRecipeIterator.remove();
 		}
 		arcFurnaceRecipes.addAll(correctRecipes);
