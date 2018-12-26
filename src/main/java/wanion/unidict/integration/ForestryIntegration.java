@@ -16,6 +16,7 @@ import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 final class ForestryIntegration extends AbstractIntegrationThread
 {
@@ -72,8 +73,6 @@ final class ForestryIntegration extends AbstractIntegrationThread
 	@Nonnull
 	private Map<ItemStack, Float> correctCentrifugeOutput(@Nonnull final Map<ItemStack, Float> outputMap)
 	{
-		final Map<ItemStack, Float> newOutputMap = new HashMap<>();
-		outputMap.forEach((output, chance) -> newOutputMap.put(resourceHandler.getMainItemStack(output), chance));
-		return newOutputMap;
+		return outputMap.entrySet().stream().collect(Collectors.toMap(entry -> resourceHandler.getMainItemStack(entry.getKey()), Map.Entry::getValue));
 	}
 }

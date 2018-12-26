@@ -12,6 +12,8 @@ import com.buuz135.industrial.api.recipe.LaserDrillEntry;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.Util;
 
+import java.util.List;
+
 final class IndustrialForegoingIntegration extends AbstractIntegrationThread
 {
 	IndustrialForegoingIntegration()
@@ -23,7 +25,8 @@ final class IndustrialForegoingIntegration extends AbstractIntegrationThread
 	public String call()
 	{
 		try {
-			LaserDrillEntry.LASER_DRILL_ENTRIES.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack", laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
+			for (final List<LaserDrillEntry> laserDrillEntryList : LaserDrillEntry.LASER_DRILL_ENTRIES)
+				laserDrillEntryList.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack", laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "enhanced Laser Drill focus.";
 	}
