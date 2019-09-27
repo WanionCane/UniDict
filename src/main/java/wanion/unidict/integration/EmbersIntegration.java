@@ -22,7 +22,6 @@ final class EmbersIntegration extends AbstractIntegrationThread
 	{
 		try {
 			RecipeRegistry.stampingRecipes.forEach(itemStampingRecipe -> itemStampingRecipe.result = resourceHandler.getMainItemStack(itemStampingRecipe.result));
-			RecipeRegistry.stampingOreRecipes.forEach(itemStampingOreRecipe -> itemStampingOreRecipe.result = resourceHandler.getMainItemStack(itemStampingOreRecipe.result));
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "Stamper is outputting the right things now.";
 	}

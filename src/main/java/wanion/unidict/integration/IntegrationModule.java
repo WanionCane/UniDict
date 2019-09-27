@@ -68,7 +68,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		ENDER_IO("enderio", EnderIOIntegration.class),
 		FORESTRY("forestry", ForestryIntegration.class),
 		FORGE_CRAFT("forgecraft", ForgeCraftIntegration.class),
-		FOUNDRY("foundry", FoundryIntegration.class),
+		//FOUNDRY("foundry", FoundryIntegration.class),
 		GADGETRY_CORE("gadgetrycore", GadgetryCoreIntegration.class),
 		GADGETRY_MACHINES("gadgetrymachines", GadgetryMachinesIntegration.class),
 		IMMERSIVE_ENGINEERING("immersiveengineering", IEIntegration.class),
@@ -76,7 +76,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		INDUSTRIAL_CRAFT_2_CLASSIC("ic2-classic-spmod", IC2CIntegration.class),
 		INDUSTRIAL_FOREGOING("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
-		MEKANISM("mekanism", MekanismIntegration.class),
+		//MEKANISM("mekanism", MekanismIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
 		DRACONIC_EVOLUTION("draconicevolution", DraconicEvolutionIntegration.class);

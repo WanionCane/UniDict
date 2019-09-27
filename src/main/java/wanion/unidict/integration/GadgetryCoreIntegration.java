@@ -8,7 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import elucent.gadgetry.core.recipe.AlloyRecipe;
+import epicsquid.gadgetry.core.recipe.AlloyRecipe;
 
 final class GadgetryCoreIntegration extends AbstractIntegrationThread
 {

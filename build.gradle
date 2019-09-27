@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -11,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.12.2-2.9.2"
+version = "1.12.2-2.9.3"
 group = "wanion.unidict" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "UniDict"
 
@@ -21,9 +21,9 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.2-14.23.5.2770"
+    version = "1.12.2-14.23.5.2838"
     runDir = "run"
-
+    
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.

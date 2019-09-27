@@ -8,7 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import elucent.gadgetry.machines.recipe.GrindingRecipe;
+import epicsquid.gadgetry.machines.recipe.GrindingRecipe;
 
 final class GadgetryMachinesIntegration extends AbstractIntegrationThread
 {
