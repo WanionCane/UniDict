@@ -70,7 +70,7 @@ public final class UniDict
 
 	public static UniDictAPI getAPI()
 	{
-		return proxy.dependencies.get(UniDictAPI.class);
+		return UniDictAPI.getInstance();
 	}
 
 	public static ModuleHandler getModuleHandler()

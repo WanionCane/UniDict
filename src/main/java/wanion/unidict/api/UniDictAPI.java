@@ -36,6 +36,12 @@ public class UniDictAPI implements UniDict.IDependency
 	}
 
 	@Nonnull
+	public static UniDictAPI getInstance()
+	{
+		return UniDict.getDependencies().get(UniDictAPI.class);
+	}
+
+	@Nonnull
 	public static Map<String, Resource> toResourceMap(@Nonnull final Collection<Resource> resources)
 	{
 		return resources.stream().collect(Collectors.toMap(Resource::getName, Function.identity()));
@@ -84,5 +90,10 @@ public class UniDictAPI implements UniDict.IDependency
 	public List<Resource> getResources(@Nonnull final int... kinds)
 	{
 		return Resource.getResources(resources, kinds);
+	}
+
+	public int getKind(@Nonnull final String kind)
+	{
+		return Resource.getKindFromName(kind);
 	}
 }

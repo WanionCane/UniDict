@@ -98,7 +98,7 @@ public final class UniResourceHandler
 			final int plusSeparator = customEntries.indexOf('+');
 			final int minusSeparator = customEntries.indexOf('-');
 			if (plusSeparator > 0) {
-				final String itemName = customEntries.substring(plusSeparator + 1, customEntries.length());
+				final String itemName = customEntries.substring(plusSeparator + 1);
 				final int separatorChar = itemName.indexOf('#');
 				final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 				if (item != null) {
@@ -113,7 +113,7 @@ public final class UniResourceHandler
 				final String oreName = customEntries.substring(0, minusSeparator);
 				final List<ItemStack> oreList = UniOreDictionary.get(oreName);
 				if (oreList != null) {
-					final String itemName = customEntries.substring(minusSeparator + 1, customEntries.length());
+					final String itemName = customEntries.substring(minusSeparator + 1);
 					final int separatorChar = itemName.indexOf('#');
 					final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 					if (item != null) {

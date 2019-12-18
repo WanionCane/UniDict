@@ -114,15 +114,13 @@ public final class UniDictCraftTweakerPlugin
 				final Object[] trueInputs = new Object[9];
 				for (int x = 0; x < 3; x++) {
 					for (int y = 0; y < 3; y++) {
-						if ((y * 3 + x) < trueInputs.length) {
-							final Object input = shapedRecipeTemplate.inputs[x][y];
-							if (input instanceof String && !input.equals(""))
-								trueInputs[y * 3 + x] = input;
-							else if (input instanceof MCItemStack && ((MCItemStack) input).getInternal() instanceof ItemStack)
-								trueInputs[y * 3 + x] = ((MCItemStack) input).getInternal();
-							else if (input instanceof MCOreDictEntry)
-								trueInputs[y * 3 + x] = ((MCOreDictEntry) input).getName();
-						}
+						final Object input = shapedRecipeTemplate.inputs[x][y];
+						if (input instanceof String && !input.equals(""))
+							trueInputs[y * 3 + x] = input;
+						else if (input instanceof MCItemStack && ((MCItemStack) input).getInternal() instanceof ItemStack)
+							trueInputs[y * 3 + x] = ((MCItemStack) input).getInternal();
+						else if (input instanceof MCOreDictEntry)
+							trueInputs[y * 3 + x] = ((MCOreDictEntry) input).getName();
 					}
 				}
 				final RecipeAttributes recipeAttributes = RecipeHelper.rawShapeToShape(trueInputs);
