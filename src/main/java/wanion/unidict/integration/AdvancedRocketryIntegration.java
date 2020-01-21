@@ -17,6 +17,7 @@ import java.util.List;
 final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 {
 	private final Field outputField;
+
 	AdvancedRocketryIntegration()
 	{
 		super("Advanced Rocketry");
@@ -42,7 +43,7 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 		RecipesMachine.getInstance().recipeList.values().forEach(iRecipes -> iRecipes.forEach(iRecipe -> {
 			if (iRecipe instanceof RecipesMachine.Recipe)
 				try {
-					resourceHandler.setMainItemStacks((List<ItemStack>) outputField.get(iRecipe));
+					((List<RecipesMachine.ChanceItemStack> ) outputField.get(iRecipe)).forEach(stack -> stack.stack = resourceHandler.getMainItemStack(stack.stack));
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
