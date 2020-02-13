@@ -326,7 +326,7 @@ public final class UniResourceHandler
 
 	private void updateEntries(final FMLStateEvent event)
 	{
-		apiResourceMap.values().parallelStream().forEach(Resource::updateEntries);
+		apiResourceMap.values().forEach(Resource::updateEntries);
 		if (!config.libraryMode) {
 			Resource customResource;
 			for (String customEntry : config.customUnifiedResources.keySet())
