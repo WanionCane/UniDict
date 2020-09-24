@@ -28,7 +28,6 @@ import wanion.unidict.UniDict;
 import wanion.unidict.UniOreDictionary;
 import wanion.unidict.api.UniDictAPI;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -51,24 +50,8 @@ public final class UniResourceHandler
 
 	public void preInit()
 	{
-		dependencies.subscribe(dependencies.new DependenceWatcher<UniDictAPI>()
-		{
-			@Override
-			@Nonnull
-			public UniDictAPI instantiate()
-			{
-				return new UniDictAPI(Collections.unmodifiableMap(apiResourceMap));
-			}
-		});
-		dependencies.subscribe(dependencies.new DependenceWatcher<ResourceHandler>()
-		{
-			@Override
-			@Nonnull
-			public ResourceHandler instantiate()
-			{
-				return new ResourceHandler(Collections.unmodifiableMap(resourceMap));
-			}
-		});
+		dependencies.subscribe(UniDictAPI.class, () -> new UniDictAPI(Collections.unmodifiableMap(apiResourceMap)));
+		dependencies.subscribe(ResourceHandler.class, () -> new ResourceHandler(Collections.unmodifiableMap(resourceMap)));
 	}
 
 	static synchronized TIntSet getKindJEIBlackSet()
