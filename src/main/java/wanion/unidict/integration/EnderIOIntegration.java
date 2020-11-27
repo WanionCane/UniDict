@@ -51,7 +51,7 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 			if (correctOutput == alloySmelterRecipe.getOutput())
 				continue;
 			final RecipeOutput recipeOutput = alloySmelterRecipe.getOutputs()[0];
-			newAlloySmelterRecipes.add(new BasicManyToOneRecipe(new Recipe(new RecipeOutput(correctOutput, recipeOutput.getChance(), recipeOutput.getExperiance()), alloySmelterRecipe.getEnergyRequired(), alloySmelterRecipe.getBonusType(), alloySmelterRecipe.getInputs())));
+			newAlloySmelterRecipes.add(new BasicManyToOneRecipe(new Recipe(new RecipeOutput(correctOutput, recipeOutput.getChance(), recipeOutput.getExperiance()), alloySmelterRecipe.getEnergyRequired(), alloySmelterRecipe.getBonusType(), alloySmelterRecipe.getRecipeLevel(), alloySmelterRecipe.getInputs())));
 			alloySmelterRecipesIterator.remove();
 		}
 		alloySmelterRecipes.addAll(newAlloySmelterRecipes);
@@ -74,6 +74,6 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 			RecipeOutput oldOutput = sagMillRecipe.getOutputs()[i];
 			output[i] = new RecipeOutput(resourceHandler.getMainItemStack(oldOutput.getOutput()), oldOutput.getChance(), oldOutput.getExperiance());
 		}
-		return new Recipe(sagMillRecipe.getInputs(), output, sagMillRecipe.getEnergyRequired(), sagMillRecipe.getBonusType());
+		return new Recipe(sagMillRecipe.getInputs(), output, sagMillRecipe.getEnergyRequired(), sagMillRecipe.getBonusType(), sagMillRecipe.getRecipeLevel());
 	}
 }
