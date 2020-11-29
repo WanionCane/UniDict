@@ -20,10 +20,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
-import wanion.unidict.recipe.ForgeRecipeResearcher;
-import wanion.unidict.recipe.IC2CRecipeResearcher;
-import wanion.unidict.recipe.IC2RecipeResearcher;
-import wanion.unidict.recipe.VanillaRecipeResearcher;
+import wanion.unidict.recipe.*;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
@@ -55,6 +52,8 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 			researcherList.add(new IC2RecipeResearcher());
 		if (Loader.isModLoaded("ic2-classic-spmod"))
 			researcherList.add(new IC2CRecipeResearcher());
+		if (Loader.isModLoaded("mekanism"))
+			researcherList.add(new MekanismRecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
 			researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
