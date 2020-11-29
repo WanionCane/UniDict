@@ -9,6 +9,7 @@ package wanion.unidict.integration;
  */
 
 import nmd.primal.forgecraft.crafting.AnvilCrafting;
+import nmd.primal.forgecraft.crafting.CastingCrafting;
 import nmd.primal.forgecraft.crafting.ForgeCrafting;
 import wanion.lib.common.Util;
 
@@ -27,7 +28,7 @@ class ForgeCraftIntegration extends AbstractIntegrationThread
 		try {
 			fixAnvilCrafting();
 			//fixBloomeryCrafting();
-			//fixCastingformCrafting();
+			fixCastingCrafting();
 			fixForgeCrafting();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "good work Kitsu =)";
@@ -47,14 +48,15 @@ class ForgeCraftIntegration extends AbstractIntegrationThread
 		if (recipes != null)
 			recipes.forEach(recipe -> Util.setField(BloomeryCrafting.class, "output", recipe, resourceHandler.getMainItemStack(recipe.getOutput())));
 	}
+	*/
 
-	private void fixCastingformCrafting()
+	private void fixCastingCrafting()
 	{
-		final List<CastingformCrafting> recipes = Util.getField(CastingformCrafting.class, "castingRecipes", null, List.class);
+		final List<CastingCrafting> recipes = Util.getField(CastingCrafting.class, "castingRecipes", null, List.class);
 		if (recipes != null)
-			recipes.forEach(recipe -> Util.setField(CastingformCrafting.class, "output", recipe, resourceHandler.getMainItemStack(recipe.getOutput())));
+			recipes.forEach(recipe -> Util.setField(CastingCrafting.class, "output", recipe, resourceHandler.getMainItemStack(recipe.getOutput())));
 	}
-	 */
+
 
 	private void fixForgeCrafting()
 	{
