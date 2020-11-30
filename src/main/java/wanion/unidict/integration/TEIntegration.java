@@ -67,10 +67,11 @@ final class TEIntegration extends AbstractIntegrationThread
 		for (final ComparableItemStack recipeMapKey : compactorRecipeMap.keySet()) {
 			final CompactorManager.CompactorRecipe recipeCompactor = compactorRecipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(recipeCompactor.getOutput());
-			if (correctOutput == recipeCompactor.getOutput())
+			final ItemStack correctInput = resourceHandler.getMainItemStack(recipeCompactor.getInput());
+			if (correctOutput == recipeCompactor.getOutput() && correctInput == recipeCompactor.getInput())
 				continue;
 			try {
-				compactorRecipeMap.put(recipeMapKey, recipeCompactorConstructor.newInstance(recipeCompactor.getInput(), correctOutput, recipeCompactor.getEnergy()));
+				compactorRecipeMap.put(recipeMapKey, recipeCompactorConstructor.newInstance(correctInput, correctOutput, recipeCompactor.getEnergy()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
@@ -95,10 +96,13 @@ final class TEIntegration extends AbstractIntegrationThread
 			final SmelterManager.SmelterRecipe smelterRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(smelterRecipe.getPrimaryOutput());
 			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(smelterRecipe.getSecondaryOutput());
-			if (correctOutput == smelterRecipe.getPrimaryOutput() && correctSecondaryOutput == smelterRecipe.getSecondaryOutput())
+			final ItemStack correctInput = resourceHandler.getMainItemStack(smelterRecipe.getPrimaryInput());
+			final ItemStack correctSecondaryInput = resourceHandler.getMainItemStack(smelterRecipe.getSecondaryInput());
+			if (correctOutput == smelterRecipe.getPrimaryOutput() && correctSecondaryOutput == smelterRecipe.getSecondaryOutput() &&
+					correctInput == smelterRecipe.getPrimaryInput() && correctSecondaryInput == smelterRecipe.getSecondaryInput())
 				continue;
 			try {
-				recipeMap.put(recipeMapKey, smelterRecipeConstructor.newInstance(smelterRecipe.getPrimaryInput(), smelterRecipe.getSecondaryInput(), correctOutput, correctSecondaryOutput, smelterRecipe.getSecondaryOutputChance(), smelterRecipe.getEnergy()));
+				recipeMap.put(recipeMapKey, smelterRecipeConstructor.newInstance(correctInput, correctSecondaryInput, correctOutput, correctSecondaryOutput, smelterRecipe.getSecondaryOutputChance(), smelterRecipe.getEnergy()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
@@ -149,10 +153,11 @@ final class TEIntegration extends AbstractIntegrationThread
 		for (final ComparableItemStack recipeMapKey : recipeMap.keySet()) {
 			final FurnaceManager.FurnaceRecipe redstoneFurnaceRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(redstoneFurnaceRecipe.getOutput());
-			if (correctOutput == redstoneFurnaceRecipe.getOutput())
+			final ItemStack correctInput = resourceHandler.getMainItemStack(redstoneFurnaceRecipe.getInput());
+			if (correctOutput == redstoneFurnaceRecipe.getOutput() && correctInput == redstoneFurnaceRecipe.getInput())
 				continue;
 			try {
-				recipeMap.put(recipeMapKey, redstoneFurnaceRecipeConstructor.newInstance(redstoneFurnaceRecipe.getInput(), correctOutput, redstoneFurnaceRecipe.getEnergy()));
+				recipeMap.put(recipeMapKey, redstoneFurnaceRecipeConstructor.newInstance(correctInput, correctOutput, redstoneFurnaceRecipe.getEnergy()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
@@ -177,10 +182,11 @@ final class TEIntegration extends AbstractIntegrationThread
 			final PulverizerManager.PulverizerRecipe pulverizerRecipe = recipeMap.get(recipeMapKey);
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(pulverizerRecipe.getPrimaryOutput());
 			final ItemStack correctSecondaryOutput = resourceHandler.getMainItemStack(pulverizerRecipe.getSecondaryOutput());
-			if (correctOutput == pulverizerRecipe.getPrimaryOutput() && correctSecondaryOutput == pulverizerRecipe.getSecondaryOutput())
+			final ItemStack correctInput = resourceHandler.getMainItemStack(pulverizerRecipe.getInput());
+			if (correctOutput == pulverizerRecipe.getPrimaryOutput() && correctSecondaryOutput == pulverizerRecipe.getSecondaryOutput() && correctInput == pulverizerRecipe.getInput())
 				continue;
 			try {
-				recipeMap.put(recipeMapKey, pulverizerRecipeConstructor.newInstance(pulverizerRecipe.getInput(), correctOutput, correctSecondaryOutput, pulverizerRecipe.getSecondaryOutputChance(), pulverizerRecipe.getEnergy()));
+				recipeMap.put(recipeMapKey, pulverizerRecipeConstructor.newInstance(correctInput, correctOutput, correctSecondaryOutput, pulverizerRecipe.getSecondaryOutputChance(), pulverizerRecipe.getEnergy()));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
