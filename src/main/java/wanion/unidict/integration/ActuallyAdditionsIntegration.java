@@ -3,6 +3,7 @@ package wanion.unidict.integration;
 import de.ellpeck.actuallyadditions.api.ActuallyAdditionsAPI;
 import de.ellpeck.actuallyadditions.api.recipe.CrusherRecipe;
 import de.ellpeck.actuallyadditions.api.recipe.EmpowererRecipe;
+import de.ellpeck.actuallyadditions.api.recipe.LensConversionRecipe;
 
 import java.lang.reflect.Field;
 
@@ -10,16 +11,15 @@ public class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
     private Field crusherOutputOne;
     private Field crusherOutputTwo;
     private Field empowererOutput;
+    private Field reconstructorOutput;
 
     public ActuallyAdditionsIntegration() {
         super("Actually Additions");
         try {
-            crusherOutputOne = CrusherRecipe.class.getDeclaredField("outputOne");
-            crusherOutputOne.setAccessible(true);
-            crusherOutputTwo = CrusherRecipe.class.getDeclaredField("outputTwo");
-            crusherOutputTwo.setAccessible(true);
-            empowererOutput = EmpowererRecipe.class.getDeclaredField("output");
-            empowererOutput.setAccessible(true);
+            (crusherOutputOne = CrusherRecipe.class.getDeclaredField("outputOne")).setAccessible(true);
+            (crusherOutputTwo = CrusherRecipe.class.getDeclaredField("outputTwo")).setAccessible(true);
+            (empowererOutput = EmpowererRecipe.class.getDeclaredField("output")).setAccessible(true);
+            (reconstructorOutput = LensConversionRecipe.class.getDeclaredField("output")).setAccessible(true);
         } catch (NoSuchFieldException e) {
             logger.error("Could not find actually additions fields!");
             e.printStackTrace();
@@ -31,6 +31,7 @@ public class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
         try {
             fixCrusherRecipes();
             fixEmpowererRecipes();
+            fixAtomicReconstructorRecipes();
         } catch (Exception e) { logger.error(threadName + e); }
         return threadName + "Actually unified the Additions!";
     }
@@ -55,11 +56,27 @@ public class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
         });
     }
 
-    private void fixEmpowererRecipes(){
+    private void fixEmpowererRecipes() {
+        if (empowererOutput == null)
+            return;
         ActuallyAdditionsAPI.EMPOWERER_RECIPES.forEach(recipe -> {
-            if (empowererOutput != null && recipe.getOutput() != null){
+            if (recipe.getOutput() != null){
                 try {
                     empowererOutput.set(recipe, resourceHandler.getMainItemStack(recipe.getOutput()));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void fixAtomicReconstructorRecipes() {
+        if (reconstructorOutput == null)
+            return;
+        ActuallyAdditionsAPI.RECONSTRUCTOR_LENS_CONVERSION_RECIPES.forEach(recipe -> {
+            if (recipe.getOutput() != null){
+                try {
+                    reconstructorOutput.set(recipe, resourceHandler.getMainItemStack(recipe.getOutput()));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
