@@ -83,7 +83,7 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final ShapedRecipes recipe)
 	{
 		final List<Ingredient> recipeInputs = recipe.getIngredients();
-		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = width > height ? width : height;
+		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = Math.max(width, height);
 		final Object[] newRecipeInputs = new Object[root * root];
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {
