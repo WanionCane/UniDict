@@ -33,7 +33,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	private final Set<Map.Entry<ResourceLocation, IRecipe>> recipes = RegistryManager.ACTIVE.<IRecipe>getRegistry(GameData.RECIPES).getEntries();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
-	private final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
+	private final Map<UniResourceContainer, Map<Integer, List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
 	private final Method getShapedRecipeKeyMethod;
 	private final Method getShapelessRecipeKeyMethod;
 	private final Method getNewShapedRecipeMethod;
@@ -96,9 +96,9 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 				recipeKey = !isShapeless ? (int) getShapedRecipeKeyMethod.invoke(shapedResearcherMap.get(recipe.getClass()), recipe) : (int) getShapelessRecipeKeyMethod.invoke(shapelessResearcherMap.get(recipe.getClass()), recipe);
 				if (recipeKey == 0)
 					continue;
-				final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
+				final Map<Integer, List<IRecipe>> evenSmarterRecipeMap;
 				if (!smartRecipeMap.containsKey(bufferContainer))
-					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
+					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new HashMap<>());
 				else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
 				if (!evenSmarterRecipeMap.containsKey(recipeKey))
 					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(recipe));
@@ -115,7 +115,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	private void reCreateTheRecipes()
 	{
 		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new HashMap<>();
-		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {
+		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEach((key, recipeList) -> {
 					if (recipeList.size() > 1) {
 						final boolean hasComparator = comparatorCache.containsKey(container);
 						final Comparator<IRecipe> recipeComparator = hasComparator ? comparatorCache.get(container) : new RecipeComparator(container.getComparator());
@@ -142,7 +142,6 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe.");
 						e.printStackTrace();
 					}
-					return true;
 				})
 		);
 	}
