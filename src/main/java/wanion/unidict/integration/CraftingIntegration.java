@@ -9,8 +9,6 @@ package wanion.unidict.integration;
  */
 
 import com.google.common.collect.Lists;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -98,7 +96,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 					continue;
 				final Map<Integer, List<IRecipe>> evenSmarterRecipeMap;
 				if (!smartRecipeMap.containsKey(bufferContainer))
-					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new HashMap<>());
+					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TreeMap<>());
 				else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
 				if (!evenSmarterRecipeMap.containsKey(recipeKey))
 					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(recipe));
@@ -114,7 +112,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 
 	private void reCreateTheRecipes()
 	{
-		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new HashMap<>();
+		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new IdentityHashMap<>();
 		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEach((key, recipeList) -> {
 					if (recipeList.size() > 1) {
 						final boolean hasComparator = comparatorCache.containsKey(container);
