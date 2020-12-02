@@ -10,6 +10,7 @@ package wanion.unidict.proxy;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -32,8 +33,11 @@ import wanion.unidict.integration.IntegrationModule;
 import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.UniResourceHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class CommonProxy
 {
@@ -83,8 +87,31 @@ public class CommonProxy
 	{
 		uniResourceHandler.postInit(event);
 		moduleHandler.startModules(event);
+		proccessRecipesToRemove();
+	}
+
+	private void proccessRecipesToRemove() {
 		final ForgeRegistry<IRecipe> recipeRegistry = RegistryManager.ACTIVE.getRegistry(GameData.RECIPES);
-		UniDict.getConfig().recipesToRemove.forEach(recipeRegistry::remove);
+
+		final List<ResourceLocation> toRemove = new ArrayList<>();
+		UniDict.getConfig().recipesToRemove.forEach(recipeStr -> {
+			recipeStr = recipeStr.replace("\"", "");
+			if (UniDict.getConfig().treatRecipesToRemoveAsRegex) {
+				final Pattern pattern = Pattern.compile(recipeStr);
+
+				recipeRegistry.forEach(recipe -> {
+					ResourceLocation recipeName;
+					if (recipe != null && (recipeName = recipe.getRegistryName()) != null && pattern.matcher(recipeName.toString()).matches())
+						toRemove.add(recipeName);
+				});
+			}
+			else {
+				final int separator = recipeStr.indexOf(':');
+				if (separator > 0)
+					toRemove.add(new ResourceLocation(recipeStr.substring(0, separator), recipeStr.substring(separator + 1)));
+			}
+		});
+		toRemove.forEach(recipeRegistry::remove);
 	}
 
 	public void loadComplete(final FMLLoadCompleteEvent event)
