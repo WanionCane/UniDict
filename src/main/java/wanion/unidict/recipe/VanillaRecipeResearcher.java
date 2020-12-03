@@ -15,16 +15,19 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.recipe.RecipeAttributes;
 import wanion.lib.recipe.RecipeHelper;
+import wanion.unidict.UniDict;
 import wanion.unidict.common.Reference;
 import wanion.unidict.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,18 +62,28 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		return Collections.singletonList(ShapedRecipes.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nonnull
 	@Override
 	public List<Class<? extends ShapelessRecipes>> getShapelessRecipeClasses()
 	{
-		return Collections.singletonList(ShapelessRecipes.class);
+		// Check if Placebo is installed. If it is, we load it's recipe class.
+		Class<? extends ShapelessRecipes> placeboShapeless = null;
+		try {
+			if (Loader.isModLoaded("placebo"))
+				placeboShapeless = (Class<? extends ShapelessRecipes>) Class.forName("shadows.placebo.util.FastShapelessRecipe");
+		} catch (ClassNotFoundException e) {
+			UniDict.getLogger().error(e);
+		}
+
+		return placeboShapeless == null ? Collections.singletonList(ShapelessRecipes.class) : Arrays.asList(ShapelessRecipes.class, placeboShapeless);
 	}
 
 	@Override
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final ShapedRecipes recipe)
 	{
 		final List<Ingredient> recipeInputs = recipe.getIngredients();
-		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = width > height ? width : height;
+		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = Math.max(width, height);
 		final Object[] newRecipeInputs = new Object[root * root];
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {

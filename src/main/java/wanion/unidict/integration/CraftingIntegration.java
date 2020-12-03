@@ -9,8 +9,6 @@ package wanion.unidict.integration;
  */
 
 import com.google.common.collect.Lists;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -20,10 +18,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.recipe.IRecipeResearcher;
-import wanion.unidict.recipe.ForgeRecipeResearcher;
-import wanion.unidict.recipe.IC2CRecipeResearcher;
-import wanion.unidict.recipe.IC2RecipeResearcher;
-import wanion.unidict.recipe.VanillaRecipeResearcher;
+import wanion.unidict.recipe.*;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
@@ -36,7 +31,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	private final Set<Map.Entry<ResourceLocation, IRecipe>> recipes = RegistryManager.ACTIVE.<IRecipe>getRegistry(GameData.RECIPES).getEntries();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
-	private final Map<UniResourceContainer, TIntObjectMap<List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
+	private final Map<UniResourceContainer, Map<Integer, List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
 	private final Method getShapedRecipeKeyMethod;
 	private final Method getShapelessRecipeKeyMethod;
 	private final Method getNewShapedRecipeMethod;
@@ -55,6 +50,8 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 			researcherList.add(new IC2RecipeResearcher());
 		if (Loader.isModLoaded("ic2-classic-spmod"))
 			researcherList.add(new IC2CRecipeResearcher());
+		if (Loader.isModLoaded("mekanism"))
+			researcherList.add(new MekanismRecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
 			researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
@@ -97,9 +94,9 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 				recipeKey = !isShapeless ? (int) getShapedRecipeKeyMethod.invoke(shapedResearcherMap.get(recipe.getClass()), recipe) : (int) getShapelessRecipeKeyMethod.invoke(shapelessResearcherMap.get(recipe.getClass()), recipe);
 				if (recipeKey == 0)
 					continue;
-				final TIntObjectMap<List<IRecipe>> evenSmarterRecipeMap;
+				final Map<Integer, List<IRecipe>> evenSmarterRecipeMap;
 				if (!smartRecipeMap.containsKey(bufferContainer))
-					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TIntObjectHashMap<>());
+					smartRecipeMap.put(bufferContainer, evenSmarterRecipeMap = new TreeMap<>());
 				else evenSmarterRecipeMap = smartRecipeMap.get(bufferContainer);
 				if (!evenSmarterRecipeMap.containsKey(recipeKey))
 					evenSmarterRecipeMap.put(recipeKey, Lists.newArrayList(recipe));
@@ -115,8 +112,8 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 
 	private void reCreateTheRecipes()
 	{
-		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new HashMap<>();
-		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEachValue(recipeList -> {
+		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new IdentityHashMap<>();
+		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEach((key, recipeList) -> {
 					if (recipeList.size() > 1) {
 						final boolean hasComparator = comparatorCache.containsKey(container);
 						final Comparator<IRecipe> recipeComparator = hasComparator ? comparatorCache.get(container) : new RecipeComparator(container.getComparator());
@@ -143,7 +140,6 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 						logger.error("Crafting Integration: Couldn't create the recipe for " + recipe.getRecipeOutput().getDisplayName() + ".\nfor now, isn't possible to restore the original recipe.");
 						e.printStackTrace();
 					}
-					return true;
 				})
 		);
 	}

@@ -58,7 +58,9 @@ public final class Config
 	public final Set<ResourceLocation> recipesToIgnore;
 	public final List<String> furnaceInputsToIgnore;
 	public final List<String> furnaceOutputsToIgnore;
-	public final List<ResourceLocation> recipesToRemove;
+
+	public final Boolean treatRecipesToRemoveAsRegex;
+	public final List<String> recipesToRemove;
 	public final Set<String> ignoreModIdRecipes;
 	public final Map<String, Set<String>> customUnifiedResources;
 	// integration specific configs:
@@ -114,7 +116,7 @@ public final class Config
 			for (final String recipeToIgnore : config.getStringList("recipeToIgnoreList", resources, new String[]{"minecraft:iron_nugget", "minecraft:iron_block", "minecraft:iron_ingot_from_block", "minecraft:iron_ingot_from_nuggets", "minecraft:gold_nugget", "minecraft:gold_ingot_from_block", "minecraft:gold_ingot_from_nuggets", "minecraft:gold_block"}, "add here recipes (names) that you don't want the Crafting Integration to mess with.")) {
 				final int separator = recipeToIgnore.indexOf(':');
 				if (separator > 0)
-					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1, recipeToIgnore.length())));
+					recipesToIgnore.add(new ResourceLocation(recipeToIgnore.substring(0, separator), recipeToIgnore.substring(separator + 1)));
 			}
 
 			furnaceInputsToIgnore = Arrays.asList(config.getStringList("furnaceInputsToIgnore", resources, new String[]{""}, "Add here input ItemStack's (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
@@ -123,13 +125,9 @@ public final class Config
 			// integration specific configs
 			ieIntegrationDuplicateRemoval = config.getBoolean("ieIntegrationDuplicateRemoval", "integrations", true, "this controls if duplicate check & removal of duplicates on Immersive Engineering Integration.");
 
-			recipesToRemove = new ArrayList<>();
-			for (String recipeToRemove : config.getStringList("recipeToRemoveList", resources, new String[]{}, "add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \"")) {
-				recipeToRemove = recipeToRemove.replace("\"", "");
-				final int separator = recipeToRemove.indexOf(':');
-				if (separator > 0)
-					recipesToRemove.add(new ResourceLocation(recipeToRemove.substring(0, separator), recipeToRemove.substring(separator + 1, recipeToRemove.length())));
-			}
+			treatRecipesToRemoveAsRegex = config.getBoolean("treatRecipeToRemoveAsRegex", resources, false, "This controls whether the recipes in recipeToRemoveList are treated as regex.");
+			recipesToRemove = Arrays.asList(config.getStringList("recipeToRemoveList", resources, new String[]{},
+					"add here recipes (names) that you want to be removed.\nnote: this will be executed after Crafting Integration.\nnote 2: if there is a space on the end of the recipe, then the recipe name must stay in \"recipename\", this is ONLY required when there is a space on the end \" \""));
 			ignoreModIdRecipes = new LinkedHashSet<>(Arrays.asList(config.getStringList("ignoreModIdRecipes", resources, new String[]{"oreshrubs"}, "Crafting Integration will ignore recipes created by the ModId's listed below.\n")));
 			customUnifiedResources = Collections.unmodifiableMap(getCustomUnifiedResourcesMap());
 			// userRegisteredOreDictEntries
@@ -165,7 +163,7 @@ public final class Config
 		for (String customUnifiedResource : config.getStringList("customUnifiedResources", resources, new String[]{"Obsidian:dustTiny|dust", "Stone:dust", "Obsidian:dust|dustSmall", "Coal:dust|dustSmall", "Sulfur:dust|dustSmall", "Salt:dust"}, "Here you can put a list to custom unify them.\nmust be in this format \"ResourceName:kind1|kind2|...\".")) {
 			final int baseSeparatorIndex;
 			final Set<String> kindSet;
-			if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1, customUnifiedResource.length()))))).isEmpty())
+			if ((baseSeparatorIndex = customUnifiedResource.indexOf(':')) != -1 && !(kindSet = Sets.newHashSet(Arrays.asList(splitPattern.split(customUnifiedResource.substring(baseSeparatorIndex + 1))))).isEmpty())
 				customUnifiedResources.put(customUnifiedResource.substring(0, baseSeparatorIndex), kindSet);
 		}
 		return customUnifiedResources;

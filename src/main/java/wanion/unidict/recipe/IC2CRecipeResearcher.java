@@ -111,7 +111,7 @@ public class IC2CRecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Ad
 	public static Object[] getNewShapedRecipeInputs(@Nonnull final AdvRecipeBase advRecipeBase, @Nonnull final ResourceHandler resourceHandler)
 	{
 		final List<Ingredient> recipeInputs = advRecipeBase.getIngredients();
-		final int width = advRecipeBase.getRecipeLength(), height = advRecipeBase.getRecipeHeight(), root = width > height ? width : height;
+		final int width = advRecipeBase.getRecipeLength(), height = advRecipeBase.getRecipeHeight(), root = Math.max(width, height);
 		final Object[] newRecipeInputs = new Object[root * root];
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {

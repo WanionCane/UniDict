@@ -32,11 +32,11 @@ final class ForestryIntegration extends AbstractIntegrationThread
 	{
 		try {
 			removeBadCarpenterOutputs(carpenterRecipes);
-			/*
+
 			final UniResourceContainer ingotBronze = resourceHandler.getContainer("Bronze", "ingot");
 			if (ingotBronze != null)
 				bronzeThings(ingotBronze);
-			 */
+
 			fixCentrifugeRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All these bees... they can hurt, you know?";
@@ -49,14 +49,18 @@ final class ForestryIntegration extends AbstractIntegrationThread
 
 	private void bronzeThings(@Nonnull final UniResourceContainer ingotBronze)
 	{
-		/*
-		final Item brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
-		final Item brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
+		Item brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
+		if (brokenBronzePickaxe == null)
+			brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "broken_bronze_pickaxe"));
+
+		Item brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
+		if (brokenBronzeShovel == null)
+			brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "broken_bronze_shovel"));
+
 		if (brokenBronzePickaxe != null)
-			CarpenterRecipeManager.carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzePickaxe))));
+			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzePickaxe))));
 		if (brokenBronzeShovel != null)
 			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzeShovel))));
-		*/
 	}
 
 	private void fixCentrifugeRecipes()
