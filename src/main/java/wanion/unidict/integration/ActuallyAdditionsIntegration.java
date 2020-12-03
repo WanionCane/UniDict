@@ -20,7 +20,7 @@ public class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
             (crusherOutputTwo = CrusherRecipe.class.getDeclaredField("outputTwo")).setAccessible(true);
             (empowererOutput = EmpowererRecipe.class.getDeclaredField("output")).setAccessible(true);
             (reconstructorOutput = LensConversionRecipe.class.getDeclaredField("output")).setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException | NullPointerException e) {
             logger.error("Could not find actually additions fields!");
             e.printStackTrace();
         }
