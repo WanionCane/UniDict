@@ -8,7 +8,7 @@ import wanion.unidict.common.Util;
 
 import java.util.Map;
 
-public class DraconicEvolutionIntegration extends AbstractIntegrationThread
+final class DraconicEvolutionIntegration extends AbstractIntegrationThread
 {
 	private final TIntSet outputsToIgnore;
 

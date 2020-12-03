@@ -7,7 +7,7 @@ import de.ellpeck.actuallyadditions.api.recipe.LensConversionRecipe;
 
 import java.lang.reflect.Field;
 
-public class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
+final class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
     private Field crusherOutputOne;
     private Field crusherOutputTwo;
     private Field empowererOutput;

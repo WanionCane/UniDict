@@ -15,7 +15,7 @@ import wanion.lib.common.Util;
 
 import java.util.List;
 
-class ForgeCraftIntegration extends AbstractIntegrationThread
+final class ForgeCraftIntegration extends AbstractIntegrationThread
 {
 	ForgeCraftIntegration()
 	{
