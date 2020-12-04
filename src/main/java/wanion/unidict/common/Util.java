@@ -99,12 +99,11 @@ public final class Util
 	public static List<ItemStack> stringListToItemStackList(@Nonnull final List<String> stringList)
 	{
 		final List<ItemStack> itemStackList = new ArrayList<>();
-		stringList.forEach(s -> {
-			final int separatorChar = s.indexOf('#');
-			final String itemName = s.substring(0, s.length());
+		stringList.forEach(itemName -> {
+			final int separatorChar = itemName.indexOf('#');
 			final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 			if (item != null) {
-				final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+				final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1));
 				itemStackList.add(new ItemStack(item, 1, metadata));
 			}
 		});

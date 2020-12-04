@@ -2,13 +2,13 @@
 {
   "modid": "unidict",
   "name": "UniDict",
-  "description": "a mod about unifying all the things.",
+  "description": "A mod about unifying all the things.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "http://minecraft.curseforge.com/projects/unidict",
   "updateUrl": "",
   "authorList": ["WanionCane"],
-  "credits": "Mojang for creating Minecraft.\nForge/FML for creating this awesome modding platform.\nThe creators of every mod that UniDict interacts.\nAll the users of UniDict.",
+  "credits": "Mojang for creating Minecraft.\nForge/FML for creating this awesome modding platform.\nThe creators of every mod that UniDict interacts with.\nAll the users of UniDict.",
   "logoFile": "unidictlogo.png",
   "screenshots": [],
   "dependencies": []

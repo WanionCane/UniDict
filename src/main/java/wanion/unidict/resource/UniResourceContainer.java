@@ -33,7 +33,7 @@ public final class UniResourceContainer
 	private boolean updated = false;
 	private Item mainEntryItem;
 	private int mainEntryMeta;
-	private List<ItemStack> originalEntries = null;
+	private List<ItemStack> originalEntries;
 
 	public UniResourceContainer(@Nonnull final String name, final int kind)
 	{
@@ -112,9 +112,7 @@ public final class UniResourceContainer
 			return;
 		final Set<ItemStack> keepOneEntryBlackSet = ResourceHandler.keepOneEntryBlackSet;
 		if (!keepOneEntryBlackSet.isEmpty()) {
-			for (final Iterator<ItemStack> keepOneEntryIterator = entries.subList(1, entries.size()).iterator(); keepOneEntryIterator.hasNext(); )
-				if (!keepOneEntryBlackSet.contains(keepOneEntryIterator.next()))
-					keepOneEntryIterator.remove();
+			entries.subList(1, entries.size()).removeIf(itemStack -> !keepOneEntryBlackSet.contains(itemStack));
 		} else entries.subList(1, entries.size()).clear();
 	}
 

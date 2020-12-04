@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class UniOreDictionary implements IDependency
 {
-	private static Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);
-	private static List<String> idToName = Util.getField(OreDictionary.class, "idToName", null, List.class);
-	private static List<List<ItemStack>> idToStack = Util.getField(OreDictionary.class, "idToStack", null, List.class);
-	private static List<List<ItemStack>> idToStackUn = Util.getField(OreDictionary.class, "idToStackUn", null, List.class);
-	private static Map<Integer, List<Integer>> stackToId = Util.getField(OreDictionary.class, "stackToId", null, Map.class);
+	private static final Map<String, Integer> nameToId = Util.getField(OreDictionary.class, "nameToId", null, Map.class);
+	private static final List<String> idToName = Util.getField(OreDictionary.class, "idToName", null, List.class);
+	private static final List<List<ItemStack>> idToStack = Util.getField(OreDictionary.class, "idToStack", null, List.class);
+	private static final List<List<ItemStack>> idToStackUn = Util.getField(OreDictionary.class, "idToStackUn", null, List.class);
+	private static final Map<Integer, List<Integer>> stackToId = Util.getField(OreDictionary.class, "stackToId", null, Map.class);
 	private final Map<List<ItemStack>, String> entryToName = new IdentityHashMap<>();
 	private final TIntObjectMap<String> stackToName = new TIntObjectHashMap<>();
 
@@ -119,9 +119,7 @@ public final class UniOreDictionary implements IDependency
 			final List<ItemStack> oreDictEntries = get(id);
 			if (oreDictEntries == null)
 				continue;
-			for (final Iterator<ItemStack> oreDictEntriesIterator = oreDictEntries.iterator(); oreDictEntriesIterator.hasNext(); )
-				if (mainEntryHash == MetaItem.get(oreDictEntriesIterator.next()))
-					oreDictEntriesIterator.remove();
+			oreDictEntries.removeIf(itemStack -> mainEntryHash == MetaItem.get(itemStack));
 		}
 	}
 

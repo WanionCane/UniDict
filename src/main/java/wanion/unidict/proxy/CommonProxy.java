@@ -138,7 +138,8 @@ public class CommonProxy
 				if (mayBeAModule.getSuperclass().isAssignableFrom(AbstractModule.class))
 					moduleHandler.addModule((AbstractModule) mayBeAModule.newInstance());
 			} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-				UniDict.getLogger().error("Cannot load ", asmData.getClassName(), e);
+				UniDict.getLogger().error(String.format("Cannot load module class \"%s\", Exception: %s",
+						asmData.getClassName(),	e));
 			}
 		});
 		return moduleHandler;
@@ -156,7 +157,8 @@ public class CommonProxy
 				if (mayBeAIntegration.getSuperclass().isAssignableFrom(AbstractIntegrationThread.class))
 					IntegrationModule.getIntegrationModule().registerIntegration((Class<AbstractIntegrationThread>) mayBeAIntegration);
 			} catch (ClassNotFoundException e) {
-				UniDict.getLogger().error("Cannot load ", asmData.getClassName(), e);
+				UniDict.getLogger().error(String.format("Cannot load integration class \"%s\", Exception: %s",
+						asmData.getClassName(),	e));
 			}
 		});
 	}

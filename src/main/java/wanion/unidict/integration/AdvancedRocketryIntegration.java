@@ -24,7 +24,7 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 		try {
 			(outputField = RecipesMachine.Recipe.class.getDeclaredField("output")).setAccessible(true);
 		} catch (NoSuchFieldException e) {
-			throw new RuntimeException("Couldn't find the fields!");
+			throw new RuntimeException("Couldn't find Advanced Rocketry fields!");
 		}
 	}
 

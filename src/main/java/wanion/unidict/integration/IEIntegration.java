@@ -65,8 +65,8 @@ final class IEIntegration extends AbstractIntegrationThread
 		final List<ArcFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(arcFurnaceRecipes.size() * 1.3).intValue());
 		for (final Iterator<ArcFurnaceRecipe> arcFurnaceRecipeIterator = arcFurnaceRecipes.iterator(); arcFurnaceRecipeIterator.hasNext(); ) {
 			final ArcFurnaceRecipe recipe = arcFurnaceRecipeIterator.next();
-			final int time = (int) Math.floor((double) ((float) recipe.getTotalProcessTime() / ArcFurnaceRecipe.timeModifier));
-			final int energy = (int) Math.floor((double) ((float) ((recipe.getTotalProcessEnergy() / ArcFurnaceRecipe.energyModifier) / recipe.getTotalProcessTime())));
+			final int time = (int) Math.floor((float) recipe.getTotalProcessTime() / ArcFurnaceRecipe.timeModifier);
+			final int energy = (int) Math.floor((recipe.getTotalProcessEnergy() / ArcFurnaceRecipe.energyModifier) / recipe.getTotalProcessTime());
 			if (recipe instanceof ArcRecyclingRecipe) {
 				final Map<ItemStack, Double> outputs = Util.getField(ArcRecyclingRecipe.class, "outputs", recipe, Map.class);
 				if (outputs == null || outputs.isEmpty())
@@ -107,7 +107,7 @@ final class IEIntegration extends AbstractIntegrationThread
 			final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
 			final int recipeId = duplicateCheck ? MetaItem.getCumulative(input, correctOutput) : 0;
 			if (recipeId == 0 || !uniques.contains(recipeId)) {
-				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((double) ((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier)));
+				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
 				if (crusherRecipe.secondaryOutput != null && crusherRecipe.secondaryChance != null && crusherRecipe.secondaryOutput.length == crusherRecipe.secondaryChance.length)
 					setSecondaryOutputAndChance(newRecipe, resourceHandler.getMainItemStacks(crusherRecipe.secondaryOutput), crusherRecipe.secondaryChance);
 				correctRecipes.add(newRecipe);
@@ -130,7 +130,7 @@ final class IEIntegration extends AbstractIntegrationThread
 				continue;
 			final int id = MetaItem.getCumulative(output, metalPressRecipe.mold.stack);
 			if (!uniques.contains(id)) {
-				correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, metalPressRecipe.input, metalPressRecipe.mold, (int) Math.floor((double) ((float) metalPressRecipe.getTotalProcessEnergy() / MetalPressRecipe.energyModifier))).setInputSize(metalPressRecipe.input.inputSize));
+				correctRecipes.put(metalPressRecipe.mold, new MetalPressRecipe(output, metalPressRecipe.input, metalPressRecipe.mold, (int) Math.floor((float) metalPressRecipe.getTotalProcessEnergy() / MetalPressRecipe.energyModifier)).setInputSize(metalPressRecipe.input.inputSize));
 				uniques.add(id);
 			}
 			metalPressRecipesIterator.remove();

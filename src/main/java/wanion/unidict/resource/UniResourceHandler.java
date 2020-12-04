@@ -86,7 +86,7 @@ public final class UniResourceHandler
 				final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 				if (item != null) {
 					try {
-						final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+						final int metadata = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1));
 						OreDictionary.registerOre(customEntries.substring(0, plusSeparator), new ItemStack(item, 1, metadata));
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -100,7 +100,7 @@ public final class UniResourceHandler
 					final int separatorChar = itemName.indexOf('#');
 					final Item item = Item.REGISTRY.getObject(new ResourceLocation(separatorChar == -1 ? itemName : itemName.substring(0, separatorChar)));
 					if (item != null) {
-						final int metaData = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1, itemName.length()));
+						final int metaData = separatorChar == -1 ? 0 : Integer.parseInt(itemName.substring(separatorChar + 1));
 						final ItemStack itemStack = new ItemStack(item, 1, metaData);
 						boolean found = false;
 						for (final Iterator<ItemStack> itemStackIterator = oreList.iterator(); !found && itemStackIterator.hasNext(); )
@@ -143,7 +143,7 @@ public final class UniResourceHandler
 			apiResourceMap.put(resourceName, new Resource(resourceName, kindMap));
 		});
 		if (!config.libraryMode) {
-			final TIntList kindList = Resource.kindNamesToKindList(config.childrenOfMetals.toArray(new String[config.childrenOfMetals.size()]));
+			final TIntList kindList = Resource.kindNamesToKindList(config.childrenOfMetals.toArray(new String[0]));
 			config.metalsToUnify.stream().filter(apiResourceMap::containsKey).forEach(resourceName -> resourceMap.put(resourceName, apiResourceMap.get(resourceName).filteredClone(kindList).setSortOfChildren(true)));
 			if (!config.customUnifiedResources.isEmpty()) {
 				config.customUnifiedResources.forEach((resourceName, kinds) -> {
