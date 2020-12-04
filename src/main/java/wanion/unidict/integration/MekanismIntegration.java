@@ -4,6 +4,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import mekanism.common.recipe.RecipeHandler;
 import mekanism.common.recipe.inputs.AdvancedMachineInput;
+import mekanism.common.recipe.inputs.DoubleMachineInput;
 import mekanism.common.recipe.inputs.InfusionInput;
 import mekanism.common.recipe.inputs.ItemStackInput;
 import mekanism.common.recipe.machines.*;
@@ -26,27 +27,24 @@ final class MekanismIntegration extends AbstractIntegrationThread
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public String call()
-    {
+    public String call() {
         try {
-            FixCrusherRecipes(RecipeHandler.Recipe.CRUSHER.get());
-            FixEnrichmentRecipes(RecipeHandler.Recipe.ENRICHMENT_CHAMBER.get());
+            FixBasicRecipes(RecipeHandler.Recipe.CRUSHER.get());
+            FixBasicRecipes(RecipeHandler.Recipe.ENRICHMENT_CHAMBER.get());
+            FixBasicRecipes(RecipeHandler.Recipe.ENERGIZED_SMELTER.get());
+            FixCombinerRecipes(RecipeHandler.Recipe.COMBINER.get());
             FixChemicalInjectionRecipes(RecipeHandler.Recipe.CHEMICAL_INJECTION_CHAMBER.get());
             FixInfusionRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
         } catch (Exception e) { logger.error(threadName + e); }
         return threadName + "All the mekanisms were checked.";
     }
 
-    private void FixCrusherRecipes(@Nonnull final Map<ItemStackInput, CrusherRecipe> recipes)
-    {
-        final int initialSize = recipes.size();
-        final Map<ItemStackInput, CrusherRecipe> correctRecipes = new HashMap<>(initialSize, 1);
+    private <T extends BasicMachineRecipe<T>> void FixBasicRecipes(@Nonnull final Map<ItemStackInput, T> recipes) {
+        final Map<ItemStackInput, T> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
-            for (final Iterator<CrusherRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
-                final CrusherRecipe mekanismRecipe = mekanismRecipeIterator.next();
+            for (final Iterator<T> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
+                final T mekanismRecipe = mekanismRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
                 if (outputContainer == null)
@@ -55,7 +53,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
                     mekanismRecipe.recipeOutput.output = outputContainer.getMainEntry(mekanismRecipe.recipeOutput.output.getCount());
                     continue;
                 }
-                final CrusherRecipe correctRecipe = mekanismRecipe.copy();
+                final T correctRecipe = mekanismRecipe.copy();
                 final ItemStack inputStack;
                 if (config.keepOneEntry)
                     inputStack = correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
@@ -72,11 +70,11 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 }
                 mekanismRecipeIterator.remove();
             }
-        } else {
+        }
+        else {
             final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
-            for (final Iterator<CrusherRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
-                final CrusherRecipe mekanismRecipe = mekanismRecipeIterator.next();
+            for (final Iterator<T> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
+                final T mekanismRecipe = mekanismRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
                 if (outputContainer == null)
@@ -91,7 +89,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 final TIntSet kindSet = containerKindMap.get(outputContainer);
                 if (!kindSet.contains(kind)) {
                     kindSet.add(kind);
-                    final CrusherRecipe correctRecipe = mekanismRecipe.copy();
+                    final T correctRecipe = mekanismRecipe.copy();
                     correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
                     correctRecipe.recipeOutput.output = outputContainer.getMainEntry(mekanismRecipe.recipeOutput.output.getCount());
                     correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
@@ -102,16 +100,13 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private void FixEnrichmentRecipes(@Nonnull final HashMap<ItemStackInput, EnrichmentRecipe> recipes)
-    {
-        final int initialSize = recipes.size();
-        final Map<ItemStackInput, EnrichmentRecipe> correctRecipes = new HashMap<>(initialSize, 1);
+    private void FixCombinerRecipes(@Nonnull final Map<DoubleMachineInput, CombinerRecipe> recipes) {
+        final Map<DoubleMachineInput, CombinerRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
-            for (final Iterator<EnrichmentRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
-                final EnrichmentRecipe mekanismRecipe = mekanismRecipeIterator.next();
-                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
+            for (final Iterator<CombinerRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ){
+                final CombinerRecipe mekanismRecipe = mekanismRecipeIterator.next();
+                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.itemStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
                 if (outputContainer == null)
                     continue;
@@ -119,12 +114,12 @@ final class MekanismIntegration extends AbstractIntegrationThread
                     mekanismRecipe.recipeOutput.output = outputContainer.getMainEntry(mekanismRecipe.recipeOutput.output.getCount());
                     continue;
                 }
-                final EnrichmentRecipe correctRecipe = mekanismRecipe.copy();
+                final CombinerRecipe correctRecipe = mekanismRecipe.copy();
                 final ItemStack inputStack;
                 if (config.keepOneEntry)
-                    inputStack = correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
+                    inputStack = correctRecipe.recipeInput.itemStack = inputContainer.getMainEntry(correctRecipe.recipeInput.itemStack.getCount());
                 else
-                    inputStack = correctRecipe.recipeInput.ingredient = correctRecipe.recipeInput.ingredient.copy();
+                    inputStack = correctRecipe.recipeInput.itemStack = correctRecipe.recipeInput.itemStack.copy();
                 final int inputId = MetaItem.get(inputStack);
                 if (!containerInputKeyMap.containsKey(outputContainer))
                     containerInputKeyMap.put(outputContainer, new TIntHashSet());
@@ -136,12 +131,12 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 }
                 mekanismRecipeIterator.remove();
             }
-        } else {
+        }
+        else {
             final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
-            for (final Iterator<EnrichmentRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
-                final EnrichmentRecipe mekanismRecipe = mekanismRecipeIterator.next();
-                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
+            for (final Iterator<CombinerRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
+                final CombinerRecipe mekanismRecipe = mekanismRecipeIterator.next();
+                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.itemStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
                 if (outputContainer == null)
                     continue;
@@ -155,25 +150,23 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 final TIntSet kindSet = containerKindMap.get(outputContainer);
                 if (!kindSet.contains(kind)) {
                     kindSet.add(kind);
-                    final EnrichmentRecipe correctRecipe = mekanismRecipe.copy();
-                    correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
+                    final CombinerRecipe correctRecipe = mekanismRecipe.copy();
+                    correctRecipe.recipeInput.itemStack = inputContainer.getMainEntry(correctRecipe.recipeInput.itemStack.getCount());
                     correctRecipe.recipeOutput.output = outputContainer.getMainEntry(mekanismRecipe.recipeOutput.output.getCount());
                     correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
                 }
                 mekanismRecipeIterator.remove();
             }
         }
+
         recipes.putAll(correctRecipes);
     }
 
-    private void FixChemicalInjectionRecipes(@Nonnull final Map<AdvancedMachineInput, InjectionRecipe> recipes)
-    {
-        final int initialSize = recipes.size();
-        final Map<AdvancedMachineInput, InjectionRecipe>  correctRecipes = new HashMap<>(initialSize, 1);
+    private void FixChemicalInjectionRecipes(@Nonnull final Map<AdvancedMachineInput, InjectionRecipe> recipes) {
+        final Map<AdvancedMachineInput, InjectionRecipe>  correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
-            for (final Iterator<InjectionRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
+            for (final Iterator<InjectionRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
                 final InjectionRecipe mekanismRecipe = mekanismRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.itemStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
@@ -200,10 +193,10 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 }
                 mekanismRecipeIterator.remove();
             }
-        } else {
+        }
+        else {
             final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
-            for (final Iterator<InjectionRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); )
-            {
+            for (final Iterator<InjectionRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
                 final InjectionRecipe mekanismRecipe = mekanismRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.itemStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
@@ -230,14 +223,11 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private void FixInfusionRecipes(@Nonnull final Map<InfusionInput, MetallurgicInfuserRecipe> recipes)
-    {
-        final int initialSize = recipes.size();
-        final Map<InfusionInput, MetallurgicInfuserRecipe> correctRecipes = new HashMap<>(initialSize, 1);
+    private void FixInfusionRecipes(@Nonnull final Map<InfusionInput, MetallurgicInfuserRecipe> recipes) {
+        final Map<InfusionInput, MetallurgicInfuserRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
-            for (final Iterator<MetallurgicInfuserRecipe> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
-            {
+            for (final Iterator<MetallurgicInfuserRecipe> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); ) {
                 final MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe> infusionRecipe = infusionRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(infusionRecipe.recipeInput.inputStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(infusionRecipe.recipeOutput.output);
@@ -264,10 +254,10 @@ final class MekanismIntegration extends AbstractIntegrationThread
                 }
                 infusionRecipeIterator.remove();
             }
-        } else {
+        }
+        else {
             final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
-            for (final Iterator<MetallurgicInfuserRecipe> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); )
-            {
+            for (final Iterator<MetallurgicInfuserRecipe> infusionRecipeIterator = recipes.values().iterator(); infusionRecipeIterator.hasNext(); ) {
                 final MachineRecipe<InfusionInput, ItemStackOutput, MetallurgicInfuserRecipe> mekanismRecipe = infusionRecipeIterator.next();
                 final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.inputStack);
                 final UniResourceContainer outputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.output);
