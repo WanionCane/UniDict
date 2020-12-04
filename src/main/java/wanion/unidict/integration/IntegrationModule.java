@@ -61,6 +61,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
 		ACTUALLY_ADDITIONS("actuallyadditions", ActuallyAdditionsIntegration.class),
 		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
+		ADVANCED_SOLAR_PANELS("advanced_solar_panels", AdvancedSolarPanelsIntegration.class),
 		APPLIED_ENERGISTICS_2("appliedenergistics2", AE2Integration.class),
 		BASE_METALS("basemetals", BaseMetalsIntegration.class),
 		BLOOD_MAGIC("bloodmagic", BloodMagicIntegration.class),

@@ -21,7 +21,7 @@ final class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
             (empowererOutput = EmpowererRecipe.class.getDeclaredField("output")).setAccessible(true);
             (reconstructorOutput = LensConversionRecipe.class.getDeclaredField("output")).setAccessible(true);
         } catch (NoSuchFieldException | NullPointerException e) {
-            logger.error("Could not find Actually aAdditions fields!");
+            logger.error("Could not find Actually Additions fields!");
             e.printStackTrace();
         }
     }
