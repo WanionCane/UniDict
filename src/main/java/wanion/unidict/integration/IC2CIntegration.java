@@ -8,22 +8,17 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import com.google.common.collect.Lists;
 import ic2.api.classic.recipe.ClassicRecipes;
-import ic2.api.classic.recipe.crafting.IAdvRecipe;
-import ic2.api.classic.recipe.crafting.ICraftingRecipeList;
 import ic2.api.classic.recipe.custom.IClassicScrapBoxManager;
 import ic2.api.classic.recipe.machine.IMachineRecipeList;
 import ic2.api.classic.recipe.machine.MachineOutput;
-import ic2.core.item.recipe.AdvRecipeBase;
 import ic2.core.item.recipe.ScrapBoxManager;
 import net.minecraft.item.ItemStack;
-import wanion.lib.recipe.RecipeHelper;
-import wanion.unidict.recipe.IC2CRecipeResearcher;
-import wanion.unidict.resource.ResourceHandler;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 final class IC2CIntegration extends AbstractIntegrationThread
 {
@@ -81,37 +76,6 @@ final class IC2CIntegration extends AbstractIntegrationThread
 		newDrops.forEach((drop, newItemStackDrop) -> {
 			classicScrapBoxManager.removeDrop(drop);
 			classicScrapBoxManager.addDrop(newItemStackDrop, drop.getRawChance());
-		});
-	}
-
-	static void fixAdvancedRecipes(final ResourceHandler resourceHandler)
-	{
-		final ICraftingRecipeList advCrafting = ClassicRecipes.advCrafting;
-		final List<IAdvRecipe> advRecipeList = advCrafting.getRecipes();
-		final Map<AdvRecipeBase, ItemStack> advRecipeItemStackMap = new HashMap<>();
-		for (final IAdvRecipe advRecipe : advRecipeList) {
-			if (advRecipe instanceof AdvRecipeBase) {
-				if (!advRecipe.isInvisible())
-					continue;
-				final ItemStack output = ((AdvRecipeBase) advRecipe).getRecipeOutput();
-				final ItemStack newOutput = resourceHandler.getMainItemStack(output);
-				if (output != newOutput)
-					advRecipeItemStackMap.put((AdvRecipeBase) advRecipe, newOutput);
-			}
-		}
-		advRecipeItemStackMap.forEach((advRecipe, newOutput) -> {
-
-			switch (advRecipe.getRecipeType()) {
-				case Shaped:
-					final List<Object> newShapedInputs = Lists.newArrayList(RecipeHelper.rawShapeToShape(IC2CRecipeResearcher.getNewShapedRecipeInputs(advRecipe, resourceHandler)).actualShape);
-					newShapedInputs.add(true);
-					advCrafting.overrideRecipe(advRecipe.getRecipeID(), newOutput, newShapedInputs.toArray());
-					break;
-				case Shapeless:
-					final List<Object> newShapelessInputs = IC2CRecipeResearcher.getNewShapelessRecipeInputs(advRecipe, resourceHandler);
-					newShapelessInputs.add(true);
-					advCrafting.overrideShapelessRecipe(advRecipe.getRecipeID(), newOutput, newShapelessInputs.toArray());
-			}
 		});
 	}
 }

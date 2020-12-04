@@ -216,4 +216,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + newInputs.size()), outputStack, newInputs.toArray());
 	}
+
+	@Override
+	public void postProcess() { }
 }

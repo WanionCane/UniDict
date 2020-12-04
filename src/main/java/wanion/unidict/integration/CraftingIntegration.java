@@ -29,6 +29,7 @@ import java.util.*;
 public final class CraftingIntegration extends AbstractIntegrationThread
 {
 	private final Set<Map.Entry<ResourceLocation, IRecipe>> recipes = RegistryManager.ACTIVE.<IRecipe>getRegistry(GameData.RECIPES).getEntries();
+	private final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList;
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapedResearcherMap = new IdentityHashMap<>();
 	private final Map<Class<? extends IRecipe>, IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> shapelessResearcherMap = new IdentityHashMap<>();
 	private final Map<UniResourceContainer, Map<Integer, List<IRecipe>>> smartRecipeMap = new IdentityHashMap<>();
@@ -43,7 +44,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 	public CraftingIntegration()
 	{
 		super("Crafting");
-		final List<IRecipeResearcher<? extends IRecipe, ? extends IRecipe>> researcherList = new ArrayList<>();
+		researcherList = new ArrayList<>();
 		researcherList.add(new VanillaRecipeResearcher());
 		researcherList.add(new ForgeRecipeResearcher());
 		if (Loader.isModLoaded("ic2") && !Loader.isModLoaded("ic2-classic-spmod"))
@@ -74,8 +75,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 		try {
 			doTheResearch();
 			reCreateTheRecipes();
-			if (Loader.isModLoaded("ic2-classic-spmod"))
-				IC2CIntegration.fixAdvancedRecipes(resourceHandler);
+			postProcessResearchers();
 		} catch (Exception e) {	e.printStackTrace(); logger.error(threadName + e); }
 		return threadName + "Why so many recipes? I had to deal with at least " + totalRecipesReCreated + " recipes.";
 	}
@@ -142,6 +142,13 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 					}
 				})
 		);
+	}
+
+	private void postProcessResearchers() {
+		researcherList.forEach(researcher -> {
+			if (researcher instanceof AbstractRecipeResearcher<?, ?>)
+				((AbstractRecipeResearcher<?, ?>) researcher).postProcess();
+		});
 	}
 
 	private static class RecipeComparator implements Comparator<IRecipe>

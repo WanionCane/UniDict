@@ -192,4 +192,7 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
 		return new ShapelessOreRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + inputs.size()), outputStack, inputs.toArray());
 	}
+
+	@Override
+	public void postProcess() { }
 }

@@ -175,4 +175,7 @@ public class MekanismRecipeResearcher extends AbstractRecipeResearcher<ShapedMek
         final ItemStack outputStack = outputContainer.getMainEntry(outputSize = recipe.getRecipeOutput().getCount());
         return new ShapelessMekanismRecipe(new ResourceLocation(Reference.MOD_ID, outputContainer.name + "_x" + outputSize + "_size." + inputs.size()), outputStack, inputs.toArray());
     }
+
+    @Override
+    public void postProcess() { }
 }
