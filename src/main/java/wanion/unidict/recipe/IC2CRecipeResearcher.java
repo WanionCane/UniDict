@@ -239,6 +239,8 @@ public class IC2CRecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Ad
 			final IRecipeInput[] recipeInputs = (IRecipeInput[])shapedInput.get(advRecipe);
 			for (int y = 0, i = 0; y < height; y++) {
 				for (int x = 0; x < width; x++, i++) {
+					if (i >= recipeInputs.length)
+						continue;
 					if (itemStacksOnly) {
 						final List<ItemStack> inputs = recipeInputs[i].getInputs();
 						if (!inputs.isEmpty())

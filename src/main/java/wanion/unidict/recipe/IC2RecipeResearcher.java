@@ -82,27 +82,31 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 	@Override
 	public ShapedOreRecipe getNewShapedRecipe(@Nonnull final AdvRecipe recipe)
 	{
-		final Object[] newRecipeInputs = new Object[9];
+		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = Math.max(width, height);
+		final Object[] newRecipeInputs = new Object[root * root];
 		final IRecipeInput[] recipeInputs = recipe.input;
-		if (itemStacksOnly) {
-			for (int i = 0; i < recipeInputs.length; i++) {
-				final List<ItemStack> inputs = recipeInputs[i].getInputs();
-				if (!inputs.isEmpty())
-					newRecipeInputs[i] = resourceHandler.getMainItemStack(inputs.get(0));
-			}
-		} else {
-			for (int i = 0; i < recipeInputs.length; i++) {
-				final IRecipeInput input = recipeInputs[i];
-				String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
-				if (oreName == null) {
-					final boolean notEmpty = !input.getInputs().isEmpty();
-					oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
-					if (oreName != null)
-						newRecipeInputs[i] = oreName;
-					else if (notEmpty)
-						newRecipeInputs[i] = input.getInputs().get(0);
-				} else
-					newRecipeInputs[i] = oreName;
+		for (int y = 0, i = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, i++) {
+				if (i >= recipeInputs.length)
+					continue;
+				if (itemStacksOnly) {
+					final List<ItemStack> inputs = recipeInputs[i].getInputs();
+					if (!inputs.isEmpty())
+						newRecipeInputs[y * root + x] = resourceHandler.getMainItemStack(inputs.get(0));
+				}
+				else {
+					final IRecipeInput input = recipeInputs[i];
+					String oreName = input instanceof RecipeInputOreDict ? ((RecipeInputOreDict) input).input : null;
+					if (oreName == null) {
+						final boolean notEmpty = !input.getInputs().isEmpty();
+						oreName = notEmpty ? uniOreDictionary.getName(input.getInputs().get(0)) : null;
+						if (oreName != null)
+							newRecipeInputs[y * root + x] = oreName;
+						else if (notEmpty)
+							newRecipeInputs[y * root + x] = input.getInputs().get(0);
+					} else
+						newRecipeInputs[y * root + x] = oreName;
+				}
 			}
 		}
 		final UniResourceContainer outputContainer = resourceHandler.getContainer(recipe.getRecipeOutput());
