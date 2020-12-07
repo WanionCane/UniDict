@@ -9,6 +9,7 @@ package wanion.unidict.integration;
  */
 
 import com.buuz135.industrial.api.recipe.LaserDrillEntry;
+import com.buuz135.industrial.api.recipe.ore.OreFluidEntrySieve;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.Util;
 
@@ -25,9 +26,16 @@ final class IndustrialForegoingIntegration extends AbstractIntegrationThread
 	public String call()
 	{
 		try {
-			for (final List<LaserDrillEntry> laserDrillEntryList : LaserDrillEntry.LASER_DRILL_ENTRIES)
-				laserDrillEntryList.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack", laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
+			for (final List<LaserDrillEntry> laserDrillEntryList : LaserDrillEntry.LASER_DRILL_ENTRIES) {
+				laserDrillEntryList.forEach(laserDrillEntry -> Util.setField(LaserDrillEntry.class, "stack",
+						laserDrillEntry, resourceHandler.getMainItemStack(Util.getField(LaserDrillEntry.class, "stack", laserDrillEntry, ItemStack.class))));
+			}
+
+			for (final OreFluidEntrySieve sieveEntry : OreFluidEntrySieve.ORE_FLUID_SIEVE) {
+				Util.setField(OreFluidEntrySieve.class, "output", sieveEntry,
+						resourceHandler.getMainItemStack(Util.getField(OreFluidEntrySieve.class, "output", sieveEntry, ItemStack.class)));
+			}
 		} catch (Exception e) { logger.error(threadName + e); }
-		return threadName + "enhanced Laser Drill focus.";
+		return threadName + "enhanced Laser Drill focus and sieve.";
 	}
 }
