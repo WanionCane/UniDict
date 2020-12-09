@@ -1,5 +1,13 @@
 package wanion.unidict.integration;
 
+/*
+ * Created by ElektroKill(https://github.com/ElektroKill).
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import mekanism.common.recipe.RecipeHandler;
