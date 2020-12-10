@@ -37,17 +37,17 @@ final class MekanismIntegration extends AbstractIntegrationThread
     @Override
     public String call() {
         try {
-            FixBasicRecipes(RecipeHandler.Recipe.CRUSHER.get());
-            FixBasicRecipes(RecipeHandler.Recipe.ENRICHMENT_CHAMBER.get());
-            FixBasicRecipes(RecipeHandler.Recipe.ENERGIZED_SMELTER.get());
-            FixCombinerRecipes(RecipeHandler.Recipe.COMBINER.get());
-            FixChemicalInjectionRecipes(RecipeHandler.Recipe.CHEMICAL_INJECTION_CHAMBER.get());
-            FixInfusionRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
+            fixBasicRecipes(RecipeHandler.Recipe.CRUSHER.get());
+            fixBasicRecipes(RecipeHandler.Recipe.ENRICHMENT_CHAMBER.get());
+            fixBasicRecipes(RecipeHandler.Recipe.ENERGIZED_SMELTER.get());
+            fixCombinerRecipes(RecipeHandler.Recipe.COMBINER.get());
+            fixChemicalInjectionRecipes(RecipeHandler.Recipe.CHEMICAL_INJECTION_CHAMBER.get());
+            fixInfusionRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
         } catch (Exception e) { logger.error(threadName + e); }
         return threadName + "All the mekanisms were checked.";
     }
 
-    private <T extends BasicMachineRecipe<T>> void FixBasicRecipes(@Nonnull final Map<ItemStackInput, T> recipes) {
+    private <T extends BasicMachineRecipe<T>> void fixBasicRecipes(@Nonnull final Map<ItemStackInput, T> recipes) {
         final Map<ItemStackInput, T> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
@@ -108,7 +108,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private void FixCombinerRecipes(@Nonnull final Map<DoubleMachineInput, CombinerRecipe> recipes) {
+    private void fixCombinerRecipes(@Nonnull final Map<DoubleMachineInput, CombinerRecipe> recipes) {
         final Map<DoubleMachineInput, CombinerRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
@@ -170,7 +170,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private void FixChemicalInjectionRecipes(@Nonnull final Map<AdvancedMachineInput, InjectionRecipe> recipes) {
+    private void fixChemicalInjectionRecipes(@Nonnull final Map<AdvancedMachineInput, InjectionRecipe> recipes) {
         final Map<AdvancedMachineInput, InjectionRecipe>  correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
@@ -231,7 +231,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private void FixInfusionRecipes(@Nonnull final Map<InfusionInput, MetallurgicInfuserRecipe> recipes) {
+    private void fixInfusionRecipes(@Nonnull final Map<InfusionInput, MetallurgicInfuserRecipe> recipes) {
         final Map<InfusionInput, MetallurgicInfuserRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
         if (!config.inputReplacementMekanism) {
             final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
