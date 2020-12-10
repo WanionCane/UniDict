@@ -58,6 +58,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 	{
 		CRAFTING(CraftingIntegration.class),
 		FURNACE(FurnaceIntegration.class),
+		VILLAGER(VillagerIntegration.class),
 		ABYSSAL_CRAFT("abyssalcraft", AbyssalCraftIntegration.class),
 		ACTUALLY_ADDITIONS("actuallyadditions", ActuallyAdditionsIntegration.class),
 		ADVANCED_ROCKETRY("advancedrocketry", AdvancedRocketryIntegration.class),
