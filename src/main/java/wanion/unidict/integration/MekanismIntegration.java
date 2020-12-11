@@ -27,6 +27,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+//TODO: Refactor this class.
 final class MekanismIntegration extends AbstractIntegrationThread
 {
     MekanismIntegration()
@@ -43,6 +44,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
             fixCombinerRecipes(RecipeHandler.Recipe.COMBINER.get());
             fixChemicalInjectionRecipes(RecipeHandler.Recipe.CHEMICAL_INJECTION_CHAMBER.get());
             fixInfusionRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
+            fixSawmillRecipes(RecipeHandler.Recipe.PRECISION_SAWMILL.get());
         } catch (Exception e) { logger.error(threadName + e); }
         return threadName + "All the mekanisms were checked.";
     }
@@ -161,6 +163,94 @@ final class MekanismIntegration extends AbstractIntegrationThread
                     final CombinerRecipe correctRecipe = mekanismRecipe.copy();
                     correctRecipe.recipeInput.itemStack = inputContainer.getMainEntry(correctRecipe.recipeInput.itemStack.getCount());
                     correctRecipe.recipeOutput.output = outputContainer.getMainEntry(mekanismRecipe.recipeOutput.output.getCount());
+                    correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
+                }
+                mekanismRecipeIterator.remove();
+            }
+        }
+
+        recipes.putAll(correctRecipes);
+    }
+
+    private void fixSawmillRecipes(@Nonnull final Map<ItemStackInput, SawmillRecipe> recipes) {
+        final Map<ItemStackInput, SawmillRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
+        if (!config.inputReplacementMekanism) {
+            final Map<UniResourceContainer, TIntSet> containerInputKeyMap = new IdentityHashMap<>();
+            for (final Iterator<SawmillRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ){
+                final SawmillRecipe mekanismRecipe = mekanismRecipeIterator.next();
+                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
+                final UniResourceContainer primaryOutputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.primaryOutput);
+                final UniResourceContainer secondaryOutputContainer =
+                        resourceHandler.getContainer(mekanismRecipe.recipeOutput.secondaryOutput);
+                if (primaryOutputContainer == null) {
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
+                    continue;
+                } else if (inputContainer == null) {
+                    mekanismRecipe.recipeOutput.primaryOutput =
+                            primaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.primaryOutput.getCount());
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
+                    continue;
+                }
+                final SawmillRecipe correctRecipe = mekanismRecipe.copy();
+                final ItemStack inputStack;
+                if (config.keepOneEntry)
+                    inputStack = correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
+                else
+                    inputStack = correctRecipe.recipeInput.ingredient = correctRecipe.recipeInput.ingredient.copy();
+                final int inputId = MetaItem.get(inputStack);
+                if (!containerInputKeyMap.containsKey(primaryOutputContainer))
+                    containerInputKeyMap.put(primaryOutputContainer, new TIntHashSet());
+                final TIntSet inputKeySet = containerInputKeyMap.get(primaryOutputContainer);
+                if (!inputKeySet.contains(inputId)) {
+                    inputKeySet.add(inputId);
+                    correctRecipe.recipeOutput.primaryOutput =
+                            primaryOutputContainer.getMainEntry(correctRecipe.recipeOutput.primaryOutput.getCount());
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
+                    correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
+                }
+                mekanismRecipeIterator.remove();
+            }
+        }
+        else {
+            final Map<UniResourceContainer, TIntSet> containerKindMap = new IdentityHashMap<>();
+            for (final Iterator<SawmillRecipe> mekanismRecipeIterator = recipes.values().iterator(); mekanismRecipeIterator.hasNext(); ) {
+                final SawmillRecipe mekanismRecipe = mekanismRecipeIterator.next();
+                final UniResourceContainer inputContainer = resourceHandler.getContainer(mekanismRecipe.recipeInput.ingredient);
+                final UniResourceContainer primaryOutputContainer = resourceHandler.getContainer(mekanismRecipe.recipeOutput.primaryOutput);
+                final UniResourceContainer secondaryOutputContainer =
+                        resourceHandler.getContainer(mekanismRecipe.recipeOutput.secondaryOutput);
+                if (primaryOutputContainer == null) {
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
+                    continue;
+                }
+                if (inputContainer == null) {
+                    mekanismRecipe.recipeOutput.primaryOutput = primaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.primaryOutput.getCount());
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
+                    continue;
+                }
+                final int kind = inputContainer.kind;
+                if (!containerKindMap.containsKey(primaryOutputContainer))
+                    containerKindMap.put(primaryOutputContainer, new TIntHashSet());
+                final TIntSet kindSet = containerKindMap.get(primaryOutputContainer);
+                if (!kindSet.contains(kind)) {
+                    kindSet.add(kind);
+                    final SawmillRecipe correctRecipe = mekanismRecipe.copy();
+                    correctRecipe.recipeInput.ingredient = inputContainer.getMainEntry(correctRecipe.recipeInput.ingredient.getCount());
+                    correctRecipe.recipeOutput.primaryOutput =
+                            primaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.primaryOutput.getCount());
+                    if (secondaryOutputContainer != null)
+                        mekanismRecipe.recipeOutput.secondaryOutput =
+                                secondaryOutputContainer.getMainEntry(mekanismRecipe.recipeOutput.secondaryOutput.getCount());
                     correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
                 }
                 mekanismRecipeIterator.remove();
