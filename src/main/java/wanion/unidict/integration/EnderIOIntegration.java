@@ -38,8 +38,6 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 		return threadName + "Some inanimate objects appear to have used ender pearls. They all disappeared, how this is possible?";
 	}
 
-	private void fixOreDictPreferences() {}
-
 	private void fixAlloySmelterRecipes()
 	{
 		final List<IManyToOneRecipe> alloySmelterRecipes = AlloyRecipeManager.getInstance().getRecipes();
