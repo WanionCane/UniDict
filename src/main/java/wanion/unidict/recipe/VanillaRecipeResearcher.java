@@ -55,11 +55,21 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		return recipeKey;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Nonnull
 	public List<Class<? extends ShapedRecipes>> getShapedRecipeClasses()
 	{
-		return Collections.singletonList(ShapedRecipes.class);
+		// Check if RailCraft is installed. If it is, we load it's recipe class.
+		Class<? extends ShapedRecipes> railCraftShapeless = null;
+		try {
+			if (Loader.isModLoaded("railcraft"))
+				railCraftShapeless = (Class<? extends ShapedRecipes>) Class.forName("mods.railcraft.common.util.crafting.ShapedRailcraftRecipe");
+		} catch (ClassNotFoundException e) {
+			UniDict.getLogger().error(e);
+		}
+
+		return railCraftShapeless == null ? Collections.singletonList(ShapedRecipes.class) : Arrays.asList(ShapedRecipes.class, railCraftShapeless);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -67,16 +77,19 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 	@Override
 	public List<Class<? extends ShapelessRecipes>> getShapelessRecipeClasses()
 	{
-		// Check if Placebo is installed. If it is, we load it's recipe class.
-		Class<? extends ShapelessRecipes> placeboShapeless = null;
+		// Check if Placebo or RailCraft are installed. If it is, we load their recipe classes.
+		List<Class<? extends ShapelessRecipes>> recipes = new ArrayList<>();
+		recipes.add(ShapelessRecipes.class);
 		try {
 			if (Loader.isModLoaded("placebo"))
-				placeboShapeless = (Class<? extends ShapelessRecipes>) Class.forName("shadows.placebo.util.FastShapelessRecipe");
+				recipes.add((Class<? extends ShapelessRecipes>) Class.forName("shadows.placebo.util.FastShapelessRecipe"));
+			if (Loader.isModLoaded("railcraft"))
+				recipes.add((Class<? extends ShapelessRecipes>) Class.forName("mods.railcraft.common.util.crafting.ShapelessRailcraftRecipe"));
 		} catch (ClassNotFoundException e) {
 			UniDict.getLogger().error(e);
 		}
 
-		return placeboShapeless == null ? Collections.singletonList(ShapelessRecipes.class) : Arrays.asList(ShapelessRecipes.class, placeboShapeless);
+		return recipes;
 	}
 
 	@Override

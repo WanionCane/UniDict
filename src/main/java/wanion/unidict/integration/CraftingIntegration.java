@@ -53,8 +53,6 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 			researcherList.add(new IC2CRecipeResearcher());
 		if (Loader.isModLoaded("mekanism"))
 			researcherList.add(new MekanismRecipeResearcher());
-		if (Loader.isModLoaded("railcraft"))
-			researcherList.add(new RailCraftRecipeResearcher());
 		researcherList.forEach(researcher -> {
 			researcher.getShapedRecipeClasses().forEach(shapedRecipeClass -> shapedResearcherMap.put(shapedRecipeClass, researcher));
 			researcher.getShapelessRecipeClasses().forEach(shapelessRecipeClass -> shapelessResearcherMap.put(shapelessRecipeClass, researcher));
