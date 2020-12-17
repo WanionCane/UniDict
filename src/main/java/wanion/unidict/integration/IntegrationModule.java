@@ -80,6 +80,7 @@ public final class IntegrationModule extends AbstractModule implements UniDict.I
 		INDUSTRIAL_FOREGOING("industrialforegoing", IndustrialForegoingIntegration.class),
 		MAGNETICRAFT("magneticraft", MagneticraftIntegration.class),
 		MEKANISM("mekanism", MekanismIntegration.class),
+		RAILCRAFT("railcraft", RailCraftIntegration.class),
 		TECH_REBORN("techreborn", TechRebornIntegration.class),
 		THERMAL_EXPANSION("thermalexpansion", TEIntegration.class),
 		DRACONIC_EVOLUTION("draconicevolution", DraconicEvolutionIntegration.class);
