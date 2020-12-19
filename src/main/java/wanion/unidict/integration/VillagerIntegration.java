@@ -8,7 +8,10 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import mods.railcraft.common.items.RailcraftItems;
+import net.minecraft.block.Block;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -26,6 +29,12 @@ final class VillagerIntegration extends AbstractIntegrationThread {
     private Field buyingItem;
     private Class<?> itemstackForEmerald;
     private Field sellingItem;
+
+    // RailCraft
+    private Class<?> genericTrade;
+    private Field sale;
+    private Field offers;
+    private Field offerObj;
 
     public VillagerIntegration() {
         super("Villagers");
@@ -75,11 +84,6 @@ final class VillagerIntegration extends AbstractIntegrationThread {
             EntityVillager.ListItemForEmeralds listItemForEmeralds = (EntityVillager.ListItemForEmeralds)list;
             listItemForEmeralds.itemToBuy = resourceHandler.getMainItemStack(listItemForEmeralds.itemToBuy);
         }
-        else if (list instanceof EntityVillager.EmeraldForItems) {
-            EntityVillager.EmeraldForItems emeraldForItems = (EntityVillager.EmeraldForItems)list;
-            emeraldForItems.buyingItem =
-                    resourceHandler.getMainItemStack(new ItemStack(emeraldForItems.buyingItem)).getItem();
-        }
         else if (emeraldForItemstack != null && emeraldForItemstack.isInstance(list)) {
             try {
                 buyingItem.set(list, resourceHandler.getMainItemStack((ItemStack)buyingItem.get(list)));
@@ -90,6 +94,21 @@ final class VillagerIntegration extends AbstractIntegrationThread {
         else if (itemstackForEmerald != null && itemstackForEmerald.isInstance(list)) {
             try {
                 sellingItem.set(list, resourceHandler.getMainItemStack((ItemStack)sellingItem.get(list)));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (genericTrade != null && genericTrade.isInstance(list)) {
+            try {
+                Object saleOffer = sale.get(list);
+                offerObj.set(saleOffer,
+                        resourceHandler.getMainItemStack(getRailCraftOfferItem(offerObj.get(saleOffer))));
+
+                Object[] sellOffers = (Object[])offers.get(list);
+                for (Object sellOffer : sellOffers) {
+                    offerObj.set(sellOffer,
+                            resourceHandler.getMainItemStack(getRailCraftOfferItem(offerObj.get(sellOffer))));
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -105,5 +124,25 @@ final class VillagerIntegration extends AbstractIntegrationThread {
             sellingItem = itemstackForEmerald.getField("sellingItem");
             sellingItem.setAccessible(true);
         }
+
+        if (Loader.isModLoaded("railcraft")) {
+            genericTrade = Class.forName("mods.railcraft.common.worldgen.VillagerTrades$GenericTrade");
+            (sale = genericTrade.getDeclaredField("sale")).setAccessible(true);
+            (offers = genericTrade.getDeclaredField("offers")).setAccessible(true);
+            (offerObj = Class.forName("mods.railcraft.common.worldgen.VillagerTrades$Offer").getDeclaredField("obj")).setAccessible(true);
+        }
+    }
+
+    private ItemStack getRailCraftOfferItem(Object obj) {
+        if (obj instanceof RailcraftItems) {
+            return ((RailcraftItems)obj).getStack();
+        } else if (obj instanceof ItemStack) {
+            return (ItemStack)obj;
+        } else if (obj instanceof Item) {
+            return new ItemStack((Item)obj);
+        } else if (obj instanceof Block) {
+            return new ItemStack((Block)obj);
+        }
+        return ItemStack.EMPTY;
     }
 }
