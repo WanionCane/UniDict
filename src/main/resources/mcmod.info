@@ -7,7 +7,7 @@
   "mcversion": "${mcversion}",
   "url": "http://minecraft.curseforge.com/projects/unidict",
   "updateUrl": "",
-  "authorList": ["WanionCane"],
+  "authorList": ["WanionCane", "ElektroKill"],
   "credits": "Mojang for creating Minecraft.\nForge/FML for creating this awesome modding platform.\nThe creators of every mod that UniDict interacts with.\nAll the users of UniDict.",
   "logoFile": "unidictlogo.png",
   "screenshots": [],
