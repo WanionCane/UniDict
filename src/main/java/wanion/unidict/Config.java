@@ -69,6 +69,7 @@ public final class Config
 	public final List<String> userOreDictEntries;
 	// modules
 	public final boolean integrationModule;
+	public final boolean modConfigModule;
 	// config
 	private final Configuration config;
 	// resource related stuff
@@ -134,6 +135,7 @@ public final class Config
 			userOreDictEntries = Arrays.asList(config.getStringList("userOreDictEntries", general, new String[]{}, "This allows to the user to add/remove entries before the unification happen.\nThis is mainly useful to avoid trying to unify certain things.\n\nFormat to Add entries to the OreDictionary:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone.\n\nFormat to Remove entries from the OreDictionary:\nweirdStone-minecraft:stone#1\nThe example above will remove Granite from weirdStone."));
 			// integration module
 			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module.\nIf false all of the Integrations will be disabled.\n");
+			modConfigModule = config.getBoolean("modConfig", "modules", true, "Mod Config Module.\nIf false UniDict will not modifiy other mods' configs to achieve unification.\n");
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
 		}

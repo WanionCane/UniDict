@@ -8,7 +8,6 @@ package wanion.unidict.proxy;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -21,7 +20,6 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
 import net.minecraftforge.registries.RegistryManager;
 import wanion.lib.common.Dependencies;
-import wanion.lib.common.Util;
 import wanion.lib.module.AbstractModule;
 import wanion.lib.module.ModuleHandler;
 import wanion.unidict.Config;
@@ -30,12 +28,12 @@ import wanion.unidict.common.SpecificEntryItemStackComparator;
 import wanion.unidict.common.SpecificKindItemStackComparator;
 import wanion.unidict.integration.AbstractIntegrationThread;
 import wanion.unidict.integration.IntegrationModule;
+import wanion.unidict.modconfig.ModConfigModule;
 import wanion.unidict.plugin.crafttweaker.UniDictCraftTweakerPlugin;
 import wanion.unidict.resource.UniResourceHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -58,29 +56,9 @@ public class CommonProxy
 	public void init(final FMLInitializationEvent event)
 	{
 		uniResourceHandler.init(event);
-		if (Loader.isModLoaded("tconstruct"))
-			fixTCon();
 		if (Loader.isModLoaded("crafttweaker"))
 			UniDictCraftTweakerPlugin.init();
 		moduleHandler.startModules(event);
-	}
-
-	// sorry KnightMiner.
-	// for now, we are completely overriding the setting "S:orePreference" from tconstruct.cfg
-	private void fixTCon()
-	{
-		Class<?> recipeUtilClass = null;
-		try {
-			recipeUtilClass = Class.forName("slimeknights.tconstruct.library.utils.RecipeUtil");
-		} catch (ClassNotFoundException e) {
-			UniDict.getLogger().error("Couldn't find the class: \"slimeknights.tconstruct.library.utils.RecipeUtil\".");
-		}
-		if (recipeUtilClass == null)
-			return;
-		Util.setField(recipeUtilClass, "orePreferences", null, new String[]{});
-		final Map<String, ItemStack> preferenceCache = Util.getField(recipeUtilClass, "preferenceCache", null, Map.class);
-		if (preferenceCache != null && preferenceCache.size() > 0)
-			preferenceCache.clear();
 	}
 
 	public void postInit(final FMLPostInitializationEvent event)
@@ -122,8 +100,10 @@ public class CommonProxy
 	private ModuleHandler populateModules(final ModuleHandler moduleHandler)
 	{
 		final Config config = UniDict.getConfig();
-		if (!config.libraryMode && config.integrationModule)
-			moduleHandler.addModule(IntegrationModule.getIntegrationModule());
+		if (!config.libraryMode) {
+			if (config.modConfigModule) moduleHandler.addModule(ModConfigModule.getModConfigModule());
+			if (config.integrationModule) moduleHandler.addModule(IntegrationModule.getIntegrationModule());
+		}
 		return moduleHandler;
 	}
 
