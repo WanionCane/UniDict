@@ -46,6 +46,7 @@ public class ModConfigModule extends AbstractModule implements UniDict.IDependen
     }
 
     private enum ModConfig {
+        GREGTECH("gregtech", GregTechModConfig.class),
         TCONSTRUCT("tconstruct", TConstructModConfig.class);
 
         private final String modId;
