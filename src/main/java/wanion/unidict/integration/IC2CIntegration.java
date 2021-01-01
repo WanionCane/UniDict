@@ -14,6 +14,8 @@ import ic2.api.classic.recipe.machine.IMachineRecipeList;
 import ic2.api.classic.recipe.machine.MachineOutput;
 import ic2.core.item.recipe.ScrapBoxManager;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
+import trinsdar.ic2c_extras.recipes.Ic2cExtrasRecipes;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ final class IC2CIntegration extends AbstractIntegrationThread
 			fixMachineOutput(ClassicRecipes.sawMill);
 			fixMachineOutput(ClassicRecipes.recycler);
 			fixScrapBoxDrops();
+			if (Loader.isModLoaded("ic2c_extras"))
+				fixIc2CExtrasRecipes();
 		} catch (Exception e) { e.printStackTrace(); }
 		return threadName + "Expect the world to be nuked by the Industrial Revolution.";
 	}
@@ -77,5 +81,13 @@ final class IC2CIntegration extends AbstractIntegrationThread
 			classicScrapBoxManager.removeDrop(drop);
 			classicScrapBoxManager.addDrop(newItemStackDrop, drop.getRawChance());
 		});
+	}
+
+	private void fixIc2CExtrasRecipes() {
+		fixMachineOutput(Ic2cExtrasRecipes.rolling);
+		fixMachineOutput(Ic2cExtrasRecipes.extruding);
+		fixMachineOutput(Ic2cExtrasRecipes.cutting);
+		fixMachineOutput(Ic2cExtrasRecipes.oreWashingPlant);
+		fixMachineOutput(Ic2cExtrasRecipes.thermalCentrifuge);
 	}
 }
