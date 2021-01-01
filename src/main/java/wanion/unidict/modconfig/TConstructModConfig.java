@@ -23,16 +23,15 @@ public class TConstructModConfig extends AbstractModConfigThread {
 
     @Override
     public String call() {
-        // Sorry KnightMiner.
-        // Here we are completely overriding the setting "S:orePreference" from tconstruct.cfg
         Class<?> recipeUtilClass = null;
         try {
             recipeUtilClass = Class.forName("slimeknights.tconstruct.library.utils.RecipeUtil");
         } catch (ClassNotFoundException e) {
             logger.error("Couldn't find the class: \"slimeknights.tconstruct.library.utils.RecipeUtil\".");
         }
+
         if (recipeUtilClass != null){
-            Util.setField(recipeUtilClass, "orePreferences", null, new String[]{});
+            Util.setField(recipeUtilClass, "orePreferences", null, getPreferredMods());
             final Map<String, ItemStack> preferenceCache = Util.getField(recipeUtilClass, "preferenceCache", null, Map.class);
             if (preferenceCache != null && preferenceCache.size() > 0)
                 preferenceCache.clear();
