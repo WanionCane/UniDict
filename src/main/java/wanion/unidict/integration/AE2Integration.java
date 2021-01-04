@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 final class AE2Integration extends AbstractIntegrationThread
 {
 	AE2Integration()
@@ -77,7 +76,7 @@ final class AE2Integration extends AbstractIntegrationThread
 				else if (grinderRecipeWrapper.optionalOutput != null && grinderRecipeWrapper.optionalOutput2 == null)
 					grinderRecipeManager.addRecipe(appEngGrinderOptionalRecipeConstructor.newInstance(grinderRecipeWrapper.input, grinderRecipeWrapper.output, grinderRecipeWrapper.optionalOutput, grinderRecipeWrapper.optionalChance, grinderRecipeWrapper.cost));
 				else if (grinderRecipeWrapper.optionalOutput != null)
-					grinderRecipeManager.addRecipe(appEngGrinderTwoOptionalRecipeConstructor.newInstance(grinderRecipeWrapper.input, grinderRecipeWrapper.output, grinderRecipeWrapper.optionalOutput, grinderRecipeWrapper.optionalChance, grinderRecipeWrapper.optionalOutput2, grinderRecipeWrapper.optionalChance2, grinderRecipeWrapper.cost));
+					grinderRecipeManager.addRecipe(appEngGrinderTwoOptionalRecipeConstructor.newInstance(grinderRecipeWrapper.input, grinderRecipeWrapper.output, grinderRecipeWrapper.optionalOutput, grinderRecipeWrapper.optionalOutput2, grinderRecipeWrapper.optionalChance, grinderRecipeWrapper.optionalChance2, grinderRecipeWrapper.cost));
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
