@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 final class ForestryIntegration extends AbstractIntegrationThread
 {
-	private Set<ICarpenterRecipe> carpenterRecipes = Util.getField(CarpenterRecipeManager.class, "recipes", null, Set.class);
+	private final Set<ICarpenterRecipe> carpenterRecipes = Util.getField(CarpenterRecipeManager.class, "recipes", null, Set.class);
 
 	ForestryIntegration()
 	{

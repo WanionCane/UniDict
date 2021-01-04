@@ -1,4 +1,4 @@
-package wanion.unidict.plugin.crafttweaker.RemovalByKind;
+package wanion.unidict.plugin.crafttweaker.removalByKind;
 
 /*
  * Created by WanionCane(https://github.com/WanionCane).

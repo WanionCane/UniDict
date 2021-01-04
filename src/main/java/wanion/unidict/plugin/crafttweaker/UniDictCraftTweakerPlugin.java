@@ -30,9 +30,9 @@ import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.UniDict;
 import wanion.unidict.api.UniDictAPI;
 import wanion.unidict.common.Reference;
-import wanion.unidict.plugin.crafttweaker.RemovalByKind.Crafting;
-import wanion.unidict.plugin.crafttweaker.RemovalByKind.Furnace;
-import wanion.unidict.plugin.crafttweaker.RemovalByKind.RemovalByKind;
+import wanion.unidict.plugin.crafttweaker.removalByKind.Crafting;
+import wanion.unidict.plugin.crafttweaker.removalByKind.Furnace;
+import wanion.unidict.plugin.crafttweaker.removalByKind.RemovalByKind;
 import wanion.unidict.resource.Resource;
 import wanion.unidict.resource.UniResourceContainer;
 

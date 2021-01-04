@@ -8,7 +8,6 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import net.minecraft.item.ItemStack;
 import zmaster587.libVulpes.recipe.RecipesMachine;
 
 import java.lang.reflect.Field;

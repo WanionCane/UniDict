@@ -178,7 +178,7 @@ final class MekanismIntegration extends AbstractIntegrationThread
         recipes.putAll(correctRecipes);
     }
 
-    private class SawMillRecipeKey {
+    private static class SawMillRecipeKey {
         private final UniResourceContainer primary;
         private final UniResourceContainer secondary;
 

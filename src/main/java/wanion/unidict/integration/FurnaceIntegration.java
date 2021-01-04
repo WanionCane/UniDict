@@ -43,7 +43,6 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 		return threadName + "Some things that you smelted appear to be different now.";
 	}
 
-	@SuppressWarnings("unchecked")
 	private void optimizeFurnaceRecipes()
 	{
 		if (!config.inputReplacementFurnace) {
