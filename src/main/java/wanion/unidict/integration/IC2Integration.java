@@ -46,6 +46,7 @@ final class IC2Integration extends AbstractIntegrationThread
 			fixMachineOutput(Recipes.metalformerRolling);
 			fixMachineOutput(Recipes.blockcutter);
 			fixMachineOutput(Recipes.extractor);
+			fixMachineOutput(Recipes.oreWashing);
 		} catch (Exception e) { logger.error(threadName + e); }
 		try {
 			fixScrapBoxDrops();
