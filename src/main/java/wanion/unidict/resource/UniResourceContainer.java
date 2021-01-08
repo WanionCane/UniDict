@@ -102,7 +102,8 @@ public final class UniResourceContainer
 
 	private void removeBadEntriesFromJEI()
 	{
-		if (entries.size() > 1 && !UniResourceHandler.getEntryJEIBlackSet().contains(name) && !UniResourceHandler.getKindJEIBlackSet().contains(kind))
+		if (entries.size() > 1 && !UniResourceHandler.getEntryJEIBlackSet().contains(name) && !UniResourceHandler.getKindJEIBlackSet().contains(kind)
+				&& !UniDict.getConfig().hideInJEIResourceBlackSet.contains(name.replace(Resource.getNameFromKind(kind), "")))
 			entries.subList(1, entries.size()).forEach(UniDictJEIPlugin::hide);
 	}
 

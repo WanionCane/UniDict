@@ -40,6 +40,7 @@ public final class Config
 	public final boolean autoHideInJEI;
 	public final Set<String> hideInJEIKindBlackSet;
 	public final Set<String> hideInJEIEntryBlackSet;
+	public final Set<String> hideInJEIResourceBlackSet;
 	// dumps
 	public final boolean kindsDump;
 	public final boolean entriesDump;
@@ -95,12 +96,13 @@ public final class Config
 			itemStacksNamesToIgnore = Arrays.asList(config.getStringList("itemStacksNamesToIgnore", general, new String[]{}, "ItemStacks that you want to be ignored/not unified.\nExample Format: minecraft:iron_ingot#0"));
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through possibilities in JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "Automatically hide items in JEI") && isModLoaded("jei");
-			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "Kinds listed here won't be hiden in JEI.\nOnly works if keepOneEntry is false."))));
-			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "Entries listed here won't be hiden in JEI.\nOnly works if keepOneEntry is false."))));
+			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "Kinds listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
+			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "Entries listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
+			hideInJEIResourceBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIResourceBlackList", general, new String[] {}, "Resources listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
 			// dumps
 			kindsDump = config.getBoolean("kindsDump", "dump", false, "Enable this to keep track of all the kinds.\nThe output file will be saved in \"config\\unidict\\dump\" folder.\nOnce the file is generated, you must delete it to re-generate.");
 			entriesDump = config.getBoolean("entriesDump", "dump", false, "Enable this to keep track of all the entries.\nThe output file will be saved in \"config\\unidict\\dump\"  folder.\nOnce the file is generated, you must delete it to re-generate.");
-			unifiedEntriesDump = config.getBoolean("unifiedEntriesDump", "dump", false, "Enable this to keep track of all the unificated entries.\nThe output file will be saved in \"config\\unidict\\dump\" folder.\nOnce the file is generated, you must delete it to re-generate.");
+			unifiedEntriesDump = config.getBoolean("unifiedEntriesDump", "dump", false, "Enable this to keep track of all the unified entries.\nThe output file will be saved in \"config\\unidict\\dump\" folder.\nOnce the file is generated, you must delete it to re-generate.");
 			// input replacement
 			inputReplacementFurnace = config.getBoolean("furnace", "inputReplacement", false, "Enabling this will remove all non-standard items from inputs of the Furnace.");
 			//inputReplacementIC2 = config.getBoolean("ic2", "inputReplacement", false, "Enabling this will remove all non-standard items as inputs of IC2 Machine Recipes.\nNote: This will only affect recipes that don't use OreDictionary.");
@@ -121,7 +123,7 @@ public final class Config
 			}
 
 			furnaceInputsToIgnore = Arrays.asList(config.getStringList("furnaceInputsToIgnore", resources, new String[]{""}, "Input ItemStack (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
-			furnaceOutputsToIgnore = Arrays.asList(config.getStringList("furnaceOutputsToIgnore", resources, new String[]{""}, "Ouput ItemStacks (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
+			furnaceOutputsToIgnore = Arrays.asList(config.getStringList("furnaceOutputsToIgnore", resources, new String[]{""}, "Output ItemStacks (item registry names) that you don't want the Furnace Integration to mess with.\nFormat:\nminecraft:iron_ingot#0"));
 
 			// integration specific configs
 			ieIntegrationDuplicateRemoval = config.getBoolean("ieIntegrationDuplicateRemoval", "integrations", true, "This controls if duplicates are removed in Immersive Engineering Integration.");
@@ -135,9 +137,10 @@ public final class Config
 			userOreDictEntries = Arrays.asList(config.getStringList("userOreDictEntries", general, new String[]{}, "This allows to the user to add/remove entries before the unification happen.\nThis is mainly useful to avoid trying to unify certain things.\n\nFormat to Add entries to the OreDictionary:\nweirdStone+minecraft:stone#1\nThe example above will register Granite as weirdStone.\n\nFormat to Remove entries from the OreDictionary:\nweirdStone-minecraft:stone#1\nThe example above will remove Granite from weirdStone."));
 			// integration module
 			integrationModule = config.getBoolean("integration", "modules", true, "Integration Module.\nIf false all of the Integrations will be disabled.\n");
-			modConfigModule = config.getBoolean("modConfig", "modules", true, "Mod Config Module.\nIf false UniDict will not modifiy other mods' configs to achieve unification.\n");
+			// mod config module
+			modConfigModule = config.getBoolean("modConfig", "modules", true, "Mod Config Module.\nIf false UniDict will not modify other mods' configs to achieve unification.\n");
 		} catch (Exception e) {
-			throw new RuntimeException("Something went wrong on " + config.getConfigFile() + " loading. " + e);
+			throw new RuntimeException("Something went wrong when loading config file \"" + config.getConfigFile() + "\" " + e);
 		}
 		if (config.hasChanged() || deleted)
 			config.save();
