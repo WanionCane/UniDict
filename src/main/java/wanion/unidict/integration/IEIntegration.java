@@ -42,6 +42,7 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixBlastFurnaceRecipes();
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
+			fixCokeOvenRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
@@ -76,9 +77,10 @@ final class IEIntegration extends AbstractIntegrationThread
 				correctRecipes.add(new ArcRecyclingRecipe(newOutputs, recipe.input, time, energy));
 			} else {
 				final ItemStack correctOutput = resourceHandler.getMainItemStack(recipe.output);
-				if (correctOutput == recipe.output)
+				final ItemStack correctSlag = resourceHandler.getMainItemStack(recipe.slag);
+				if (correctOutput == recipe.output && correctSlag == recipe.slag)
 					continue;
-				correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.input, recipe.slag, time, energy, (Object[]) recipe.additives));
+				correctRecipes.add(new ArcFurnaceRecipe(correctOutput, recipe.input, correctSlag, time, energy, (Object[]) recipe.additives));
 			}
 			arcFurnaceRecipeIterator.remove();
 		}
@@ -88,7 +90,7 @@ final class IEIntegration extends AbstractIntegrationThread
 	private void fixBlastFurnaceRecipes()
 	{
 		final List<BlastFurnaceRecipe> correctRecipes = new ArrayList<>(new Double(BlastFurnaceRecipe.recipeList.size() * 1.3).intValue());
-		correctRecipes.addAll(BlastFurnaceRecipe.recipeList.stream().map(blastFurnaceRecipe -> new BlastFurnaceRecipe(resourceHandler.getMainItemStack(blastFurnaceRecipe.output), blastFurnaceRecipe.input, blastFurnaceRecipe.time, blastFurnaceRecipe.slag)).collect(Collectors.toList()));
+		correctRecipes.addAll(BlastFurnaceRecipe.recipeList.stream().map(blastFurnaceRecipe -> new BlastFurnaceRecipe(resourceHandler.getMainItemStack(blastFurnaceRecipe.output), blastFurnaceRecipe.input, blastFurnaceRecipe.time, resourceHandler.getMainItemStack(blastFurnaceRecipe.slag))).collect(Collectors.toList()));
 		BlastFurnaceRecipe.recipeList.clear();
 		BlastFurnaceRecipe.recipeList.addAll(correctRecipes);
 	}
@@ -146,5 +148,12 @@ final class IEIntegration extends AbstractIntegrationThread
 			secondaryAndChanceList.add(chance[i]);
 		}
 		crusherRecipe.addToSecondaryOutput(secondaryAndChanceList.toArray());
+	}
+
+	private void fixCokeOvenRecipes() {
+		final List<CokeOvenRecipe> correctRecipes =
+				CokeOvenRecipe.recipeList.stream().map(cokeOvenRecipe -> new CokeOvenRecipe(resourceHandler.getMainItemStack(cokeOvenRecipe.output), cokeOvenRecipe.input, cokeOvenRecipe.time, cokeOvenRecipe.creosoteOutput)).collect(Collectors.toList());
+		CokeOvenRecipe.recipeList.clear();
+		CokeOvenRecipe.recipeList.addAll(correctRecipes);
 	}
 }
