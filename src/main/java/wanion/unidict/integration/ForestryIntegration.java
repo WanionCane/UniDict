@@ -7,11 +7,11 @@ import forestry.factory.recipes.CarpenterRecipe;
 import forestry.factory.recipes.CarpenterRecipeManager;
 import forestry.factory.recipes.CentrifugeRecipe;
 import forestry.factory.recipes.CentrifugeRecipeManager;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import wanion.lib.common.MetaItem;
+import net.minecraft.item.crafting.Ingredient;
 import wanion.lib.common.Util;
+import wanion.lib.recipe.RecipeAttributes;
+import wanion.lib.recipe.RecipeHelper;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
@@ -20,47 +20,56 @@ import java.util.stream.Collectors;
 
 final class ForestryIntegration extends AbstractIntegrationThread
 {
-	private final Set<ICarpenterRecipe> carpenterRecipes = Util.getField(CarpenterRecipeManager.class, "recipes", null, Set.class);
-
-	ForestryIntegration()
-	{
-		super("Forestry");
-	}
+	ForestryIntegration() { super("Forestry"); }
 
 	@Override
-	public String call()
-	{
+	public String call() {
 		try {
-			removeBadCarpenterOutputs(carpenterRecipes);
-
-			final UniResourceContainer ingotBronze = resourceHandler.getContainer("Bronze", "ingot");
-			if (ingotBronze != null)
-				bronzeThings(ingotBronze);
-
+			fixCarpenterRecipes();
 			fixCentrifugeRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All these bees... they can hurt, you know?";
 	}
 
-	private void removeBadCarpenterOutputs(@Nonnull final Set<ICarpenterRecipe> carpenterRecipes)
-	{
-		carpenterRecipes.removeIf(carpenterRecipe -> carpenterRecipe != null && resourceHandler.exists(MetaItem.get(carpenterRecipe.getCraftingGridRecipe().getOutput())));
+	private void fixCarpenterRecipes() {
+		final Set<ICarpenterRecipe> carpenterRecipes = Util.getField(CarpenterRecipeManager.class, "recipes", null, Set.class);
+		if (carpenterRecipes == null)
+			return;
+		final List<ICarpenterRecipe> newRecipes = new ArrayList<>();
+		for (final Iterator<ICarpenterRecipe> carpenterRecipeIterator = carpenterRecipes.iterator(); carpenterRecipeIterator.hasNext();) {
+			final ICarpenterRecipe carpenterRecipe = carpenterRecipeIterator.next();
+
+			if (carpenterRecipe.getCraftingGridRecipe() instanceof ShapedRecipeCustom) {
+				final ShapedRecipeCustom gridRecipe = (ShapedRecipeCustom)carpenterRecipe.getCraftingGridRecipe();
+
+				newRecipes.add(new CarpenterRecipe(carpenterRecipe.getPackagingTime(),
+						carpenterRecipe.getFluidResource(), carpenterRecipe.getBox(),  recreateRecipe(gridRecipe)));
+
+				carpenterRecipeIterator.remove();
+			}
+		}
+		carpenterRecipes.addAll(newRecipes);
 	}
 
-	private void bronzeThings(@Nonnull final UniResourceContainer ingotBronze)
-	{
-		Item brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzePickaxe"));
-		if (brokenBronzePickaxe == null)
-			brokenBronzePickaxe = Item.REGISTRY.getObject(new ResourceLocation("forestry", "broken_bronze_pickaxe"));
-
-		Item brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "brokenBronzeShovel"));
-		if (brokenBronzeShovel == null)
-			brokenBronzeShovel = Item.REGISTRY.getObject(new ResourceLocation("forestry", "broken_bronze_shovel"));
-
-		if (brokenBronzePickaxe != null)
-			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(2), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzePickaxe))));
-		if (brokenBronzeShovel != null)
-			carpenterRecipes.add(new CarpenterRecipe(5, null, ItemStack.EMPTY, new ShapedRecipeCustom(ingotBronze.getMainEntry(), "X  ", "   ", "   ", 'X', new ItemStack(brokenBronzeShovel))));
+	private ShapedRecipeCustom recreateRecipe(final ShapedRecipeCustom recipe) {
+		final List<Ingredient> recipeInputs = recipe.getIngredients();
+		final int width = recipe.getRecipeWidth(), height = recipe.getRecipeHeight(), root = Math.max(width, height);
+		final Object[] newRecipeInputs = new Object[root * root];
+		for (int y = 0, i = 0; y < height; y++) {
+			for (int x = 0; x < width; x++, i++) {
+				final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
+				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
+					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+					newRecipeInputs[y * root + x] = container != null ? container.name : itemStack;
+				}
+			}
+		}
+		final RecipeAttributes newRecipeAttributes = RecipeHelper.rawShapeToShape(newRecipeInputs);
+		final ShapedRecipeCustom newRecipe =
+				new ShapedRecipeCustom(resourceHandler.getMainItemStack(recipe.getRecipeOutput()), newRecipeAttributes.actualShape);
+		newRecipe.setRegistryName(recipe.getGroup());
+		return newRecipe;
 	}
 
 	private void fixCentrifugeRecipes()
@@ -69,11 +78,12 @@ final class ForestryIntegration extends AbstractIntegrationThread
 		if (centrifugeRecipes == null)
 			return;
 		final List<ICentrifugeRecipe> newRecipes = new ArrayList<>();
-		for (final Iterator<ICentrifugeRecipe> centrifugeRecipeIterator = centrifugeRecipes.iterator(); centrifugeRecipeIterator.hasNext(); centrifugeRecipeIterator.remove())
+		for (final Iterator<ICentrifugeRecipe> centrifugeRecipeIterator = centrifugeRecipes.iterator(); centrifugeRecipeIterator.hasNext();)
 		{
 			final ICentrifugeRecipe centrifugeRecipe = centrifugeRecipeIterator.next();
 			newRecipes.add(new CentrifugeRecipe(centrifugeRecipe.getProcessingTime(), centrifugeRecipe.getInput(), correctCentrifugeOutput(centrifugeRecipe.getAllProducts())));
 
+			centrifugeRecipeIterator.remove();
 		}
 		centrifugeRecipes.addAll(newRecipes);
 	}
