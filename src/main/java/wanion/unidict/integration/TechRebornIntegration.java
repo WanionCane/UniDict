@@ -16,7 +16,6 @@ import techreborn.api.recipe.Recipes;
 import wanion.lib.common.Util;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 final class TechRebornIntegration extends AbstractIntegrationThread
 {
@@ -38,7 +37,7 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 		try {
 			fixFusionReactorRecipe();
 			fixTechRebornRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) { e.printStackTrace(); }
 		return threadName + "now Tech is truly Reborn.";
 	}
 
@@ -53,21 +52,23 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 		if (recipeOutputs == null)
 			return;
 
-		fixPraescriptumRecipes(Recipes.alloySmelter.getRecipes());
-		fixPraescriptumRecipes(Recipes.assemblingMachine.getRecipes());
-		fixPraescriptumRecipes(Recipes.centrifuge.getRecipes());
-		fixPraescriptumRecipes(Recipes.chemicalReactor.getRecipes());
-		fixPraescriptumRecipes(Recipes.compressor.getRecipes());
-		fixPraescriptumRecipes(Recipes.extractor.getRecipes());
-		fixPraescriptumRecipes(Recipes.grinder.getRecipes());
-		fixPraescriptumRecipes(Recipes.plateBendingMachine.getRecipes());
-		fixPraescriptumRecipes(Recipes.recycler.getRecipes());
-		fixPraescriptumRecipes(Recipes.solidCanningMachine.getRecipes());
-		fixPraescriptumRecipes(Recipes.wireMill.getRecipes());
+		fixPraescriptumRecipes(Recipes.alloySmelter);
+		fixPraescriptumRecipes(Recipes.assemblingMachine);
+		fixPraescriptumRecipes(Recipes.centrifuge);
+		fixPraescriptumRecipes(Recipes.chemicalReactor);
+		fixPraescriptumRecipes(Recipes.compressor);
+		fixPraescriptumRecipes(Recipes.extractor);
+		fixPraescriptumRecipes(Recipes.grinder);
+		fixPraescriptumRecipes(Recipes.plateBendingMachine);
+		fixPraescriptumRecipes(Recipes.recycler);
+		fixPraescriptumRecipes(Recipes.solidCanningMachine);
+		fixPraescriptumRecipes(Recipes.wireMill);
 	}
 
-	private void fixPraescriptumRecipes(Collection<Recipe> recipes) {
-		recipes.forEach(recipe -> {
+	private void fixPraescriptumRecipes(reborncore.api.praescriptum.recipes.RecipeHandler handler) {
+		if (handler == null)
+			return;
+		handler.getRecipes().forEach(recipe -> {
 			try {
 				recipeOutputs.set(recipe, resourceHandler.getMainItemStacks(recipe.getItemOutputs()));
 			} catch (IllegalAccessException e) {
