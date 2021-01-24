@@ -16,7 +16,9 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.GameData;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
+import nmd.primal.forgecraft.blocks.machine.Forge;
 import wanion.lib.recipe.IRecipeResearcher;
 import wanion.unidict.recipe.*;
 import wanion.unidict.resource.UniResourceContainer;
@@ -112,6 +114,7 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 
 	private void reCreateTheRecipes()
 	{
+		final IForgeRegistry<IRecipe> recipes = ForgeRegistries.RECIPES;
 		final Map<UniResourceContainer, Comparator<IRecipe>> comparatorCache = new IdentityHashMap<>();
 		smartRecipeMap.forEach((container, evenSmartRecipeMap) -> evenSmartRecipeMap.forEach((key, recipeList) -> {
 					if (recipeList.size() > 1) {
@@ -133,7 +136,12 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 						else
 							iRecipe = isShapeless ? (IRecipe) getNewShapelessRecipeMethod.invoke(recipeResearcher, recipe) : (IRecipe) getNewShapedRecipeMethod.invoke(recipeResearcher, recipe);
 						if (iRecipe != null) {
-							ForgeRegistries.RECIPES.register(iRecipe.setRegistryName(new ResourceLocation(iRecipe.getGroup())));
+							ResourceLocation resKey = new ResourceLocation(iRecipe.getGroup());
+							int identifier = 2;
+							while (ForgeRegistries.RECIPES.containsKey(resKey)) {
+								resKey = new ResourceLocation(resKey.toString() + "_" + identifier++);
+							}
+							ForgeRegistries.RECIPES.register(iRecipe.setRegistryName(resKey));
 							totalRecipesReCreated++;
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
