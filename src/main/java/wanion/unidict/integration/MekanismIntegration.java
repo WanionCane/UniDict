@@ -12,9 +12,12 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import mekanism.common.recipe.RecipeHandler;
 import mekanism.common.recipe.inputs.*;
+import mekanism.common.recipe.machines.CrystallizerRecipe;
 import mekanism.common.recipe.machines.MachineRecipe;
+import mekanism.common.recipe.machines.PressurizedRecipe;
 import mekanism.common.recipe.machines.SawmillRecipe;
 import mekanism.common.recipe.outputs.ItemStackOutput;
+import mekanism.common.recipe.outputs.PressurizedOutput;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.resource.UniResourceContainer;
@@ -25,8 +28,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-final class MekanismIntegration extends AbstractIntegrationThread
-{
+final class MekanismIntegration extends AbstractIntegrationThread {
     MekanismIntegration()
     {
         super("Mekanism");
@@ -42,6 +44,8 @@ final class MekanismIntegration extends AbstractIntegrationThread
             fixMachineRecipes(RecipeHandler.Recipe.CHEMICAL_INJECTION_CHAMBER.get());
             fixMachineRecipes(RecipeHandler.Recipe.METALLURGIC_INFUSER.get());
             fixSawmillRecipes(RecipeHandler.Recipe.PRECISION_SAWMILL.get());
+            fixCrystallizerRecipes(RecipeHandler.Recipe.CHEMICAL_CRYSTALLIZER.get());
+            fixPRCRecipes(RecipeHandler.Recipe.PRESSURIZED_REACTION_CHAMBER.get());
         } catch (Exception e) { logger.error(threadName + e); }
         return threadName + "All the mekanisms were checked.";
     }
@@ -173,6 +177,43 @@ final class MekanismIntegration extends AbstractIntegrationThread
             }
 
             mekanismRecipeIterator.remove();
+        }
+
+        recipes.putAll(correctRecipes);
+    }
+
+    private void fixCrystallizerRecipes(HashMap<GasInput, CrystallizerRecipe> recipes) {
+        final Map<GasInput, CrystallizerRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
+
+        final Iterator<CrystallizerRecipe> recipeIterator = recipes.values().iterator();
+        while (recipeIterator.hasNext()) {
+            final CrystallizerRecipe recipe = recipeIterator.next();
+            final UniResourceContainer outputContainer = resourceHandler.getContainer(recipe.recipeOutput.output);
+            if (outputContainer == null)
+                continue;
+            final CrystallizerRecipe correctRecipe = recipe.copy();
+            correctRecipe.recipeOutput.output = outputContainer.getMainEntry(recipe.recipeOutput.output.getCount());
+            correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
+            recipeIterator.remove();
+        }
+
+        recipes.putAll(correctRecipes);
+    }
+
+    private void fixPRCRecipes(HashMap<PressurizedInput, PressurizedRecipe> recipes) {
+        final Map<PressurizedInput, PressurizedRecipe> correctRecipes = new HashMap<>(recipes.size(), 1);
+
+        final Iterator<PressurizedRecipe> recipeIterator = recipes.values().iterator();
+        while (recipeIterator.hasNext()) {
+            final PressurizedRecipe recipe = recipeIterator.next();
+            final ItemStack inputStack = recipe.recipeOutput.getItemOutput();
+            final UniResourceContainer outputContainer = resourceHandler.getContainer(inputStack);
+            if (outputContainer == null)
+                continue;
+            final PressurizedRecipe correctRecipe = recipe.copy();
+            correctRecipe.recipeOutput = new PressurizedOutput(outputContainer.getMainEntry(inputStack.getCount()), recipe.recipeOutput.getGasOutput());
+            correctRecipes.put(correctRecipe.recipeInput, correctRecipe);
+            recipeIterator.remove();
         }
 
         recipes.putAll(correctRecipes);

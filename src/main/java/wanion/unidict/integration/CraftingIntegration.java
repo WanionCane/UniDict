@@ -138,10 +138,10 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 						if (iRecipe != null) {
 							ResourceLocation resKey = new ResourceLocation(iRecipe.getGroup());
 							int identifier = 2;
-							while (ForgeRegistries.RECIPES.containsKey(resKey)) {
+							while (recipes.containsKey(resKey)) {
 								resKey = new ResourceLocation(resKey.toString() + "_" + identifier++);
 							}
-							ForgeRegistries.RECIPES.register(iRecipe.setRegistryName(resKey));
+							recipes.register(iRecipe.setRegistryName(resKey));
 							totalRecipesReCreated++;
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
