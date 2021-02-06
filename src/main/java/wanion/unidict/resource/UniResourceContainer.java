@@ -87,8 +87,13 @@ public final class UniResourceContainer
 			if (config.autoHideInJEI)
 				removeBadEntriesFromJEI();
 			if (config.keepOneEntry) {
-				if ((!config.keepOneEntryBlackListsAsWhiteLists && (!config.keepOneEntryEntryBlackSet.contains(name) || !config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))) || (config.keepOneEntryBlackListsAsWhiteLists && (config.keepOneEntryEntryBlackSet.contains(name) || config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))))
-					keepOneEntry();
+				if (config.keepOneEntryBlackListsAsWhiteLists) {
+					if(config.keepOneEntryEntryBlackSet.contains(name) ||
+							config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind)))
+						keepOneEntry();
+				}
+				else if (!config.keepOneEntryEntryBlackSet.contains(name) &&
+						!config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind))) keepOneEntry();
 			}
 		}
 		return updated = true;
