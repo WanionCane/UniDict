@@ -113,9 +113,9 @@ public final class UniDictCraftTweakerPlugin
 							nameKindMap.put((String) input, Resource.getKindFromName((String) input));
 				nameKindMap.put(shapedRecipeTemplate.outputKind, Resource.getKindFromName(shapedRecipeTemplate.outputKind));
 				final Object[] trueInputs = new Object[9];
-				for (int x = 0; x < 3; x++) {
-					for (int y = 0; y < 3; y++) {
-						final Object input = shapedRecipeTemplate.inputs[x][y];
+				for (int y = 0; y < 3; y++) {
+					for (int x = 0; x < 3; x++) {
+						final Object input = shapedRecipeTemplate.inputs[y][x];
 						if (input instanceof String && !input.equals(""))
 							trueInputs[y * 3 + x] = input;
 						else if (input instanceof MCItemStack && ((MCItemStack) input).getInternal() instanceof ItemStack)
