@@ -106,7 +106,8 @@ final class IEIntegration extends AbstractIntegrationThread
 			final ItemStack correctOutput = resourceHandler.getMainItemStack(output);
 			if (output == correctOutput)
 				continue;
-			final ItemStack input = UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString);
+			final ItemStack input = crusherRecipe.oreInputString != null ?
+					UniOreDictionary.getFirstEntry(crusherRecipe.oreInputString) : crusherRecipe.input.stack;
 			final int recipeId = duplicateCheck ? MetaItem.getCumulative(input, correctOutput) : 0;
 			if (recipeId == 0 || !uniques.contains(recipeId)) {
 				final CrusherRecipe newRecipe = new CrusherRecipe(correctOutput, crusherRecipe.input, (int) Math.floor((float) crusherRecipe.getTotalProcessEnergy() / CrusherRecipe.energyModifier));
