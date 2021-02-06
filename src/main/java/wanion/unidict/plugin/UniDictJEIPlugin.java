@@ -13,6 +13,7 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import net.minecraft.item.ItemStack;
+import wanion.unidict.UniDict;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public final class UniDictJEIPlugin implements IModPlugin
 	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)
 	{
+		UniDict.getLogger().info("Hiding items from JEI...");
 		final IIngredientBlacklist iIngredientBlacklist = iModRegistry.getJeiHelpers().getIngredientBlacklist();
 		stacksToHideList.forEach(iIngredientBlacklist::addIngredientToBlacklist);
 	}

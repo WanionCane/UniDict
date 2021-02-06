@@ -34,6 +34,7 @@ public final class Config
 	public final Set<String> keepOneEntryModBlackSet;
 	public final Set<String> keepOneEntryKindBlackSet;
 	public final Set<String> keepOneEntryEntryBlackSet;
+	public final boolean keepOneEntryDisableJEIHide;
 	public final List<String> itemStacksNamesToIgnore;
 	public final List<ItemStack> itemStacksToIgnore = new ArrayList<>();
 	public final boolean keepOneEntryBlackListsAsWhiteLists;
@@ -93,6 +94,7 @@ public final class Config
 			keepOneEntryKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryKindBlackList", general, new String[]{}, "Kinds listed here will be blacklisted in keepOneEntry.\nMust be the exact kind name."))));
 			keepOneEntryEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("keepOneEntryEntryBlackList", general, new String[]{}, "Entries listed here will be blacklisted in keepOneEntry.\nMust be the exact entry name."))));
 			keepOneEntryBlackListsAsWhiteLists = config.getBoolean("keepOneEntryBlackListsAsWhiteLists", general, false, "Enable this if you want the keepOneEntry blacklist to became a whitelist.\nNote: This doesn't applies for \"S:keepOneEntryModBlackList\"");
+			keepOneEntryDisableJEIHide = config.getBoolean("keepOneEntryDisableHideFromJEI", general, false, "Entries blacklisted from keepOneEntry will not be hidden in JEI if enabled.");
 			itemStacksNamesToIgnore = Arrays.asList(config.getStringList("itemStacksNamesToIgnore", general, new String[]{}, "ItemStacks that you want to be ignored/not unified.\nExample Format: minecraft:iron_ingot#0"));
 			registerNewCraftingIngredientsAsItemStacks = config.getBoolean("registerNewCraftingIngredientsAsItemStacks", general, false, "If Enabled, the ingredients of all the new recipes created by Crafting Integration will be registered as ItemStacks.\nEnable this if you don't like the cycling through possibilities in JEI.");
 			autoHideInJEI = config.getBoolean("autoHideInJEI", general, true, "Automatically hide items in JEI") && isModLoaded("jei");

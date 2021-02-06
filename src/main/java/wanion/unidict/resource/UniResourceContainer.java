@@ -107,9 +107,25 @@ public final class UniResourceContainer
 
 	private void removeBadEntriesFromJEI()
 	{
-		if (entries.size() > 1 && !UniResourceHandler.getEntryJEIBlackSet().contains(name) && !UniResourceHandler.getKindJEIBlackSet().contains(kind)
-				&& !UniDict.getConfig().hideInJEIResourceBlackSet.contains(name.replace(Resource.getNameFromKind(kind), "")))
-			entries.subList(1, entries.size()).forEach(UniDictJEIPlugin::hide);
+		if (entries.size() <= 1) return;
+		if (UniResourceHandler.getEntryJEIBlackSet().contains(name)) return;
+		if (UniResourceHandler.getKindJEIBlackSet().contains(kind)) return;
+		Config config = UniDict.getConfig();
+		if (config.hideInJEIResourceBlackSet.contains(name.replace(Resource.getNameFromKind(kind), "")))
+			return;
+		if (config.keepOneEntry && config.keepOneEntryDisableJEIHide) {
+			if (config.keepOneEntryBlackListsAsWhiteLists) {
+				if (!config.keepOneEntryEntryBlackSet.contains(name) &&
+						!config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind))) {
+					return;
+				}
+			}
+			else if (config.keepOneEntryEntryBlackSet.contains(name) ||
+					config.keepOneEntryKindBlackSet.contains(Resource.getNameFromKind(kind))) {
+				return;
+			}
+		}
+		entries.subList(1, entries.size()).forEach(UniDictJEIPlugin::hide);
 	}
 
 	private void keepOneEntry()
