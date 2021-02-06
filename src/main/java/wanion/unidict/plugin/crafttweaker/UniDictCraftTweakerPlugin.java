@@ -107,9 +107,10 @@ public final class UniDictCraftTweakerPlugin
 						badEntry = true;
 			if (!badEntry) {
 				final TObjectIntMap<String> nameKindMap = new TObjectIntHashMap<>();
-				for (final Object input : shapedRecipeTemplate.inputs)
-					if (input instanceof String && !nameKindMap.containsKey(input))
-						nameKindMap.put((String) input, Resource.getKindFromName((String) input));
+				for (final Object[] subInputs : shapedRecipeTemplate.inputs)
+					for (final Object input : subInputs)
+						if (input instanceof String && !nameKindMap.containsKey(input))
+							nameKindMap.put((String) input, Resource.getKindFromName((String) input));
 				nameKindMap.put(shapedRecipeTemplate.outputKind, Resource.getKindFromName(shapedRecipeTemplate.outputKind));
 				final Object[] trueInputs = new Object[9];
 				for (int x = 0; x < 3; x++) {
