@@ -13,12 +13,15 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import net.minecraft.item.ItemStack;
+import wanion.lib.common.MetaItem;
 import wanion.unidict.UniDict;
+import wanion.unidict.common.Util;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JEIPlugin
 public final class UniDictJEIPlugin implements IModPlugin
@@ -35,6 +38,11 @@ public final class UniDictJEIPlugin implements IModPlugin
 	{
 		UniDict.getLogger().info("Hiding items from JEI...");
 		final IIngredientBlacklist iIngredientBlacklist = iModRegistry.getJeiHelpers().getIngredientBlacklist();
-		stacksToHideList.forEach(iIngredientBlacklist::addIngredientToBlacklist);
+		List<Integer> blackList =
+				Util.stringListToItemStackList(UniDict.getConfig().hideInJEIItemBlackSet).stream().map(MetaItem::get).collect(Collectors.toList());
+		for (ItemStack itemStack : stacksToHideList) {
+			if (!blackList.contains(MetaItem.get(itemStack)))
+				iIngredientBlacklist.addIngredientToBlacklist(itemStack);
+		}
 	}
 }

@@ -42,6 +42,7 @@ public final class Config
 	public final Set<String> hideInJEIKindBlackSet;
 	public final Set<String> hideInJEIEntryBlackSet;
 	public final Set<String> hideInJEIResourceBlackSet;
+	public final List<String> hideInJEIItemBlackSet;
 	// dumps
 	public final boolean kindsDump;
 	public final boolean entriesDump;
@@ -101,6 +102,8 @@ public final class Config
 			hideInJEIKindBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIKindBlackList", general, new String[]{"ore"}, "Kinds listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
 			hideInJEIEntryBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIEntryBlackList", general, new String[]{}, "Entries listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
 			hideInJEIResourceBlackSet = Collections.unmodifiableSet(Sets.newHashSet(Arrays.asList(config.getStringList("autoHideInJEIResourceBlackList", general, new String[] {}, "Resources listed here won't be hidden in JEI.\nOnly works if keepOneEntry is false."))));
+			hideInJEIItemBlackSet = Arrays.asList(config.getStringList("autoHideInJEIItemBlackList", general, new String[] {},
+					"ItemStack names listed here won't be hidden in JEI\nExample Format: minecraft:iron_ingot#0"));
 			// dumps
 			kindsDump = config.getBoolean("kindsDump", "dump", false, "Enable this to keep track of all the kinds.\nThe output file will be saved in \"config\\unidict\\dump\" folder.\nOnce the file is generated, you must delete it to re-generate.");
 			entriesDump = config.getBoolean("entriesDump", "dump", false, "Enable this to keep track of all the entries.\nThe output file will be saved in \"config\\unidict\\dump\"  folder.\nOnce the file is generated, you must delete it to re-generate.");
