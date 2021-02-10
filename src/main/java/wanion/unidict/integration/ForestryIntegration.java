@@ -3,10 +3,8 @@ package wanion.unidict.integration;
 import forestry.api.recipes.ICarpenterRecipe;
 import forestry.api.recipes.ICentrifugeRecipe;
 import forestry.core.recipes.ShapedRecipeCustom;
-import forestry.factory.recipes.CarpenterRecipe;
-import forestry.factory.recipes.CarpenterRecipeManager;
-import forestry.factory.recipes.CentrifugeRecipe;
-import forestry.factory.recipes.CentrifugeRecipeManager;
+import forestry.core.utils.datastructures.ItemStackMap;
+import forestry.factory.recipes.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import wanion.lib.common.Util;
@@ -27,6 +25,7 @@ final class ForestryIntegration extends AbstractIntegrationThread
 		try {
 			fixCarpenterRecipes();
 			fixCentrifugeRecipes();
+			fixSqueezerRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "All these bees... they can hurt, you know?";
 	}
@@ -92,5 +91,24 @@ final class ForestryIntegration extends AbstractIntegrationThread
 	private Map<ItemStack, Float> correctCentrifugeOutput(@Nonnull final Map<ItemStack, Float> outputMap)
 	{
 		return outputMap.entrySet().stream().collect(Collectors.toMap(entry -> resourceHandler.getMainItemStack(entry.getKey()), Map.Entry::getValue));
+	}
+
+	private void fixSqueezerRecipes() {
+		final ItemStackMap<ISqueezerContainerRecipe> containerRecipes = Util.getField(SqueezerRecipeManager.class,
+				"containerRecipes", null, ItemStackMap.class);
+		if (containerRecipes == null)
+			return;
+		final ItemStackMap<ISqueezerContainerRecipe> newContainerRecipes = new ItemStackMap<>();
+		for (final Iterator<ISqueezerContainerRecipe> squeezerRecipeIterator = containerRecipes.values().iterator(); squeezerRecipeIterator.hasNext();) {
+			final ISqueezerContainerRecipe squeezerRecipe = squeezerRecipeIterator.next();
+			newContainerRecipes.put(squeezerRecipe.getEmptyContainer(),
+					new SqueezerContainerRecipe(squeezerRecipe.getEmptyContainer(),
+							squeezerRecipe.getProcessingTime(),
+							resourceHandler.getMainItemStack(squeezerRecipe.getRemnants()),
+							squeezerRecipe.getRemnantsChance()));
+			squeezerRecipeIterator.remove();
+		}
+
+		containerRecipes.putAll(newContainerRecipes);
 	}
 }
