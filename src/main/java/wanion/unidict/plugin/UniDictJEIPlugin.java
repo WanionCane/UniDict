@@ -36,6 +36,8 @@ public final class UniDictJEIPlugin implements IModPlugin
 	@Override
 	public void register(@Nonnull final IModRegistry iModRegistry)
 	{
+		if (stacksToHideList.isEmpty())
+			return;
 		UniDict.getLogger().info("Hiding items from JEI...");
 		final IIngredientBlacklist iIngredientBlacklist = iModRegistry.getJeiHelpers().getIngredientBlacklist();
 		List<Integer> blackList =
