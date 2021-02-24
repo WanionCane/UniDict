@@ -64,19 +64,19 @@ public final class UniOreDictionary implements IDependency
 
 	public static List<ItemStack> getUn(@Nonnull final String oreDictName)
 	{
-		return idToStackUn.get(nameToId.get(oreDictName));
+		return getUn(nameToId.get(oreDictName));
 	}
 
 	public static ItemStack getFirstEntry(final String oreDictName)
 	{
 		final List<ItemStack> oreList = get(oreDictName);
-		return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(0).copy() : null;
+		return (oreList != null && !oreList.isEmpty()) ? oreList.get(0).copy() : null;
 	}
 
 	public static ItemStack getLastEntry(final String oreDictName)
 	{
 		final List<ItemStack> oreList = get(oreDictName);
-		return (oreList != null && !oreDictName.isEmpty()) ? oreList.get(oreList.size() - 1).copy() : null;
+		return (oreList != null && !oreList.isEmpty()) ? oreList.get(oreList.size() - 1).copy() : null;
 	}
 
 	public static List<ItemStack> get(final ItemStack thing)
@@ -135,7 +135,7 @@ public final class UniOreDictionary implements IDependency
 
 	private static boolean checkId(final Integer oreDictId)
 	{
-		return oreDictId != null && oreDictId <= idToStack.size();
+		return oreDictId != null && oreDictId < idToStack.size();
 	}
 
 	public String getName(final Object thing)
