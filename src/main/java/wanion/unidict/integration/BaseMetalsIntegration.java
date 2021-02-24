@@ -31,7 +31,10 @@ final class BaseMetalsIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixCrushingRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Fixing Everything!";
 	}
 

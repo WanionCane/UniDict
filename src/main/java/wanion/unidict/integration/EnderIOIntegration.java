@@ -34,7 +34,10 @@ final class EnderIOIntegration extends AbstractIntegrationThread
 		try {
 			fixAlloySmelterRecipes();
 			fixSagMillRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Some inanimate objects appear to have used ender pearls. They all disappeared, how this is possible?";
 	}
 

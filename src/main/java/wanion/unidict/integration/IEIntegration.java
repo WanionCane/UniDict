@@ -43,7 +43,10 @@ final class IEIntegration extends AbstractIntegrationThread
 			fixCrusherRecipes();
 			fixMetalPressRecipes();
 			fixCokeOvenRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "The world's engineer appears to be more immersive.";
 	}
 

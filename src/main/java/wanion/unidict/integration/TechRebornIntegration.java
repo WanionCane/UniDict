@@ -27,6 +27,7 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 		try {
 			(recipeOutputs = Recipe.class.getDeclaredField("itemOutputs")).setAccessible(true);
 		} catch (NoSuchFieldException | NullPointerException e) {
+			logger.error("Couldn't find TechReborn fields!");
 			e.printStackTrace();
 		}
 	}
@@ -37,7 +38,10 @@ final class TechRebornIntegration extends AbstractIntegrationThread
 		try {
 			fixFusionReactorRecipe();
 			fixTechRebornRecipes();
-		} catch (Exception e) { e.printStackTrace(); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "now Tech is truly Reborn.";
 	}
 

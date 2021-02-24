@@ -22,7 +22,10 @@ final class GadgetryCoreIntegration extends AbstractIntegrationThread
 	{
 		try {
 			AlloyRecipe.recipes.replaceAll(alloyRecipe -> new AlloyRecipe(resourceHandler.getMainItemStack(alloyRecipe.getOutput()), alloyRecipe.inputs.toArray()));
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "first we fix the core;";
 	}
 }

@@ -39,7 +39,10 @@ final class FurnaceIntegration extends AbstractIntegrationThread
 	{
 		try {
 			optimizeFurnaceRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Some things that you smelted appear to be different now.";
 	}
 

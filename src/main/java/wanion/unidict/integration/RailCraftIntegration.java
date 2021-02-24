@@ -43,16 +43,22 @@ public class RailCraftIntegration extends AbstractIntegrationThread {
 
     @Override
     public String call() {
-        fixBlastFurnaceRecipes();
-        if (metalRollingRecipe != null && metalRollingTrueRecipe != null) {
-            try {
-                fixMetalRollingRecipes();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        try {
+            fixBlastFurnaceRecipes();
+            if (metalRollingRecipe != null && metalRollingTrueRecipe != null) {
+                try {
+                    fixMetalRollingRecipes();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
+            if (rockCrusherOutputEntry != null && rockCrusherOutputItem != null)
+                fixRockCrushingRecipes();
         }
-        if (rockCrusherOutputEntry != null && rockCrusherOutputItem != null)
-            fixRockCrushingRecipes();
+        catch (Exception e) {
+            logger.error(threadName + e);
+            e.printStackTrace();
+        }
         return threadName + "The rails seem more viable.";
     }
 

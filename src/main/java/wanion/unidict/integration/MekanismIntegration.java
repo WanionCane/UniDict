@@ -46,7 +46,10 @@ final class MekanismIntegration extends AbstractIntegrationThread {
             fixSawmillRecipes(RecipeHandler.Recipe.PRECISION_SAWMILL.get());
             fixCrystallizerRecipes(RecipeHandler.Recipe.CHEMICAL_CRYSTALLIZER.get());
             fixPRCRecipes(RecipeHandler.Recipe.PRESSURIZED_REACTION_CHAMBER.get());
-        } catch (Exception e) { logger.error(threadName + e); }
+        } catch (Exception e) {
+            logger.error(threadName + e);
+            e.printStackTrace();
+        }
         return threadName + "All the mekanisms were checked.";
     }
 

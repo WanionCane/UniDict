@@ -25,7 +25,10 @@ final class AbyssalCraftIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixTransmutationRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "TransMules Fixes!";
 	}
 

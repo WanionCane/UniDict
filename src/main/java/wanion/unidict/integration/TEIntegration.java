@@ -37,7 +37,10 @@ final class TEIntegration extends AbstractIntegrationThread
 			fixInductionSmelterRecipes();
 			fixRedstoneFurnaceRecipes();
 			fixPulverizerRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "The world seems to be more thermally involved.";
 	}
 

@@ -23,7 +23,10 @@ final class DraconicEvolutionIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixOreDoublingRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Draconic Chest has doubled it's power.";
 	}
 

@@ -30,7 +30,10 @@ final class BloodMagicIntegration extends AbstractIntegrationThread
 	{
 		try {
 			fixAlchemyTableRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "It's bleeding...";
 	}
 

@@ -30,7 +30,10 @@ final class ForgeCraftIntegration extends AbstractIntegrationThread
 			//fixBloomeryCrafting();
 			fixCastingCrafting();
 			fixForgeCrafting();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "good work Kitsu =)";
 	}
 

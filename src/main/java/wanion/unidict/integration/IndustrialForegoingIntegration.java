@@ -35,7 +35,10 @@ final class IndustrialForegoingIntegration extends AbstractIntegrationThread
 				Util.setField(OreFluidEntrySieve.class, "output", sieveEntry,
 						resourceHandler.getMainItemStack(Util.getField(OreFluidEntrySieve.class, "output", sieveEntry, ItemStack.class)));
 			}
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "enhanced Laser Drill focus and sieve.";
 	}
 }

@@ -78,7 +78,10 @@ public final class CraftingIntegration extends AbstractIntegrationThread
 			doTheResearch();
 			reCreateTheRecipes();
 			postProcessResearchers();
-		} catch (Exception e) {	e.printStackTrace(); logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Why so many recipes? I had to deal with at least " + totalRecipesReCreated + " recipes.";
 	}
 

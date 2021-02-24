@@ -26,7 +26,10 @@ final class ForestryIntegration extends AbstractIntegrationThread
 			fixCarpenterRecipes();
 			fixCentrifugeRecipes();
 			fixSqueezerRecipes();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "All these bees... they can hurt, you know?";
 	}
 

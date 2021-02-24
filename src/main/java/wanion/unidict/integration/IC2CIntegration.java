@@ -41,7 +41,10 @@ final class IC2CIntegration extends AbstractIntegrationThread
 			fixScrapBoxDrops();
 			if (Loader.isModLoaded("ic2c_extras"))
 				fixIc2CExtrasRecipes();
-		} catch (Exception e) { e.printStackTrace(); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "Expect the world to be nuked by the Industrial Revolution.";
 	}
 

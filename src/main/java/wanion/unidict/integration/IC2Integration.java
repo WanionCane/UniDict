@@ -47,10 +47,17 @@ final class IC2Integration extends AbstractIntegrationThread
 			fixMachineOutput(Recipes.blockcutter);
 			fixMachineOutput(Recipes.extractor);
 			fixMachineOutput(Recipes.oreWashing);
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
+
 		try {
 			fixScrapBoxDrops();
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "The world appears to be entirely industrialized.";
 	}
 

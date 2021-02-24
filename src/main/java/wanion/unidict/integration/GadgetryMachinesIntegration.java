@@ -22,7 +22,10 @@ final class GadgetryMachinesIntegration extends AbstractIntegrationThread
 	{
 		try {
 			GrindingRecipe.recipes.replaceAll(grindingRecipe -> new GrindingRecipe(resourceHandler.getMainItemStack(grindingRecipe.getOutput()), grindingRecipe.inputs.toArray()));
-		} catch (Exception e) { logger.error(threadName + e); }
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 		return threadName + "then the machines! =D";
 	}
 }

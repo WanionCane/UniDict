@@ -52,8 +52,14 @@ final class VillagerIntegration extends AbstractIntegrationThread {
 
     @Override
     public String call() {
-        if (careerList != null && tradeList != null)
-            fixTradeLists();
+        try {
+            if (careerList != null && tradeList != null)
+                fixTradeLists();
+        }
+        catch (Exception e) {
+            logger.error(threadName + e);
+            e.printStackTrace();
+        }
         return threadName + "Villagers now offer even better deals.";
     }
 

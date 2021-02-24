@@ -40,7 +40,10 @@ final class ActuallyAdditionsIntegration extends AbstractIntegrationThread {
             fixCrusherRecipes();
             fixEmpowererRecipes();
             fixAtomicReconstructorRecipes();
-        } catch (Exception e) { logger.error(threadName + e); }
+        } catch (Exception e) {
+            logger.error(threadName + e);
+            e.printStackTrace();
+        }
         return threadName + "Actually unified the Additions!";
     }
 

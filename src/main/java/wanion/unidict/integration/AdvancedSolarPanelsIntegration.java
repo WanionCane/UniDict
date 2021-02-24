@@ -39,7 +39,10 @@ final class AdvancedSolarPanelsIntegration extends AbstractIntegrationThread {
                     }
                 });
             }
-        } catch (Exception e) { logger.error(threadName + e); }
+        } catch (Exception e) {
+            logger.error(threadName + e);
+            e.printStackTrace();
+        }
         return threadName + "All that free energy now has a use!";
     }
 }

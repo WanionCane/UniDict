@@ -27,6 +27,7 @@ final class ChickensIntegration extends AbstractIntegrationThread
 			});
 		} catch (Exception e) {
 			logger.error(threadName + e);
+			e.printStackTrace();
 		}
 		return threadName + "changed Chicken's DNA to make the eggs give the right things when hatched.";
 	}

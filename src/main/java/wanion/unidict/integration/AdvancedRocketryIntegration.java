@@ -15,7 +15,7 @@ import java.util.List;
 
 final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 {
-	private final Field outputField;
+	private Field outputField;
 
 	AdvancedRocketryIntegration()
 	{
@@ -23,7 +23,8 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 		try {
 			(outputField = RecipesMachine.Recipe.class.getDeclaredField("output")).setAccessible(true);
 		} catch (NoSuchFieldException e) {
-			throw new RuntimeException("Couldn't find Advanced Rocketry fields!");
+			logger.error("Couldn't find Advanced Rocketry fields!");
+			e.printStackTrace();
 		}
 	}
 
@@ -31,7 +32,8 @@ final class AdvancedRocketryIntegration extends AbstractIntegrationThread
 	public String call()
 	{
 		try {
-			fixRecipes();
+			if (outputField != null)
+				fixRecipes();
 		} catch (Exception e) { logger.error(threadName + e); }
 		return threadName + "10. 9...3 2 1... BOOOOM!!";
 	}
