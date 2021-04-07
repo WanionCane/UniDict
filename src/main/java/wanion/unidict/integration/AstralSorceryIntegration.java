@@ -8,8 +8,7 @@ package wanion.unidict.integration;
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import hellfirepvp.astralsorcery.common.crafting.grindstone.GrindstoneRecipe;
-import hellfirepvp.astralsorcery.common.crafting.grindstone.GrindstoneRecipeRegistry;
+import hellfirepvp.astralsorcery.common.crafting.grindstone.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -49,6 +48,9 @@ public class AstralSorceryIntegration extends AbstractIntegrationThread {
         final List<GrindstoneRecipe> newRecipes = new ArrayList<>();
         for (final Iterator<GrindstoneRecipe> grindstoneRecipeIterator = recipes.iterator(); grindstoneRecipeIterator.hasNext(); ){
             GrindstoneRecipe recipe = grindstoneRecipeIterator.next();
+
+            if (recipe instanceof CrystalSharpeningRecipe || recipe instanceof CrystalToolSharpeningRecipe || recipe instanceof SwordSharpeningRecipe)
+                continue;
 
             try {
                 newRecipes.add(new GrindstoneRecipe(recipe.getInputForRender(),
