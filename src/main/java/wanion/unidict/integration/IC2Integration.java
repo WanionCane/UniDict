@@ -12,8 +12,10 @@ import ic2.api.recipe.IBasicMachineRecipeManager;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
+import ic2.core.block.steam.TileEntityCokeKiln;
 import ic2.core.recipe.MachineRecipeHelper;
 import ic2.core.recipe.ScrapboxRecipeManager;
+import ic2.core.recipe.dynamic.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import wanion.lib.common.Util;
@@ -21,10 +23,7 @@ import wanion.lib.common.Util;
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 final class IC2Integration extends AbstractIntegrationThread
 {
@@ -58,6 +57,15 @@ final class IC2Integration extends AbstractIntegrationThread
 			logger.error(threadName + e);
 			e.printStackTrace();
 		}
+
+		try {
+			fixCokeKilnRecipes();
+		} catch (Exception e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
+
+
 		return threadName + "The world appears to be entirely industrialized.";
 	}
 
@@ -111,5 +119,67 @@ final class IC2Integration extends AbstractIntegrationThread
 		});
 		dropList.clear();
 		dropList.addAll(newDrops);
+	}
+
+	private void fixCokeKilnRecipes() {
+		try {
+			Class.forName("ic2.core.block.steam.TileEntityCokeKiln");
+
+			final DynamicRecipeManager recipeManager = TileEntityCokeKiln.recipeManager;
+
+			final Map<Collection<RecipeInputIngredient<?>>, DynamicRecipe> recipes =
+					Util.getField(DynamicRecipeManager.class, "recipes", recipeManager, Map.class);
+			final Map<Item, List<DynamicRecipe>> recipeCacheItem = Util.getField(DynamicRecipeManager.class,
+					"recipeCacheItem", recipeManager, Map.class);
+			final Map<String, List<DynamicRecipe>> recipeCacheFluid = Util.getField(DynamicRecipeManager.class,
+					"recipeCacheFluid", recipeManager, Map.class);
+			final List<DynamicRecipe> uncacheableRecipes = Util.getField(DynamicRecipeManager.class,
+					"uncacheableRecipes", recipeManager, List.class);
+
+			if (recipes == null || recipeCacheItem == null || recipeCacheFluid == null || uncacheableRecipes == null)
+				return;
+
+			recipeCacheItem.clear();
+			recipeCacheFluid.clear();
+			uncacheableRecipes.clear();
+
+			final List<DynamicRecipe> toRegister = new ArrayList<>();
+			final Iterator<DynamicRecipe> recipeIterator = recipes.values().iterator();
+			while (recipeIterator.hasNext()) {
+				final DynamicRecipe recipe = recipeIterator.next();
+
+				final List<RecipeOutputIngredient> newOutputs = new ArrayList<>();
+
+				boolean skip = false;
+				for (RecipeOutputIngredient<?> outputIngredient : recipe.getOutputIngredients()) {
+					if (outputIngredient instanceof RecipeOutputFluidStack){
+						newOutputs.add(outputIngredient);
+					}
+					else if (outputIngredient instanceof RecipeOutputItemStack) {
+						RecipeOutputItemStack itemStack = (RecipeOutputItemStack)outputIngredient;
+						newOutputs.add(RecipeOutputItemStack.of(resourceHandler.getMainItemStack(itemStack.ingredient)));
+					}
+					else {
+						skip = true;
+					}
+				}
+				if (skip)
+					continue;
+
+				toRegister.add(new DynamicRecipe(recipeManager)
+						.withInput(recipe.getInputIngredients())
+						.withOutput(newOutputs)
+						.withMetadata(recipe.getMetadata())
+						.withOperationDurationTicks(recipe.getOperationDuration())
+						.withOperationEnergyCost(recipe.getOperationEnergyCost()));
+
+				recipeIterator.remove();
+			}
+
+			toRegister.forEach(DynamicRecipe::register);
+		} catch (ClassNotFoundException e) {
+			logger.error(threadName + e);
+			e.printStackTrace();
+		}
 	}
 }
