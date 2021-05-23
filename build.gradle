@@ -33,6 +33,9 @@ minecraft {
 
     replaceIn "Reference.java"
     replace "@version@", project.version
+
+    clientJvmArgs += "-Dfml.coreMods.load=wanion.unidict.core.UniDictCoreMod"
+    serverJvmArgs += "-Dfml.coreMods.load=wanion.unidict.core.UniDictCoreMod"
 }
 
 dependencies {
@@ -76,4 +79,12 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+jar {
+    manifest.attributes(
+            'FMLCorePluginContainsFMLMod': 'true',
+            'FMLCorePlugin': 'wanion.unidict.core.UniDictCoreMod',
+            'ForceLoadAsMod': 'true'
+    )
 }

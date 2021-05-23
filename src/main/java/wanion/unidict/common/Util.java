@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreIngredient;
 import wanion.lib.common.MetaItem;
 import wanion.unidict.Config;
 import wanion.unidict.UniDict;
@@ -108,5 +109,10 @@ public final class Util
 			}
 		});
 		return itemStackList;
+	}
+
+	public static String getOreNameFromIngredient(OreIngredient ingredient) {
+		// This code gets patched by the core mod.
+		return ingredient.toString();
 	}
 }
