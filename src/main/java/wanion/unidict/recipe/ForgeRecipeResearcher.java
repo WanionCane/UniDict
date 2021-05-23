@@ -25,7 +25,6 @@ import wanion.unidict.common.Util;
 import wanion.unidict.resource.UniResourceContainer;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,20 +32,6 @@ import java.util.List;
 
 public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRecipe, ShapelessOreRecipe>
 {
-	private final Field oresField;
-
-	public ForgeRecipeResearcher()
-	{
-		Field dummyOresField = null;
-		try {
-			dummyOresField = OreIngredient.class.getDeclaredField("ores");
-			dummyOresField.setAccessible(true);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		}
-		oresField = dummyOresField;
-	}
-
 	@Override
 	public int getShapedRecipeKey(@Nonnull final ShapedOreRecipe recipe)
 	{
@@ -100,14 +85,25 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {
 				final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					final ItemStack[] matching = oreIngredient.getMatchingStacks();
+
+					if (matching.length > 0) {
+						final ItemStack itemStack = matching[0];
+						final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+						if (container != null) {
+							newRecipeInputs[y * root + x] = (itemStacksOnly ? container.getMainEntry(itemStack) :
+									container.name);
+							continue;
+						}
+					}
+					newRecipeInputs[y * root + x] = Util.getOreNameFromIngredient(oreIngredient);
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 					newRecipeInputs[y * root + x] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
-				} else if (ingredient instanceof OreIngredient) {
-					try {
-						newRecipeInputs[y * root + x] = uniOreDictionary.getName(oresField.get(ingredient));
-					} catch (IllegalAccessException e) { e.printStackTrace(); }
 				}
 			}
 		}
@@ -127,7 +123,21 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 		final Object[] newRecipeInputs = new Object[9];
 		for (int i = 0; i < 9; i++) {
 			final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-			if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+			if (ingredient instanceof OreIngredient) {
+				final OreIngredient oreIngredient = (OreIngredient)ingredient;
+				final ItemStack[] matching = oreIngredient.getMatchingStacks();
+
+				if (matching.length > 0) {
+					final ItemStack itemStack = matching[0];
+					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+					if (container != null) {
+						newRecipeInputs[i] = (itemStacksOnly ? container.getMainEntry(itemStack) : container.name);
+						continue;
+					}
+				}
+				newRecipeInputs[i] = Util.getOreNameFromIngredient(oreIngredient);
+			}
+			else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 				final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 				final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 				newRecipeInputs[i] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
@@ -153,7 +163,11 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 			});
 		} else {
 			recipe.getIngredients().forEach(ingredient -> {
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					inputs.add(Util.getOreNameFromIngredient(oreIngredient));
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack input = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(input);
 					inputs.add(container != null ? container.name : input);
@@ -178,7 +192,11 @@ public class ForgeRecipeResearcher extends AbstractRecipeResearcher<ShapedOreRec
 					inputs.add(resourceHandler.getMainItemStack(ingredient.getMatchingStacks()[0]));
 		} else {
 			for (final Ingredient ingredient : recipe.getIngredients()) {
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					inputs.add(Util.getOreNameFromIngredient(oreIngredient));
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack input = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(input);
 					inputs.add(container != null ? container.name : input);

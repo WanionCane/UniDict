@@ -16,6 +16,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.recipe.RecipeAttributes;
@@ -101,7 +102,22 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {
 				final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					final ItemStack[] matching = oreIngredient.getMatchingStacks();
+
+					if (matching.length > 0) {
+						final ItemStack itemStack = matching[0];
+						final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+						if (container != null) {
+							newRecipeInputs[y * root + x] = (itemStacksOnly ? container.getMainEntry(itemStack) :
+									container.name);
+							continue;
+						}
+					}
+					newRecipeInputs[y * root + x] = Util.getOreNameFromIngredient(oreIngredient);
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 					newRecipeInputs[y * root + x] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
@@ -124,7 +140,21 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 		final Object[] newRecipeInputs = new Object[9];
 		for (int i = 0; i < 9; i++) {
 			final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-			if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+			if (ingredient instanceof OreIngredient) {
+				final OreIngredient oreIngredient = (OreIngredient)ingredient;
+				final ItemStack[] matching = oreIngredient.getMatchingStacks();
+
+				if (matching.length > 0) {
+					final ItemStack itemStack = matching[0];
+					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
+					if (container != null) {
+						newRecipeInputs[i] = (itemStacksOnly ? container.getMainEntry(itemStack) : container.name);
+						continue;
+					}
+				}
+				newRecipeInputs[i] = Util.getOreNameFromIngredient(oreIngredient);
+			}
+			else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 				final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 				final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 				newRecipeInputs[i] = container != null ? (itemStacksOnly ? container.getMainEntry(itemStack) : container.name) : itemStack;
@@ -150,7 +180,11 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 			});
 		} else {
 			recipe.getIngredients().forEach(ingredient -> {
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					inputs.add(Util.getOreNameFromIngredient(oreIngredient));
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack input = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(input);
 					inputs.add(container != null ? container.name : input);
@@ -175,7 +209,11 @@ public class VanillaRecipeResearcher extends AbstractRecipeResearcher<ShapedReci
 					inputs.add(resourceHandler.getMainItemStack(ingredient.getMatchingStacks()[0]));
 		} else {
 			for (final Ingredient ingredient : recipe.getIngredients()) {
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					inputs.add(Util.getOreNameFromIngredient(oreIngredient));
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack input = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(input);
 					inputs.add(container != null ? container.name : input);

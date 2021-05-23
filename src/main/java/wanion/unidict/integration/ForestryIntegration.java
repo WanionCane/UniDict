@@ -7,6 +7,7 @@ import forestry.core.utils.datastructures.ItemStackMap;
 import forestry.factory.recipes.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraftforge.oredict.OreIngredient;
 import wanion.lib.common.Util;
 import wanion.lib.recipe.RecipeAttributes;
 import wanion.lib.recipe.RecipeHelper;
@@ -60,7 +61,11 @@ final class ForestryIntegration extends AbstractIntegrationThread
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, i++) {
 				final Ingredient ingredient = i < recipeInputs.size() ? recipeInputs.get(i) : null;
-				if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
+				if (ingredient instanceof OreIngredient) {
+					final OreIngredient oreIngredient = (OreIngredient)ingredient;
+					newRecipeInputs[y * root + x] = wanion.unidict.common.Util.getOreNameFromIngredient(oreIngredient);
+				}
+				else if (ingredient != null && ingredient.getMatchingStacks().length > 0) {
 					final ItemStack itemStack = ingredient.getMatchingStacks()[0];
 					final UniResourceContainer container = resourceHandler.getContainer(itemStack);
 					newRecipeInputs[y * root + x] = container != null ? container.name : itemStack;

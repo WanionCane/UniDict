@@ -18,6 +18,7 @@ import ic2.core.recipe.RecipeInputOreDict;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import wanion.lib.common.MetaItem;
@@ -175,7 +176,7 @@ public class IC2RecipeResearcher extends AbstractRecipeResearcher<AdvRecipe, Adv
 						newInputs.add(recipeInput.getInputs().get(0));
 				} else {
 					if (oreName.equals("craftingToolForgeHammer") && ic2ForgeHammer != null)
-						newInputs.add(new ItemStack(ic2ForgeHammer, 1, 32767));
+						newInputs.add(new ItemStack(ic2ForgeHammer, 1, OreDictionary.WILDCARD_VALUE));
 					else
 						newInputs.add(oreName);
 				}
