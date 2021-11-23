@@ -56,8 +56,6 @@ public class CommonProxy
 	public void init(final FMLInitializationEvent event)
 	{
 		uniResourceHandler.init(event);
-		if (Loader.isModLoaded("crafttweaker"))
-			UniDictCraftTweakerPlugin.init();
 		moduleHandler.startModules(event);
 	}
 
@@ -66,6 +64,8 @@ public class CommonProxy
 		uniResourceHandler.postInit(event);
 		moduleHandler.startModules(event);
 		proccessRecipesToRemove();
+		if (Loader.isModLoaded("crafttweaker"))
+			UniDictCraftTweakerPlugin.init();
 	}
 
 	private void proccessRecipesToRemove() {
